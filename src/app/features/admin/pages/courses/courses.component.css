@@ -1,0 +1,41 @@
+.table-pagination {
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+:host ::ng-deep .ant-pagination-item {
+  border-radius: 4px;
+  font-size: 13px;
+}
+:host ::ng-deep .ant-pagination-item-active {
+  background: #3bb273;
+  color: #fff;
+  border-color: #3bb273;
+}
+:host ::ng-deep .ant-pagination-item-active a {
+  color: #fff !important;
+}
+
+:host ::ng-deep .ant-pagination-item-active {
+  background: #3bb273;
+  color: #fff;
+  border-color: #3bb273;
+}
+:host ::ng-deep .ant-pagination-item-active a {
+  color: #fff !important;
+}
+:host ::ng-deep .ant-pagination-options {
+  margin-left: 16px;
+}
+/* Nút xoá màu đỏ */
+.btn-delete {
+  background-color: #fc4f5274 !important;
+  border-color: #ffffff97 !important;
+  color: #ff0000 !important;
+}
+.btn-delete:hover,
+.btn-delete:focus {
+  background-color: #d9363e !important;
+  border-color: #d9363e !important;
+  color: #fff !important;
+}

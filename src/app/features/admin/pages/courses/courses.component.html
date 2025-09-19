@@ -1,0 +1,96 @@
+<nz-modal
+  [(nzVisible)]="showAddForm"
+  nzTitle="Thêm mới khóa học"
+  (nzOnCancel)="onCancelAddCourse()"
+  [nzFooter]="null"
+  [nzWidth]="520"
+>
+  <app-courses-form
+    (save)="onSaveCourse($event)"
+    (cancel)="onCancelAddCourse()"
+  ></app-courses-form>
+</nz-modal>
+
+<div class="page-header">
+  <div class="page-title-section">
+    <h2 class="page-title">
+      <span nz-icon nzType="book" nzTheme="outline"></span> Quản lý khóa học
+    </h2>
+    <p class="page-subtitle">Quản lý thông tin khóa học và học phí</p>
+  </div>
+  <div class="page-actions">
+    <span class="total">Tổng số: {{ courses.length }}</span>
+    <button nz-button nzType="primary" class="btn-add" (click)="onAddCourse()">
+      <span nz-icon nzType="plus"></span> Thêm khóa học
+    </button>
+  </div>
+</div>
+
+<div class="card">
+  <nz-table
+    [nzBordered]="false"
+    [nzData]="paginatedCourses"
+    [nzShowPagination]="false"
+    [nzSize]="'middle'"
+  >
+    <thead>
+      <tr>
+        <th>STT</th>
+        <th>Tên khóa học</th>
+        <th>Thời lượng</th>
+        <th>Học phí</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let c of paginatedCourses; index as i">
+        <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+        <td>{{ c.name }}</td>
+        <td>{{ c.duration }}</td>
+        <td>{{ c.fee }}</td>
+        <td>
+          <button
+            nz-button
+            nzType="default"
+            nzShape="circle"
+            class="btn-edit"
+            (click)="viewCourse(c)"
+          >
+            <span nz-icon nzType="eye"></span>
+          </button>
+          <button
+            nz-button
+            nzType="default"
+            nzShape="circle"
+            class="btn-edit"
+            (click)="editCourse(c)"
+          >
+            <span nz-icon nzType="edit"></span>
+          </button>
+          <button
+            nz-button
+            nzType="primary"
+            nzDanger
+            nzShape="circle"
+            class="btn-delete"
+            (click)="deleteCourse(c)"
+          >
+            <span nz-icon nzType="delete"></span>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+  <div class="table-pagination">
+    <nz-pagination
+      [nzPageIndex]="pageIndex"
+      [nzTotal]="courses.length"
+      [nzPageSize]="pageSize"
+      [nzPageSizeOptions]="[5, 10, 20]"
+      (nzPageIndexChange)="onPageIndexChange($event)"
+      (nzPageSizeChange)="onPageSizeChange($event)"
+      [nzShowSizeChanger]="true"
+      [nzShowQuickJumper]="true"
+    ></nz-pagination>
+  </div>
+</div>

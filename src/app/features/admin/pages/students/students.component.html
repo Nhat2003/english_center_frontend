@@ -1,0 +1,91 @@
+
+<div class="page-header">
+	<div class="page-title-section">
+		<h2 class="page-title">
+			<span nz-icon nzType="user" nzTheme="outline"></span> Quản lý học sinh
+		</h2>
+		<p class="page-subtitle">Quản lý thông tin học sinh</p>
+	</div>
+	<div class="page-actions">
+		<span class="total">Tổng số: {{ total }}</span>
+		<button nz-button nzType="primary" class="btn-add" (click)="openAddStudentModal()">
+			<span nz-icon nzType="plus"></span> Thêm học sinh
+		</button>
+	</div>
+</div>
+
+<div class="card">
+	<nz-table
+		[nzBordered]="false"
+		[nzData]="students"
+		[nzShowPagination]="false"
+		[nzSize]="'middle'"
+		[nzLoading]="loading"
+	>
+		<thead>
+			<tr>
+				<th>STT</th>
+				<th>Họ tên</th>
+				<th>Ngày sinh</th>
+				<th>Giới tính</th>
+				<th>SĐT</th>
+				<th>Địa chỉ</th>
+				<th>Ngày vào</th>
+				<th>Hành động</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr *ngFor="let s of students; index as i">
+				<td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+				<td>{{ s.fullName }}</td>
+				<td>{{ s.dob | date:'dd/MM/yyyy' }}</td>
+				<td>{{ s.gender }}</td>
+				<td>{{ s.phone }}</td>
+				<td>{{ s.address }}</td>
+				<td>{{ s.joinedAt | date:'dd/MM/yyyy' }}</td>
+				<td>
+					<button
+						nz-button
+						nzType="default"
+						nzShape="circle"
+						class="btn-edit"
+						(click)="viewStudent(s)"
+					>
+						<span nz-icon nzType="eye"></span>
+					</button>
+					<button
+						nz-button
+						nzType="default"
+						nzShape="circle"
+						class="btn-edit"
+						(click)="editStudent(s)"
+					>
+						<span nz-icon nzType="edit"></span>
+					</button>
+					<button
+						nz-button
+						nzType="primary"
+						nzDanger
+						nzShape="circle"
+						class="btn-delete"
+						(click)="deleteStudent(s)"
+					>
+						<span nz-icon nzType="delete"></span>
+					</button>
+				</td>
+			</tr>
+		</tbody>
+	</nz-table>
+	<div class="table-pagination">
+		<nz-pagination
+			[nzPageIndex]="pageIndex"
+			[nzTotal]="total"
+			[nzPageSize]="pageSize"
+			[nzPageSizeOptions]="[5, 10, 20]"
+			(nzPageIndexChange)="onPageIndexChange($event)"
+			(nzPageSizeChange)="onPageSizeChange($event)"
+			[nzShowSizeChanger]="true"
+			[nzShowQuickJumper]="true"
+		></nz-pagination>
+	</div>
+</div>

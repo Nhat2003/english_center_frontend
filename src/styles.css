@@ -1,0 +1,403 @@
+/* You can add global styles to this file, and also import other style files */
+/* Ưu tiên style cho nút xoá, không bị ghi đè bởi .ant-btn-primary */
+.ant-btn.btn-delete,
+button[nz-button].btn-delete {
+  background-color: #fc4f5274 !important;
+  border-color: #ffffff97 !important;
+  color: #ff0000 !important;
+}
+.ant-btn.btn-delete:hover,
+.ant-btn.btn-delete:focus,
+button[nz-button].btn-delete:hover,
+button[nz-button].btn-delete:focus {
+  background-color: #d9363e !important;
+  border-color: #d9363e !important;
+  color: #fff !important;
+}
+.total{
+  padding: 10px;
+  font-weight: bold;
+}
+/* Nút xoá màu đỏ dùng chung cho toàn bộ dự án */
+.btn-delete {
+  background-color: #fc4f5274 !important;
+  border-color: #ffffff97 !important;
+  color: #ff0000 !important;
+}
+.btn-delete:hover,
+.btn-delete:focus {
+  background-color: #d9363e !important;
+  border-color: #d9363e !important;
+  color: #fff !important;
+}
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.page-title-section {
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+
+/* ================== SHARED BUTTON STYLES ================== */
+.btn-add,
+button[nz-button].btn-add,
+.ant-btn-primary {
+  background-color: #3bb273 !important;
+  border-color: #3bb273 !important;
+  color: #fff !important;
+}
+.btn-add:hover,
+button[nz-button].btn-add:hover,
+.ant-btn-primary:hover {
+  background-color: #2e8b57 !important;
+  border-color: #2e8b57 !important;
+  color: #fff !important;
+}
+
+/* ================== SHARED PAGINATION STYLES ================== */
+.table-pagination {
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+:host ::ng-deep .ant-pagination-item {
+  border-radius: 4px;
+  font-size: 13px;
+  min-width: 28px;
+  height: 28px;
+}
+:host ::ng-deep .ant-pagination-item-active {
+  background: #3bb273;
+  color: #fff;
+  border-color: #3bb273;
+}
+:host ::ng-deep .ant-pagination-item-active a {
+  color: #fff !important;
+}
+:host ::ng-deep .ant-pagination-options {
+  margin-left: 16px;
+}
+/* ================== SHARED PAGINATION STYLES ================== */
+:host ::ng-deep .ant-pagination-item,
+:host ::ng-deep .ant-pagination-prev,
+:host ::ng-deep .ant-pagination-next {
+  min-width: 24px;
+  height: 24px;
+  line-height: 24px;
+  font-size: 12px;
+  margin: 0 2px;
+}
+:host ::ng-deep .ant-pagination-item {
+  border-radius: 3px;
+}
+:host ::ng-deep .ant-pagination-item-active {
+  background: #3bb273;
+  color: #fff;
+  border-color: #3bb273;
+}
+:host ::ng-deep .ant-pagination-item-active a {
+  color: #fff !important;
+}
+/* ================== FINAL PAGINATION NUMBER OVERRIDE ================== */
+:host ::ng-deep .ant-pagination-item:focus,
+:host ::ng-deep .ant-pagination-item:hover {
+  border-color: #3bb273 !important;
+  background: #e6f9f0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+:host ::ng-deep .ant-pagination-item-active:focus,
+:host ::ng-deep .ant-pagination-item-active:hover {
+  border-color: #2e8b57 !important;
+  background: #2e8b57 !important;
+  color: #fff !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+:host ::ng-deep .ant-pagination-item a:focus,
+:host ::ng-deep .ant-pagination-item a:hover {
+  color: #3bb273 !important;
+  outline: none !important;
+}
+/* ================== FORCE PAGINATION OVERRIDE ================== */
+:host ::ng-deep .ant-pagination-item:focus,
+:host ::ng-deep .ant-pagination-item:hover,
+:host ::ng-deep .ant-pagination-item-active:focus,
+:host ::ng-deep .ant-pagination-item-active:hover {
+  border-color: #3bb273 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+:host ::ng-deep .ant-pagination-item a:focus,
+:host ::ng-deep .ant-pagination-item a:hover {
+  color: #3bb273 !important;
+  outline: none !important;
+}
+/* ================== PAGINATION OVERRIDE ================== */
+:host ::ng-deep .ant-pagination-item:focus,
+:host ::ng-deep .ant-pagination-item:hover {
+  border-color: #3bb273 !important;
+  box-shadow: 0 0 0 2px rgba(59,178,115,0.12) !important;
+}
+:host ::ng-deep .ant-pagination-item-active:focus,
+:host ::ng-deep .ant-pagination-item-active:hover {
+  border-color: #2e8b57 !important;
+  background: #2e8b57 !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+/* ================== FORCE OVERRIDE NG-ZORRO FOCUS & HOVER ================== */
+/* Button */
+button,
+.ant-btn,
+.ant-btn-primary {
+  outline: none !important;
+}
+button:focus,
+button:hover,
+.ant-btn:focus,
+.ant-btn:hover,
+.ant-btn-primary:focus,
+.ant-btn-primary:hover {
+  background-color: #2e8b57 !important;
+  border-color: #2e8b57 !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+/* Input */
+input:focus,
+input:hover,
+.ant-input:focus,
+.ant-input:hover {
+  border-color: #3bb273 !important;
+  box-shadow: 0 0 0 2px rgba(59,178,115,0.12) !important;
+}
+
+/* Select */
+.ant-select-focused .ant-select-selector,
+.ant-select-selector:focus,
+.ant-select-selector:hover {
+  border-color: #3bb273 !important;
+  box-shadow: 0 0 0 2px rgba(59,178,115,0.12) !important;
+}
+
+/* Checkbox & Radio */
+.ant-checkbox-checked .ant-checkbox-inner,
+.ant-radio-checked .ant-radio-inner {
+  background-color: #3bb273 !important;
+  border-color: #3bb273 !important;
+}
+/* ================== OVERRIDE NG-ZORRO FOCUS & HOVER ================== */
+:host ::ng-deep .ant-btn:focus,
+:host ::ng-deep .ant-btn-primary:focus,
+:host ::ng-deep .ant-btn:hover,
+:host ::ng-deep .ant-btn-primary:hover {
+  background-color: #2e8b57 !important;
+  border-color: #2e8b57 !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+:host ::ng-deep .ant-input:focus,
+:host ::ng-deep .ant-input:hover {
+  border-color: #3bb273 !important;
+  box-shadow: 0 0 0 2px rgba(59,178,115,0.12) !important;
+}
+
+:host ::ng-deep .ant-select-focused .ant-select-selector,
+:host ::ng-deep .ant-select-selector:focus,
+:host ::ng-deep .ant-select-selector:hover {
+  border-color: #3bb273 !important;
+  box-shadow: 0 0 0 2px rgba(59,178,115,0.12) !important;
+}
+
+:host ::ng-deep .ant-checkbox-checked .ant-checkbox-inner,
+:host ::ng-deep .ant-radio-checked .ant-radio-inner {
+  background-color: #3bb273 !important;
+  border-color: #3bb273 !important;
+}
+/* 🎨 Màu chủ đạo */
+body {
+  background-color: #f5f7fa;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  color: #333;
+  margin: 0;
+}
+
+/* ================== ADMIN LAYOUT ================== */
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===== Sidebar ===== */
+.admin-layout .sidebar {
+  background-color: #ffffff;
+  border-right: 1px solid #e0e0e0;
+  padding-top: 20px;
+}
+
+.admin-layout .sidebar .logo {
+  text-align: center;
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.admin-layout .sidebar ul[nz-menu] {
+  background-color: transparent;
+  border-inline-end: none;
+}
+
+.admin-layout .sidebar ul[nz-menu] li[nz-menu-item] {
+  color: #333;
+}
+
+.admin-layout .sidebar ul[nz-menu] li[nz-menu-item]:hover {
+  background-color: #d8f1e2;
+}
+
+.admin-layout .sidebar ul[nz-menu] li[nz-menu-item].ant-menu-item-selected {
+  background-color: #3bb273;
+  color: white;
+}
+
+/* ===== Content ===== */
+.admin-layout .content {
+  flex: 1;
+  padding: 20px;
+}
+
+.admin-layout .content .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.admin-layout .content .page-header h2 {
+  margin: 0;
+  font-weight: bold;
+}
+
+.admin-layout .content .page-header .action-buttons button {
+  margin-left: 10px;
+}
+
+.admin-layout .content .card {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* ================== NÚT CHỦ ĐẠO ================== */
+.ant-btn-primary {
+  background-color: #3bb273;
+  border-color: #3bb273;
+}
+
+.ant-btn-primary:hover {
+  background-color: #4a9f70;
+  border-color: #349d63;
+}
+
+.btn-edit {
+  border-color: #3bb273;
+  color: #3bb273;
+}
+
+.btn-edit:hover {
+  background-color: #3bb273;
+  color: white;
+}
+
+.btn-delete {
+  background-color: #ff4d4f;
+  border-color: #ff4d4f;
+}
+
+.btn-delete:hover {
+  background-color: #d9363e;
+  border-color: #d9363e;
+}
+
+
+/* ================== PAGE TITLE ================== */
+.page-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #3bb273;
+}
+
+/* ================== BẢNG DỮ LIỆU ================== */
+nz-table {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+thead th {
+  background: #f0f2f5 !important;
+  font-weight: 600;
+  text-align: center;
+}
+
+tbody td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* ================== BUTTON ================== */
+button[nz-button] {
+  height: 32px;
+
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+button[nz-button]:hover {
+  opacity: 0.85;
+}
+
+button + button {
+  margin-left: 8px;
+}
+:host ::ng-deep .ant-btn-primary {
+  background-color: #3bb273 !important;
+  border-color: #3bb273 !important;
+  color: white !important;
+}
+:host ::ng-deep .ant-btn-primary:hover,
+:host ::ng-deep .ant-btn-primary:focus {
+  background-color: #2e8b57 !important;
+  border-color: #2e8b57 !important;
+  color: white !important;
+}
+
+/* ================== PAGINATION ================== */
+:host ::ng-deep .ant-pagination {
+  margin-top: 16px;
+  text-align: center;
+}
+
+/* ================== RESPONSIVE ================== */
+@media (max-width: 768px) {
+  nz-table {
+    font-size: 13px;
+  }
+
+  .page-title {
+    font-size: 18px;
+  }
+}

@@ -1,0 +1,32 @@
+<div class="card shadow-sm p-4" style="border-radius: 12px; max-width: 500px; margin: 0 auto; background: #fff;">
+  <form nz-form [formGroup]="form" (ngSubmit)="onSubmit()" nzLayout="vertical">
+    <div class="form-header mb-4 d-flex align-items-center">
+      <div class="avatar bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width:48px;height:48px;border-radius:50%;font-size:24px;">
+        <i nz-icon nzType="book" nzTheme="outline"></i>
+      </div>
+      <div class="title" style="font-size:1.2rem;font-weight:500;">Thêm mới khóa học</div>
+    </div>
+    <nz-form-item>
+      <nz-form-label [nzRequired]="true" nzFor="name">Tên khóa học</nz-form-label>
+      <nz-form-control>
+        <input nz-input formControlName="name" id="name" placeholder="Nhập tên khóa học" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzRequired]="true" nzFor="duration">Thời lượng (giờ)</nz-form-label>
+      <nz-form-control>
+        <input nz-input type="number" formControlName="duration" id="duration" placeholder="Nhập thời lượng" min="1" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzRequired]="true" nzFor="fee">Học phí (VNĐ)</nz-form-label>
+      <nz-form-control>
+        <input nz-input type="number" formControlName="fee" id="fee" placeholder="Nhập học phí" min="0" />
+      </nz-form-control>
+    </nz-form-item>
+    <div class="form-footer d-flex justify-content-end mt-4 gap-2">
+      <button nz-button nzType="default" (click)="onCancel()" type="button">Huỷ</button>
+      <button nz-button nzType="primary" [disabled]="form.invalid">Lưu</button>
+    </div>
+  </form>
+</div>

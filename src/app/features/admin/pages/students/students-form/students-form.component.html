@@ -1,0 +1,70 @@
+
+
+
+<div class="card shadow-sm p-4" style="border-radius: 12px; max-width: 650px; margin: 0 auto; background: #fff;">
+  <form nz-form [formGroup]="form" (ngSubmit)="onSubmit()" nzLayout="vertical">
+    <div class="form-header mb-4 d-flex align-items-center">
+      <div class="avatar bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width:48px;height:48px;border-radius:50%;font-size:24px;">
+        <i nz-icon nzType="user" nzTheme="outline"></i>
+      </div>
+      <div class="title" style="font-size:1.3rem;font-weight:500;">Thông tin học viên</div>
+    </div>
+    <div nz-row [nzGutter]="16">
+      <div nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="fullName">Họ tên</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="fullName" id="fullName" placeholder="Nhập họ tên" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="dob">Ngày sinh</nz-form-label>
+          <nz-form-control>
+            <input nz-input type="date" formControlName="dob" id="dob" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="gender">Giới tính</nz-form-label>
+          <nz-form-control>
+            <nz-select formControlName="gender" id="gender" nzPlaceHolder="Chọn giới tính">
+              <nz-option nzValue="Male" nzLabel="Nam"></nz-option>
+              <nz-option nzValue="Female" nzLabel="Nữ"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="phone">Số điện thoại</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="phone" id="phone" placeholder="Nhập số điện thoại" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="24">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="address">Địa chỉ</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="address" id="address" placeholder="Nhập địa chỉ" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="joinedAt">Ngày vào trung tâm</nz-form-label>
+          <nz-form-control>
+            <input nz-input type="date" formControlName="joinedAt" id="joinedAt" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div class="form-footer d-flex justify-content-end mt-4 gap-2">
+      <button nz-button nzType="default" (click)="onCancel()" type="button">Huỷ</button>
+      <button nz-button nzType="primary" [disabled]="form.invalid">Lưu</button>
+    </div>
+  </form>
+</div>

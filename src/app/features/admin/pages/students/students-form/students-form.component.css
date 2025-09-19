@@ -1,0 +1,85 @@
+
+.student-form {
+  max-width: 520px;
+  margin: 32px auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  padding: 0 0 24px 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+.form-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 32px 8px 32px;
+  border-bottom: 1px solid #f0f0f0;
+  background: linear-gradient(90deg, #e0e7ff 0%, #fff 100%);
+  border-radius: 18px 18px 0 0;
+}
+.avatar {
+  width: 56px;
+  height: 56px;
+  background: #f0f5ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: #3b82f6;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.08);
+}
+.title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+.form-body {
+  padding: 24px 32px 0 32px;
+}
+.form-row {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 18px;
+}
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #334155;
+}
+.form-group input,
+.form-group select {
+  border-radius: 8px;
+  border: 1px solid #dbeafe;
+  min-height: 40px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+.form-group input:focus,
+.form-group select:focus {
+  border: 1.5px solid #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 2px #dbeafe;
+}
+.form-group input[disabled],
+.form-group select[disabled] {
+  background: #f1f5f9;
+  color: #94a3b8;
+}
+.form-group.w-100 {
+  flex: 2;
+}
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 24px 32px 0 32px;
+}
+.text-danger { color: #ff4d4f; }
+.me-2 { margin-right: 8px; }

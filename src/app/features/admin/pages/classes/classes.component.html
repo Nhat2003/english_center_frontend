@@ -1,0 +1,100 @@
+<nz-modal
+  [(nzVisible)]="showAddForm"
+  nzTitle="Thêm mới lớp học"
+  (nzOnCancel)="onCancelAddClass()"
+  [nzFooter]="null"
+  [nzWidth]="520"
+>
+  <app-classes-form
+    (save)="onSaveClass($event)"
+    (cancel)="onCancelAddClass()"
+  ></app-classes-form>
+</nz-modal>
+
+<div class="page-header">
+  <div class="page-title-section">
+    <h2 class="page-title">
+      <span nz-icon nzType="apartment" nzTheme="outline"></span> Quản lý lớp học
+    </h2>
+    <p class="page-subtitle">Quản lý thông tin lớp học và giáo viên phụ trách</p>
+  </div>
+  <div class="page-actions">
+    <span class="total">Tổng số: {{ classes.length }}</span>
+    <button nz-button nzType="primary" class="btn-add" (click)="onAddClass()">
+      <span nz-icon nzType="plus"></span> Thêm lớp học
+    </button>
+  </div>
+</div>
+
+<div class="card">
+  <nz-table
+    [nzBordered]="false"
+    [nzData]="paginatedClasses"
+    [nzShowPagination]="false"
+    [nzSize]="'middle'"
+  >
+    <thead>
+      <tr>
+        <th>STT</th>
+        <th>Tên lớp</th>
+        <th>Giáo viên phụ trách</th>
+        <th>Khóa học</th>
+        <th>Lịch học</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let cl of paginatedClasses; index as i">
+        <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+        <td>{{ cl.name }}</td>
+        <td>{{ cl.teacher }}</td>
+        <td>{{ cl.course }}</td>
+        <td>{{ cl.schedule }}</td>
+        <td>
+          <button
+            nz-button
+            nzType="default"
+            nzShape="circle"
+            class="btn-edit"
+            (click)="viewClassroom(cl)"
+          >
+            <span nz-icon nzType="eye"></span>
+          </button>
+          <button
+            nz-button
+            nzType="default"
+            nzShape="circle"
+            class="btn-edit"
+            (click)="editClass(cl)"
+          >
+            <span nz-icon nzType="edit"></span>
+          </button>
+          <button
+            nz-button
+            nzType="primary"
+            nzDanger
+            nzShape="circle"
+            class="btn-delete"
+            (click)="deleteClass(cl)"
+          >
+            <span nz-icon nzType="delete"></span>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+  <div class="table-pagination">
+    <nz-pagination
+      [nzPageIndex]="pageIndex"
+      [nzTotal]="classes.length"
+      [nzPageSize]="pageSize"
+      [nzPageSizeOptions]="[5, 10, 20]"
+      (nzPageIndexChange)="onPageIndexChange($event)"
+      (nzPageSizeChange)="onPageSizeChange($event)"
+      [nzShowSizeChanger]="true"
+      [nzShowQuickJumper]="true"
+    ></nz-pagination>
+  </div>
+</div>
+
+

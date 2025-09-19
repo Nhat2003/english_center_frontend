@@ -1,0 +1,40 @@
+<nz-layout style="min-height: 100vh;">
+  <!-- Sidebar -->
+  <nz-sider
+    nzCollapsible
+    [(nzCollapsed)]="isCollapsed"
+    [nzWidth]="220"
+    [nzCollapsedWidth]="64"
+    [nzTheme]="'light'"
+    style="position: fixed; left: 0; top: 0; bottom: 0; border-right: 1px solid #f0f0f0;"
+  >
+    <!-- Logo -->
+    <div class="logo">
+      <span *ngIf="!isCollapsed">Admin <span class="children-logo">Panel</span></span>
+      <span *ngIf="isCollapsed">A</span>
+    </div>
+
+    <!-- Menu -->
+    <ul nz-menu nzTheme="light" nzMode="inline" style="border: none;">
+      <li
+        nz-menu-item
+        *ngFor="let item of menuItems"
+        [routerLink]="item.route"
+        routerLinkActive="ant-menu-item-selected"
+      >
+        <span [ngClass]="{'menu-icon-center': isCollapsed}">
+          <i nz-icon [nzType]="item.icon"></i>
+        </span>
+        <span *ngIf="!isCollapsed">{{ item.label }}</span>
+      </li>
+    </ul>
+  </nz-sider>
+
+  <!-- Nội dung -->
+  <nz-layout [style.margin-left.px]="isCollapsed ? 64 : 220">
+    <nz-content style="padding: 24px; background: #f5f5f5; min-height: 100vh;">
+      <app-breadcrumb></app-breadcrumb>
+      <router-outlet></router-outlet>
+    </nz-content>
+  </nz-layout>
+</nz-layout>

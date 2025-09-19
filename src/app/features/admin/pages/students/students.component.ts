@@ -1,0 +1,113 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { FormsModule } from '@angular/forms';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+import { NzTagModule } from 'ng-zorro-antd/tag';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { Student } from '../../../../core/models/student.model';
+import { StudentService } from '../../../../core/services/student.service';
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { StudentsFormComponent } from './students-form/students-form.component';
+
+@Component({
+  selector: 'app-students',
+  templateUrl: './students.component.html',
+  styleUrls: ['./students.component.css']
+})
+export class StudentsComponent implements OnInit {
+  students: Student[] = [];
+  total = 0;
+  pageIndex = 1;
+  pageSize = 10;
+  loading = false;
+
+  constructor(
+    private studentService: StudentService,
+    private modal: NzModalService
+  ) {}
+  openAddStudentModal() {
+    const modalRef = this.modal.create({
+      nzTitle: 'Thêm học sinh',
+      nzContent: StudentsFormComponent,
+      nzFooter: null,
+      nzWidth: 600
+    });
+    modalRef.afterClose.subscribe(result => {
+      if (result) {
+        this.studentService.createStudent(result).subscribe(() => {
+          this.fetchStudents();
+        });
+      }
+    });
+  }
+
+  deleteStudent(student: Student) {
+    this.modal.confirm({
+      nzTitle: `Bạn có chắc muốn xoá học sinh "${student.fullName}"?`,
+      nzOkType: 'danger',
+      nzOnOk: () => {
+        this.loading = true;
+        this.studentService.deleteStudent(student.id).subscribe({
+          next: () => {
+            this.fetchStudents();
+          },
+          error: () => {
+            this.loading = false;
+          }
+        });
+      }
+    });
+  }
+
+
+  ngOnInit(): void {
+    this.fetchStudents();
+  }
+
+  fetchStudents() {
+    this.loading = true;
+    this.studentService.getStudents(this.pageIndex - 1, this.pageSize).subscribe({
+      next: (data: any) => {
+        // Nếu backend trả về { content: Student[], totalElements: number }
+        if (data && data.content && data.totalElements !== undefined) {
+          this.students = data.content;
+          this.total = data.totalElements;
+        } else if (Array.isArray(data)) {
+          // Nếu backend trả về mảng đơn giản
+          this.students = data;
+          this.total = data.length;
+        }
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+      }
+    });
+  }
+
+
+  // Không cần paginatedStudents nữa, dữ liệu đã phân trang từ backend
+
+
+  onPageIndexChange(index: number) {
+    this.pageIndex = index;
+    this.fetchStudents();
+  }
+
+  onPageSizeChange(size: number) {
+    this.pageSize = size;
+    this.pageIndex = 1;
+    this.fetchStudents();
+  }
+
+  viewStudent(student: Student) {
+    console.log('View student:', student);
+  }
+  editStudent(student: Student) {
+    console.log('Edit student:', student);
+  }
+// ...existing code...
+}
