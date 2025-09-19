@@ -9,6 +9,20 @@
       <div class="title" style="font-size:1.3rem;font-weight:500;">Thông tin giáo viên</div>
     </div>
     <div nz-row [nzGutter]="16">
+      <div nz-col [nzSpan]="24">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="userId">Chọn người dùng</nz-form-label>
+          <nz-form-control>
+            <nz-select formControlName="userId" id="userId" nzPlaceHolder="Chọn người dùng để tạo hồ sơ giáo viên">
+              <nz-option
+                *ngFor="let user of availableUsers"
+                [nzValue]="user.id"
+                [nzLabel]="user.username">
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
       <div nz-col [nzSpan]="12">
         <nz-form-item>
           <nz-form-label [nzRequired]="true" nzFor="fullName">Họ tên</nz-form-label>

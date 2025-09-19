@@ -39,7 +39,7 @@
 				<td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
 				<td>{{ s.fullName }}</td>
 				<td>{{ s.dob | date:'dd/MM/yyyy' }}</td>
-				<td>{{ s.gender }}</td>
+				<td>{{ s.gender === 'Male' ? 'Nam' : (s.gender === 'Female' ? 'Nữ' : s.gender) }}</td>
 				<td>{{ s.phone }}</td>
 				<td>{{ s.address }}</td>
 				<td>{{ s.joinedAt | date:'dd/MM/yyyy' }}</td>

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Student } from '../models/student.model';
+import { User } from '../models/user.model';
 
 @Injectable({
 	providedIn: 'root'
@@ -19,6 +20,11 @@ export class StudentService {
 
 	getStudent(id: number): Observable<Student> {
 		return this.http.get<Student>(`${this.apiUrl}/${id}`);
+	}
+
+	// Lấy danh sách users có thể tạo thành student (chưa có student profile)
+	getAvailableUsersForStudent(): Observable<User[]> {
+		return this.http.get<User[]>(`${this.apiUrl}/available-users`);
 	}
 
 	createStudent(student: Student): Observable<Student> {

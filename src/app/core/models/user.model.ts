@@ -5,4 +5,5 @@ export interface User {
   root: boolean;
   status: string;
   role: string;
+  isActive: boolean;
 }

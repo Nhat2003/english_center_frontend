@@ -16,6 +16,15 @@ export class UserService {
     return this.http.get<User[]>(this.apiUrl);
   }
 
+  getUsersByRole(role: string): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrl}?role=${role}`);
+  }
+
+  // Lấy users theo role và isActive = true
+  getActiveUsersByRole(role: string): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrl}?role=${role}&isActive=true`);
+  }
+
   getUser(id: number): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/${id}`);
   }
