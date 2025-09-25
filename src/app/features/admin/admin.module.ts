@@ -27,9 +27,17 @@ import { StudentsComponent } from './pages/students/students.component';
 import { StudentsFormComponent } from './pages/students/students-form/students-form.component';
 import { TeachersFormComponent } from './pages/teachers/teachers-form/teachers-form.component';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
+import { NzAvatarModule } from 'ng-zorro-antd/avatar';
+import { NzLayoutModule } from 'ng-zorro-antd/layout';
+import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { CoursesFormComponent } from './pages/courses/courses-form/courses-form.component';
 import { ClassesFormComponent } from './pages/classes/classes-form/classes-form.component';
 import { NzMessageModule } from 'ng-zorro-antd/message';
+import { SchedulesComponent } from './pages/schedules/schedules.component';
+import { SchedulesFormComponent } from './pages/schedules/schedules-form/schedules-form.component';
 @NgModule({
   declarations: [
     UserListComponent,
@@ -43,7 +51,9 @@ import { NzMessageModule } from 'ng-zorro-antd/message';
     StudentsFormComponent,
     TeachersFormComponent,
     CoursesFormComponent,
-    ClassesFormComponent
+    ClassesFormComponent,
+    SchedulesComponent,
+    SchedulesFormComponent
 
   ],
   imports: [
@@ -61,6 +71,12 @@ import { NzMessageModule } from 'ng-zorro-antd/message';
     NzSelectModule,
     NzGridModule,
     NzCheckboxModule,
+    NzSpinModule,
+    NzToolTipModule,
+    NzDropDownModule,
+    NzAvatarModule,
+    NzLayoutModule,
+    NzMenuModule,
     AdminLayoutModule,
     NzMessageModule,
     RouterModule.forChild(ADMIN_ROUTES)

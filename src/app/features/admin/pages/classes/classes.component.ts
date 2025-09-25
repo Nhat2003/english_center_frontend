@@ -1,73 +1,142 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { FormsModule } from '@angular/forms';
-import { NzIconModule } from 'ng-zorro-antd/icon';import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-
-
-interface Class {
-  id: number;
-  name: string;
-  teacher: string;
-  course: string;
-}
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzTagModule } from 'ng-zorro-antd/tag';
+import { Class } from '../../../../core/models/class.model';
+import { ClassService } from '../../../../core/services/class.service';
+import { ClassesFormComponent } from './classes-form/classes-form.component';
 
 @Component({
   selector: 'app-classes',
   templateUrl: './classes.component.html',
   styleUrls: ['./classes.component.css']
 })
-export class ClassesComponent {
-  classes: Class[] = [
-    { id: 1, name: 'Lớp Giao Tiếp 1', teacher: 'Nguyễn Văn A', course: 'Tiếng Anh Giao Tiếp' },
-    { id: 2, name: 'Lớp IELTS 1', teacher: 'Trần Thị B', course: 'IELTS 6.5+' }
-  ];
-
+export class ClassesComponent implements OnInit {
+  classes: Class[] = [];
+  total = 0;
   pageIndex = 1;
-  pageSize = 5;
-  showAddForm = false;
+  pageSize = 10;
+  loading = false;
 
-  get paginatedClasses() {
-    const start = (this.pageIndex - 1) * this.pageSize;
-    return this.classes.slice(start, start + this.pageSize);
+  constructor(
+    private classService: ClassService,
+    private modal: NzModalService,
+    private message: NzMessageService
+  ) {}
+
+  ngOnInit(): void {
+    this.fetchClasses();
+  }
+
+  fetchClasses() {
+    this.loading = true;
+    this.classService.getClasses(this.pageIndex - 1, this.pageSize).subscribe({
+      next: (data: any) => {
+        if (data && data.content && data.totalElements !== undefined) {
+          this.classes = data.content;
+          this.total = data.totalElements;
+        } else if (Array.isArray(data)) {
+          this.classes = data;
+          this.total = data.length;
+        }
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+      }
+    });
   }
 
   onPageIndexChange(index: number) {
     this.pageIndex = index;
+    this.fetchClasses();
   }
 
   onPageSizeChange(size: number) {
     this.pageSize = size;
+    this.pageIndex = 1;
+    this.fetchClasses();
+  }
+
+  openAddClassModal() {
+    const modalRef = this.modal.create({
+      nzTitle: 'Thêm lớp học',
+      nzContent: ClassesFormComponent,
+      nzFooter: null,
+      nzWidth: 800,
+      nzComponentParams: {
+        mode: 'create'
+      }
+    });
+    modalRef.afterClose.subscribe(result => {
+      if (result) {
+        this.message.success('Thêm lớp học thành công!');
+        this.fetchClasses();
+      }
+    });
+  }
+
+  viewClass(classItem: Class) {
+    this.modal.create({
+      nzTitle: 'Thông tin lớp học',
+      nzContent: ClassesFormComponent,
+      nzFooter: null,
+      nzWidth: 800,
+      nzComponentParams: {
+        classData: { id: classItem.id },
+        mode: 'view'
+      }
+    });
   }
 
   editClass(classItem: Class) {
-    console.log('Edit class:', classItem);
-  }
-  viewClassroom(classItem: Class) {
-    console.log('View classroom:', classItem);
+    console.log('Edit class called with:', classItem);
+    const modalRef = this.modal.create({
+      nzTitle: 'Chỉnh sửa lớp học',
+      nzContent: ClassesFormComponent,
+      nzFooter: null,
+      nzWidth: 800,
+      nzComponentParams: {
+        classData: classItem, // Pass full class object
+        mode: 'edit'
+      }
+    });
+    console.log('Modal created with params:', { classData: classItem, mode: 'edit' });
+
+    modalRef.afterClose.subscribe(result => {
+      if (result) {
+        this.message.success('Cập nhật lớp học thành công!');
+        this.fetchClasses();
+      }
+    });
   }
 
   deleteClass(classItem: Class) {
-    console.log('Delete class:', classItem);
-  }
-
-  onAddClass() {
-    this.showAddForm = true;
-  }
-
-  onSaveClass(classData: any) {
-    this.classes.push({
-      id: this.classes.length + 1,
-      name: classData.name,
-      teacher: classData.teacher,
-      course: classData.course
+    this.modal.confirm({
+      nzTitle: `Bạn có chắc chắn muốn xóa lớp "${classItem.name}"?`,
+      nzContent: 'Hành động này không thể hoàn tác.',
+      nzOkText: 'Xóa',
+      nzCancelText: 'Hủy',
+      nzOkType: 'danger',
+      nzOnOk: () => {
+        this.loading = true;
+        this.classService.deleteClass(classItem.id).subscribe({
+          next: () => {
+            this.message.success('Xóa lớp học thành công!');
+            this.fetchClasses();
+          },
+          error: () => {
+            this.loading = false;
+            this.message.error('Không thể xóa lớp học!');
+          }
+        });
+      }
     });
-    this.showAddForm = false;
   }
-
-  onCancelAddClass() {
-    this.showAddForm = false;
-  }
-
 }

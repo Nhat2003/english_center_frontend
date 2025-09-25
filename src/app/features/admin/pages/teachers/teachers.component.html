@@ -19,6 +19,7 @@
     [nzData]="paginatedTeachers"
     [nzShowPagination]="false"
     [nzSize]="'middle'"
+    [nzLoading]="loading"
   >
     <thead>
       <tr>
@@ -33,30 +34,58 @@
     <tbody>
       <tr *ngFor="let t of paginatedTeachers; index as i">
         <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
-        <td>{{ t.name }}</td>
-        <td>{{ t.email }}</td>
-        <td>{{ t.phone }}</td>
-        <td>{{ t.subject }}</td>
         <td>
-          <button
-            nz-button
-            nzType="default"
-            nzShape="circle"
-            class="btn-edit"
-            (click)="editTeacher(t)"
-          >
-            <span nz-icon nzType="edit"></span>
-          </button>
-          <button
-            nz-button
-            nzType="primary"
-            nzDanger
-            nzShape="circle"
-            class="btn-delete"
-            (click)="deleteTeacher(t)"
-          >
-            <span nz-icon nzType="delete"></span>
-          </button>
+          <div class="teacher-name">
+            <span nz-icon nzType="user" nzTheme="outline" class="teacher-icon"></span>
+            <strong>{{ t.name }}</strong>
+          </div>
+        </td>
+        <td>
+          <span class="email-text">{{ t.email }}</span>
+        </td>
+        <td>
+          <span class="phone-text">{{ t.phone }}</span>
+        </td>
+        <td>
+          <nz-tag nzColor="blue">{{ t.subject }}</nz-tag>
+        </td>
+        <td>
+          <div class="action-buttons">
+            <button
+              nz-button
+              nzType="default"
+              nzShape="circle"
+              nzSize="small"
+              class="btn-view"
+              nz-tooltip="Xem chi tiết"
+              (click)="viewTeacher(t)"
+            >
+              <span nz-icon nzType="eye" nzTheme="outline"></span>
+            </button>
+            <button
+              nz-button
+              nzType="primary"
+              nzShape="circle"
+              nzSize="small"
+              class="btn-edit"
+              nz-tooltip="Chỉnh sửa"
+              (click)="editTeacher(t)"
+            >
+              <span nz-icon nzType="edit" nzTheme="outline"></span>
+            </button>
+            <button
+              nz-button
+              nzType="primary"
+              nzDanger
+              nzShape="circle"
+              nzSize="small"
+              class="btn-delete"
+              nz-tooltip="Xóa giáo viên"
+              (click)="deleteTeacher(t)"
+            >
+              <span nz-icon nzType="delete" nzTheme="outline"></span>
+            </button>
+          </div>
         </td>
       </tr>
     </tbody>

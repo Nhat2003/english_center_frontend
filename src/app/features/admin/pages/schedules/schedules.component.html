@@ -1,0 +1,74 @@
+<div class="schedules-container">
+  <!-- Header -->
+  <div class="schedules-header">
+    <h2 class="schedules-title">
+      <span nz-icon nzType="calendar" nzTheme="outline"></span>
+      Danh sách lịch học
+    </h2>
+  </div>
+
+  <!-- Table -->
+  <div class="schedules-table-container">
+    <nz-table
+      #schedulesTable
+      [nzData]="schedules"
+      [nzLoading]="isLoading"
+      [nzShowPagination]="false"
+      [nzScroll]="{ y: '400px' }"
+    >
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>Tên lịch học</th>
+          <th>Mô tả</th>
+          <th>Thời gian</th>
+          <th>Ngày trong tuần</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let schedule of schedules; index as i">
+          <td>{{ i + 1 }}</td>
+          <td>
+            <div class="schedule-name">
+              <span nz-icon nzType="calendar" nzTheme="outline" class="schedule-icon"></span>
+              <strong>{{ schedule.name }}</strong>
+            </div>
+          </td>
+          <td>{{ schedule.description || 'Không có mô tả' }}</td>
+          <td>
+            <span *ngIf="schedule.startTime && schedule.endTime">
+              {{ schedule.startTime }} - {{ schedule.endTime }}
+            </span>
+            <span *ngIf="!schedule.startTime || !schedule.endTime" class="text-muted">
+              Chưa xác định
+            </span>
+          </td>
+          <td>
+            <nz-tag nzColor="blue" *ngIf="schedule.dayOfWeek">
+              {{ schedule.dayOfWeek }}
+            </nz-tag>
+            <span *ngIf="!schedule.dayOfWeek" class="text-muted">Chưa xác định</span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <button
+                nz-button
+                nzType="default"
+                nzShape="circle"
+                nzSize="small"
+                class="btn-view"
+                nz-tooltip="Xem chi tiết"
+                (click)="viewSchedule(schedule)"
+              >
+                <span nz-icon nzType="eye" nzTheme="outline"></span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+
+
+  </div>
+</div>

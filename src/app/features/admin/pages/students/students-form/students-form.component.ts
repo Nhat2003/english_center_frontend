@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { StudentService } from '../../../../../core/services/student.service';
 import { UserService } from '../../../../../core/services/user.service';
+import { NzModalRef } from 'ng-zorro-antd/modal';
+import { NzMessageService } from 'ng-zorro-antd/message';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Student } from '../../../../../core/models/student.model';
@@ -13,30 +15,54 @@ import { User } from '../../../../../core/models/user.model';
 })
 export class StudentsFormComponent implements OnInit {
   @Input() student: Partial<Student> | null = null;
+  @Input() mode: 'create' | 'edit' | 'view' = 'create';
   @Output() save = new EventEmitter<Student>();
   @Output() cancel = new EventEmitter<void>();
   form: FormGroup;
   loading = false;
   availableUsers: User[] = [];
+  studentData: Student | null = null;
+  isViewMode = false;
 
-  constructor(private fb: FormBuilder, private studentService: StudentService, private userService: UserService) {
+  constructor(
+    private fb: FormBuilder,
+    private studentService: StudentService,
+    private userService: UserService,
+    private modal: NzModalRef,
+    private message: NzMessageService
+  ) {
     this.form = this.fb.group({
       userId: [null, Validators.required],
       fullName: [null, Validators.required],
+      email: [null, [Validators.required, Validators.email]],
       dob: [null, Validators.required],
       gender: [null, Validators.required],
       phone: [null, Validators.required],
       address: [null, Validators.required],
-      joinedAt: [null, Validators.required]
+      joinedAt: [null, Validators.required],
+      className: [null, Validators.required]
     });
   }
 
   ngOnInit() {
-    // Load available users for selection
-    this.loadAvailableUsers();
+    this.isViewMode = this.mode === 'view';
 
-    if (this.student) {
+    // Load available users for selection (chỉ khi tạo mới)
+    if (this.mode === 'create') {
+      this.loadAvailableUsers();
+    }
+
+    // Load student data nếu có id (cho edit/view mode)
+    if (this.student?.id) {
+      this.loadStudentDetails(this.student.id);
+    } else if (this.student) {
+      // Trường hợp tạo mới với dữ liệu sẵn có
       this.form.patchValue(this.student);
+    }
+
+    // Disable form nếu là view mode
+    if (this.isViewMode) {
+      this.form.disable();
     }
   }
 
@@ -65,6 +91,37 @@ export class StudentsFormComponent implements OnInit {
     });
   }
 
+  loadStudentDetails(studentId: number) {
+    this.loading = true;
+    this.studentService.getStudent(studentId).subscribe({
+      next: (student) => {
+        this.studentData = student;
+        this.form.patchValue({
+          userId: student.userId,
+          fullName: student.fullName,
+          email: student.email,
+          dob: student.dob,
+          gender: student.gender,
+          phone: student.phone,
+          address: student.address,
+          joinedAt: student.joinedAt,
+          className: student.className
+        });
+        this.loading = false;
+
+        // Load available users sau khi có dữ liệu student (cho edit mode)
+        if (this.mode === 'edit') {
+          this.loadAvailableUsers();
+        }
+      },
+      error: (error) => {
+        this.loading = false;
+        console.error('Error loading student details:', error);
+        this.message.error('Không thể tải thông tin học viên');
+      }
+    });
+  }
+
   onSubmit() {
     if (this.form.valid) {
       this.loading = true;
@@ -82,25 +139,24 @@ export class StudentsFormComponent implements OnInit {
         delete data.id;
       }
 
-      console.log('Creating student with data:', data);
-      console.log('userId being sent:', data.userId);
-      console.log('Original form data:', formData);
+      // Xử lý create vs edit mode
+      const apiCall = this.mode === 'edit' && this.studentData?.id
+        ? this.studentService.updateStudent(this.studentData.id, data)
+        : this.studentService.createStudent(data);
 
-      this.studentService.createStudent(data).subscribe({
+      const action = this.mode === 'edit' ? 'cập nhật' : 'tạo';
+      console.log(`${action} student with data:`, data);
+
+      apiCall.subscribe({
         next: (student) => {
           this.loading = false;
-          console.log('Student created successfully:', student);
-          this.save.emit(student);
+          console.log(`Student ${action}d successfully:`, student);
+          this.modal.close(true); // Đóng modal và trả về true
         },
         error: (error) => {
           this.loading = false;
-          console.error('Error creating student:', error);
-          console.error('Error details:', error.error);
-          console.error('Error message:', error.error?.message);
-          console.error('Error status:', error.status);
-
-          // Hiển thị lỗi chi tiết cho user
-          alert(`Lỗi tạo học viên: ${error.error?.message || error.message || 'Unknown error'}`);
+          console.error(`Error ${action}ing student:`, error);
+          this.handleError(error, action);
         }
       });
     } else {
@@ -109,7 +165,30 @@ export class StudentsFormComponent implements OnInit {
     }
   }
 
+  handleError(error: any, action: string) {
+    console.error('Error details:', error.error);
+    console.error('Error message:', error.error?.message);
+    console.error('Error status:', error.status);
+
+    let errorMessage = `Có lỗi xảy ra khi ${action} học viên`;
+
+    if (error.status === 400 || error.status === 409) {
+      // Lỗi duplicate userId hoặc validation
+      if (error.error?.message?.includes('userId') || error.error?.message?.includes('exist')) {
+        errorMessage = 'User này đã có hồ sơ học viên hoặc giáo viên. Vui lòng chọn user khác.';
+      } else {
+        errorMessage = error.error?.message || 'Dữ liệu không hợp lệ';
+      }
+    } else if (error.status === 500) {
+      errorMessage = 'Lỗi server. Vui lòng thử lại sau.';
+    } else if (error.error?.message) {
+      errorMessage = error.error.message;
+    }
+
+    this.message.error(errorMessage);
+  }
+
   onCancel() {
-    this.cancel.emit();
+    this.modal.close(false); // Đóng modal và trả về false
   }
 }

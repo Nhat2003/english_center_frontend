@@ -8,30 +8,28 @@ export const routes: Routes = [
     redirectTo: 'auth/login',
     pathMatch: 'full'
   },
-  // {
-  //   path: 'auth',
-  //   loadChildren: () =>
-  //     import('./features/auth/auth.module').then(m => m.AuthModule)
-  // },
+  {
+    path: 'auth',
+    loadChildren: () =>
+      import('./features/auth/auth.module').then(m => m.AuthModule)
+  },
   {
     path: 'admin',
     loadChildren: () =>
       import('./features/admin/admin.module').then(m => m.AdminModule)
   },
-  // {
-  //   path: 'teacher',
-  //   canActivate: [AuthGuard, RoleGuard],
-  //   data: { roles: ['TEACHER'] },
-  //   loadChildren: () =>
-  //     import('./features/teacher/teacher.module').then(m => m.TeacherModule)
-  // },
-  // {
-  //   path: 'student',
-  //   canActivate: [AuthGuard, RoleGuard],
-  //   data: { roles: ['STUDENT'] },
-  //   loadChildren: () =>
-  //     import('./features/student/student.module').then(m => m.StudentModule)
-  // },
+  {
+    path: 'teacher',
+    canActivate: [AuthGuard],
+    loadChildren: () =>
+      import('./features/teacher/teacher.module').then(m => m.TeacherModule)
+  },
+  {
+    path: 'student',
+    canActivate: [AuthGuard],
+    loadChildren: () =>
+      import('./features/student/student.module').then(m => m.StudentModule)
+  },
   {
     path: '**',
     redirectTo: 'auth/login'

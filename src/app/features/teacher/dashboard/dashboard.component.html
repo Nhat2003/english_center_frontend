@@ -1,0 +1,148 @@
+<div class="teacher-dashboard">
+  <!-- Welcome Section -->
+  <div class="welcome-section">
+    <nz-card nzTitle="Chào mừng giáo viên!" [nzBordered]="false" class="welcome-card">
+      <p>Xin chào <strong>{{ currentUser?.fullName || currentUser?.username }}</strong>! Chúc bạn có một ngày làm việc hiệu quả.</p>
+    </nz-card>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div nz-row [nzGutter]="[16, 16]" class="stats-section">
+    <div nz-col nzXs="24" nzSm="12" nzMd="6">
+      <nz-card [nzBordered]="false" class="stat-card">
+        <nz-statistic
+          nzTitle="Tổng số lớp"
+          [nzValue]="stats.totalClasses"
+          [nzValueStyle]="{ color: '#1890ff' }"
+          nzPrefix="📚">
+        </nz-statistic>
+      </nz-card>
+    </div>
+
+    <div nz-col nzXs="24" nzSm="12" nzMd="6">
+      <nz-card [nzBordered]="false" class="stat-card">
+        <nz-statistic
+          nzTitle="Tổng học viên"
+          [nzValue]="stats.totalStudents"
+          [nzValueStyle]="{ color: '#52c41a' }"
+          nzPrefix="👥">
+        </nz-statistic>
+      </nz-card>
+    </div>
+
+    <div nz-col nzXs="24" nzSm="12" nzMd="6">
+      <nz-card [nzBordered]="false" class="stat-card">
+        <nz-statistic
+          nzTitle="Lớp hôm nay"
+          [nzValue]="stats.todayClasses"
+          [nzValueStyle]="{ color: '#faad14' }"
+          nzPrefix="📅">
+        </nz-statistic>
+      </nz-card>
+    </div>
+
+    <div nz-col nzXs="24" nzSm="12" nzMd="6">
+      <nz-card [nzBordered]="false" class="stat-card">
+        <nz-statistic
+          nzTitle="Chờ chấm điểm"
+          [nzValue]="stats.pendingAssessments"
+          [nzValueStyle]="{ color: '#f5222d' }"
+          nzPrefix="📝">
+        </nz-statistic>
+      </nz-card>
+    </div>
+  </div>
+
+  <!-- Content Row -->
+  <div nz-row [nzGutter]="[16, 16]" class="content-section">
+    <!-- Today's Schedule -->
+    <div nz-col nzXs="24" nzLg="14">
+      <nz-card nzTitle="Lịch dạy hôm nay" [nzExtra]="scheduleExtra" [nzBordered]="false">
+        <ng-template #scheduleExtra>
+          <button nz-button nzType="link" nzSize="small">
+            <span nz-icon nzType="calendar"></span>
+            Xem tất cả
+          </button>
+        </ng-template>
+
+        <nz-table #scheduleTable [nzData]="todaySchedule" [nzShowPagination]="false" nzSize="small">
+          <thead>
+            <tr>
+              <th>Thời gian</th>
+              <th>Lớp học</th>
+              <th>Phòng</th>
+              <th>Học viên</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let schedule of scheduleTable.data">
+              <td>{{ schedule.time }}</td>
+              <td>{{ schedule.class }}</td>
+              <td>{{ schedule.room }}</td>
+              <td>{{ schedule.students }}</td>
+              <td>
+                <button nz-button nzType="link" nzSize="small">
+                  <span nz-icon nzType="check-circle"></span>
+                  Điểm danh
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </nz-card>
+    </div>
+
+    <!-- Recent Activities -->
+    <div nz-col nzXs="24" nzLg="10">
+      <nz-card nzTitle="Hoạt động gần đây" [nzBordered]="false">
+        <div class="activity-list">
+          <div class="activity-item" *ngFor="let activity of recentActivities">
+            <div class="activity-icon" [ngClass]="'activity-' + activity.type">
+              <span nz-icon
+                [nzType]="activity.type === 'attendance' ? 'check-circle' :
+                         activity.type === 'assessment' ? 'file-text' : 'book'">
+              </span>
+            </div>
+            <div class="activity-content">
+              <div class="activity-action">{{ activity.action }}</div>
+              <div class="activity-time">{{ activity.time }}</div>
+            </div>
+          </div>
+        </div>
+      </nz-card>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions-section">
+    <nz-card nzTitle="Thao tác nhanh" [nzBordered]="false">
+      <div nz-row [nzGutter]="[16, 16]">
+        <div nz-col nzXs="24" nzSm="12" nzMd="8" nzLg="6">
+          <button nz-button nzType="primary" nzSize="large" nzBlock>
+            <span nz-icon nzType="plus"></span>
+            Tạo bài kiểm tra
+          </button>
+        </div>
+        <div nz-col nzXs="24" nzSm="12" nzMd="8" nzLg="6">
+          <button nz-button nzType="default" nzSize="large" nzBlock>
+            <span nz-icon nzType="check-circle"></span>
+            Điểm danh nhanh
+          </button>
+        </div>
+        <div nz-col nzXs="24" nzSm="12" nzMd="8" nzLg="6">
+          <button nz-button nzType="default" nzSize="large" nzBlock>
+            <span nz-icon nzType="file-text"></span>
+            Nhập điểm
+          </button>
+        </div>
+        <div nz-col nzXs="24" nzSm="12" nzMd="8" nzLg="6">
+          <button nz-button nzType="default" nzSize="large" nzBlock>
+            <span nz-icon nzType="message"></span>
+            Gửi thông báo
+          </button>
+        </div>
+      </div>
+    </nz-card>
+  </div>
+</div>

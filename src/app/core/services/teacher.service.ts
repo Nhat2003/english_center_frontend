@@ -3,10 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Teacher } from '../models/teacher.model';
 import { User } from '../models/user.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class TeacherService {
-	private apiUrl = 'http://localhost:8080/teachers';
+	private apiUrl = `${environment.apiUrl}/teachers`;
 
 	constructor(private http: HttpClient) {}
 
@@ -23,7 +24,20 @@ export class TeacherService {
 			return this.http.get<Teacher[]>(this.apiUrl);
 		}
 
-		deleteTeacher(id: number): Observable<void> {
-			return this.http.delete<void>(`${this.apiUrl}/${id}`);
+		getTeacher(id: number): Observable<Teacher> {
+			return this.http.get<Teacher>(`${this.apiUrl}/${id}`);
 		}
+
+		updateTeacher(id: number, teacher: Teacher): Observable<Teacher> {
+			return this.http.put<Teacher>(`${this.apiUrl}/${id}`, teacher);
+		}
+
+	deleteTeacher(id: number): Observable<void> {
+		return this.http.delete<void>(`${this.apiUrl}/${id}`);
+	}
+
+	// Lấy tất cả teachers cho dropdown (không phân trang)
+	getAllTeachers(): Observable<Teacher[]> {
+		return this.http.get<Teacher[]>(`${this.apiUrl}/all`);
+	}
 }

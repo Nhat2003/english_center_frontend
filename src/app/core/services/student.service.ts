@@ -1,21 +1,34 @@
 
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { Student } from '../models/student.model';
 import { User } from '../models/user.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class StudentService {
-	private apiUrl = 'http://localhost:8080/students';
+	private apiUrl = `${environment.apiUrl}/students`;
 
 	constructor(private http: HttpClient) {}
 
 	getStudents(page: number = 0, size: number = 10): Observable<Student[]> {
 		const params = new HttpParams().set('page', page.toString()).set('size', size.toString());
-		return this.http.get<Student[]>(this.apiUrl, { params });
+		return this.http.get<Student[]>(this.apiUrl, { params })
+			.pipe(
+				catchError(this.handleError)
+			);
+	}
+
+	private handleError(error: HttpErrorResponse) {
+		console.error('Student API Error:', error);
+		if (error.status === 401) {
+			console.error('Unauthorized - Token may be expired');
+		}
+		return throwError(() => error);
 	}
 
 	getStudent(id: number): Observable<Student> {
@@ -37,5 +50,10 @@ export class StudentService {
 
 	deleteStudent(id: number): Observable<void> {
 		return this.http.delete<void>(`${this.apiUrl}/${id}`);
+	}
+
+	// Lấy tất cả students cho dropdown (không phân trang)
+	getAllStudents(): Observable<Student[]> {
+		return this.http.get<Student[]>(`${this.apiUrl}/all`);
 	}
 }

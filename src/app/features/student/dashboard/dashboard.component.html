@@ -1,0 +1,163 @@
+<div class="student-dashboard">
+  <!-- Welcome Section -->
+  <div class="welcome-section">
+    <nz-card nzTitle="Xin chào học viên!" [nzBordered]="false" class="welcome-card">
+      <p>Chào mừng <strong>{{ currentUser?.fullName || currentUser?.username }}</strong> trở lại lớp học! Hãy tiếp tục hành trình học tiếng Anh của bạn.</p>
+    </nz-card>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div nz-row [nzGutter]="[16, 16]" class="stats-section">
+    <div nz-col nzXs="24" nzSm="12" nzMd="6">
+      <nz-card [nzBordered]="false" class="stat-card">
+        <nz-statistic
+          nzTitle="Khóa học đã đăng ký"
+          [nzValue]="studentStats.enrolledCourses"
+          [nzValueStyle]="{ color: '#1890ff' }"
+          nzPrefix="📚">
+        </nz-statistic>
+      </nz-card>
+    </div>
+
+    <div nz-col nzXs="24" nzSm="12" nzMd="6">
+      <nz-card [nzBordered]="false" class="stat-card">
+        <nz-statistic
+          nzTitle="Lớp học sắp tới"
+          [nzValue]="studentStats.upcomingClasses"
+          [nzValueStyle]="{ color: '#52c41a' }"
+          nzPrefix="📅">
+        </nz-statistic>
+      </nz-card>
+    </div>
+
+    <div nz-col nzXs="24" nzSm="12" nzMd="6">
+      <nz-card [nzBordered]="false" class="stat-card">
+        <nz-statistic
+          nzTitle="Bài tập chưa nộp"
+          [nzValue]="studentStats.pendingAssignments"
+          [nzValueStyle]="{ color: '#faad14' }"
+          nzPrefix="📝">
+        </nz-statistic>
+      </nz-card>
+    </div>
+
+    <div nz-col nzXs="24" nzSm="12" nzMd="6">
+      <nz-card [nzBordered]="false" class="stat-card">
+        <nz-statistic
+          nzTitle="Điểm trung bình"
+          [nzValue]="studentStats.averageGrade"
+          [nzValueStyle]="{ color: '#722ed1' }"
+          nzSuffix="/10"
+          nzPrefix="⭐">
+        </nz-statistic>
+      </nz-card>
+    </div>
+  </div>
+
+  <!-- Content Row -->
+  <div nz-row [nzGutter]="[16, 16]" class="content-section">
+    <!-- Today's Classes -->
+    <div nz-col nzXs="24" nzLg="14">
+      <nz-card nzTitle="Lịch học hôm nay" [nzExtra]="scheduleExtra" [nzBordered]="false">
+        <ng-template #scheduleExtra>
+          <button nz-button nzType="link" nzSize="small">
+            <span nz-icon nzType="calendar"></span>
+            Xem tất cả
+          </button>
+        </ng-template>
+
+        <nz-table #scheduleTable [nzData]="todaySchedule" [nzShowPagination]="false" nzSize="small">
+          <thead>
+            <tr>
+              <th>Thời gian</th>
+              <th>Môn học</th>
+              <th>Giáo viên</th>
+              <th>Phòng</th>
+              <th>Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let schedule of scheduleTable.data">
+              <td>{{ schedule.time }}</td>
+              <td>{{ schedule.subject }}</td>
+              <td>{{ schedule.teacher }}</td>
+              <td>{{ schedule.room }}</td>
+              <td>
+                <nz-tag [nzColor]="schedule.status === 'upcoming' ? 'blue' : 'green'">
+                  {{ schedule.status === 'upcoming' ? 'Sắp tới' : 'Đã học' }}
+                </nz-tag>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </nz-card>
+    </div>
+
+    <!-- Pending Fees & Notifications -->
+    <div nz-col nzXs="24" nzLg="10">
+      <!-- Fee Status -->
+      <nz-card nzTitle="Tình trạng học phí" [nzBordered]="false" style="margin-bottom: 16px;">
+        <div class="fee-status">
+          <div class="fee-item" *ngFor="let fee of feeStatus">
+            <div class="fee-course">{{ fee.course }}</div>
+            <div class="fee-amount" [ngClass]="fee.status">
+              {{ fee.amount }}
+              <nz-tag [nzColor]="fee.status === 'paid' ? 'green' : 'red'">
+                {{ fee.status === 'paid' ? 'Đã đóng' : 'Chưa đóng' }}
+              </nz-tag>
+            </div>
+          </div>
+        </div>
+        <button nz-button nzType="primary" nzBlock style="margin-top: 16px;">
+          <span nz-icon nzType="credit-card"></span>
+          Đóng học phí
+        </button>
+      </nz-card>
+
+      <!-- Recent Grades -->
+      <nz-card nzTitle="Điểm số mới nhất" [nzBordered]="false">
+        <div class="grade-list">
+          <div class="grade-item" *ngFor="let grade of recentGrades">
+            <div class="grade-subject">{{ grade.subject }}</div>
+            <div class="grade-score" [ngClass]="getGradeColor(grade.score)">
+              {{ grade.score }}/10
+            </div>
+            <div class="grade-date">{{ grade.date }}</div>
+          </div>
+        </div>
+      </nz-card>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions-section">
+    <nz-card nzTitle="Thao tác nhanh" [nzBordered]="false">
+      <div nz-row [nzGutter]="[16, 16]">
+        <div nz-col nzXs="24" nzSm="12" nzMd="8" nzLg="6">
+          <button nz-button nzType="primary" nzSize="large" nzBlock>
+            <span nz-icon nzType="credit-card"></span>
+            Đóng học phí
+          </button>
+        </div>
+        <div nz-col nzXs="24" nzSm="12" nzMd="8" nzLg="6">
+          <button nz-button nzType="default" nzSize="large" nzBlock>
+            <span nz-icon nzType="file-text"></span>
+            Nộp bài tập
+          </button>
+        </div>
+        <div nz-col nzXs="24" nzSm="12" nzMd="8" nzLg="6">
+          <button nz-button nzType="default" nzSize="large" nzBlock>
+            <span nz-icon nzType="book"></span>
+            Tài liệu học tập
+          </button>
+        </div>
+        <div nz-col nzXs="24" nzSm="12" nzMd="8" nzLg="6">
+          <button nz-button nzType="default" nzSize="large" nzBlock>
+            <span nz-icon nzType="message"></span>
+            Liên hệ giáo viên
+          </button>
+        </div>
+      </div>
+    </nz-card>
+  </div>
+</div>

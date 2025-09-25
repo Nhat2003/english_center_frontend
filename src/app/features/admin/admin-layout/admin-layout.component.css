@@ -16,7 +16,7 @@
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 30px;
   color: #3bb273; /* primary */
   border-bottom: 1px solid #f0f0f0;
   background: white;
@@ -24,7 +24,7 @@
 }
 
 .logo span {
-  transition: font-size 0.3s, padding 0.3s;
+  transition: font-size 0.5s, padding 0.3s;
 }
 
 .logo span[ng-reflect-ng-if="true"] {

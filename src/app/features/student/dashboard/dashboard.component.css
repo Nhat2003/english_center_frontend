@@ -1,0 +1,140 @@
+.student-dashboard {
+  padding: 24px;
+  background: #f0f2f5;
+  min-height: calc(100vh - 64px);
+}
+
+.welcome-section {
+  margin-bottom: 24px;
+}
+
+.welcome-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.welcome-card ::ng-deep .ant-card-head-title {
+  color: white;
+  font-weight: bold;
+}
+
+.stats-section {
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.content-section {
+  margin-bottom: 24px;
+}
+
+.fee-status {
+  space-y: 12px;
+}
+
+.fee-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.fee-course {
+  font-weight: 500;
+}
+
+.fee-amount {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fee-amount.pending {
+  color: #ff4d4f;
+}
+
+.fee-amount.paid {
+  color: #52c41a;
+}
+
+.grade-list {
+  space-y: 8px;
+}
+
+.grade-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.grade-subject {
+  font-weight: 500;
+}
+
+.grade-score {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.grade-score.excellent {
+  color: #52c41a;
+}
+
+.grade-score.good {
+  color: #1890ff;
+}
+
+.grade-score.average {
+  color: #faad14;
+}
+
+.grade-score.poor {
+  color: #ff4d4f;
+}
+
+.grade-date {
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+.quick-actions-section {
+  margin-top: 24px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .student-dashboard {
+    padding: 16px;
+  }
+
+  .stats-section .ant-col {
+    margin-bottom: 16px;
+  }
+
+  .content-section .ant-col {
+    margin-bottom: 16px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .student-dashboard {
+    background: #141414;
+  }
+
+  .fee-item,
+  .grade-item {
+    border-bottom-color: #303030;
+  }
+}

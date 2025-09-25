@@ -1,16 +1,3 @@
-<nz-modal
-  [(nzVisible)]="showAddForm"
-  nzTitle="Thêm mới lớp học"
-  (nzOnCancel)="onCancelAddClass()"
-  [nzFooter]="null"
-  [nzWidth]="520"
->
-  <app-classes-form
-    (save)="onSaveClass($event)"
-    (cancel)="onCancelAddClass()"
-  ></app-classes-form>
-</nz-modal>
-
 <div class="page-header">
   <div class="page-title-section">
     <h2 class="page-title">
@@ -19,8 +6,8 @@
     <p class="page-subtitle">Quản lý thông tin lớp học và giáo viên phụ trách</p>
   </div>
   <div class="page-actions">
-    <span class="total">Tổng số: {{ classes.length }}</span>
-    <button nz-button nzType="primary" class="btn-add" (click)="onAddClass()">
+    <span class="total">Tổng số: {{ total }}</span>
+    <button nz-button nzType="primary" class="btn-add" (click)="openAddClassModal()">
       <span nz-icon nzType="plus"></span> Thêm lớp học
     </button>
   </div>
@@ -29,9 +16,10 @@
 <div class="card">
   <nz-table
     [nzBordered]="false"
-    [nzData]="paginatedClasses"
+    [nzData]="classes"
     [nzShowPagination]="false"
     [nzSize]="'middle'"
+    [nzLoading]="loading"
   >
     <thead>
       <tr>
@@ -39,46 +27,63 @@
         <th>Tên lớp</th>
         <th>Giáo viên phụ trách</th>
         <th>Khóa học</th>
+        <th>Số học viên</th>
         <th>Lịch học</th>
         <th>Hành động</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let cl of paginatedClasses; index as i">
+      <tr *ngFor="let cl of classes; index as i">
         <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
-        <td>{{ cl.name }}</td>
-        <td>{{ cl.teacher }}</td>
-        <td>{{ cl.course }}</td>
-        <td>{{ cl.schedule }}</td>
         <td>
-          <button
-            nz-button
-            nzType="default"
-            nzShape="circle"
-            class="btn-edit"
-            (click)="viewClassroom(cl)"
-          >
-            <span nz-icon nzType="eye"></span>
-          </button>
-          <button
-            nz-button
-            nzType="default"
-            nzShape="circle"
-            class="btn-edit"
-            (click)="editClass(cl)"
-          >
-            <span nz-icon nzType="edit"></span>
-          </button>
-          <button
-            nz-button
-            nzType="primary"
-            nzDanger
-            nzShape="circle"
-            class="btn-delete"
-            (click)="deleteClass(cl)"
-          >
-            <span nz-icon nzType="delete"></span>
-          </button>
+          <div class="class-name">
+            <span nz-icon nzType="apartment" nzTheme="outline" class="class-icon"></span>
+            <strong>{{ cl.name }}</strong>
+          </div>
+        </td>
+        <td>{{ cl.teacherName || 'Chưa phân công' }}</td>
+        <td>{{ cl.courseName || 'Chưa chọn khóa học' }}</td>
+        <td>
+          <nz-tag nzColor="blue">{{ cl.studentIds?.length || 0 }} học viên</nz-tag>
+        </td>
+        <td>{{ cl.scheduleName || 'Chưa xếp lịch' }}</td>
+        <td>
+          <div class="action-buttons">
+            <button
+              nz-button
+              nzType="default"
+              nzShape="circle"
+              nzSize="small"
+              class="btn-view"
+              nz-tooltip="Xem chi tiết"
+              (click)="viewClass(cl)"
+            >
+              <span nz-icon nzType="eye" nzTheme="outline"></span>
+            </button>
+            <button
+              nz-button
+              nzType="primary"
+              nzShape="circle"
+              nzSize="small"
+              class="btn-edit"
+              nz-tooltip="Chỉnh sửa"
+              (click)="editClass(cl)"
+            >
+              <span nz-icon nzType="edit" nzTheme="outline"></span>
+            </button>
+            <button
+              nz-button
+              nzType="primary"
+              nzDanger
+              nzShape="circle"
+              nzSize="small"
+              class="btn-delete"
+              nz-tooltip="Xóa"
+              (click)="deleteClass(cl)"
+            >
+              <span nz-icon nzType="delete" nzTheme="outline"></span>
+            </button>
+          </div>
         </td>
       </tr>
     </tbody>
@@ -86,9 +91,9 @@
   <div class="table-pagination">
     <nz-pagination
       [nzPageIndex]="pageIndex"
-      [nzTotal]="classes.length"
+      [nzTotal]="total"
       [nzPageSize]="pageSize"
-      [nzPageSizeOptions]="[5, 10, 20]"
+      [nzPageSizeOptions]="[10, 20, 50]"
       (nzPageIndexChange)="onPageIndexChange($event)"
       (nzPageSizeChange)="onPageSizeChange($event)"
       [nzShowSizeChanger]="true"

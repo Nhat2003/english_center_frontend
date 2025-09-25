@@ -34,6 +34,14 @@
       </div>
       <div nz-col [nzSpan]="12">
         <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="email">Email</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="email" id="email" placeholder="Nhập email" type="email" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="12">
+        <nz-form-item>
           <nz-form-label [nzRequired]="true" nzFor="dob">Ngày sinh</nz-form-label>
           <nz-form-control>
             <input nz-input type="date" formControlName="dob" id="dob" />
@@ -69,6 +77,14 @@
       </div>
       <div nz-col [nzSpan]="12">
         <nz-form-item>
+          <nz-form-label [nzRequired]="true" nzFor="className">Lớp học</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="className" id="className" placeholder="Nhập tên lớp học" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="12">
+        <nz-form-item>
           <nz-form-label [nzRequired]="true" nzFor="joinedAt">Ngày vào trung tâm</nz-form-label>
           <nz-form-control>
             <input nz-input type="date" formControlName="joinedAt" id="joinedAt" />
@@ -77,8 +93,12 @@
       </div>
     </div>
     <div class="form-footer d-flex justify-content-end mt-4 gap-2">
-      <button nz-button nzType="default" (click)="onCancel()" type="button">Huỷ</button>
-      <button nz-button nzType="primary" [disabled]="form.invalid">Lưu</button>
+      <button nz-button nzType="default" (click)="onCancel()" type="button">
+        {{ isViewMode ? 'Đóng' : 'Huỷ' }}
+      </button>
+      <button *ngIf="!isViewMode" nz-button nzType="primary" [disabled]="form.invalid" [nzLoading]="loading">
+        {{ mode === 'edit' ? 'Cập nhật' : 'Lưu' }}
+      </button>
     </div>
   </form>
 </div>

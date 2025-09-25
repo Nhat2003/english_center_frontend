@@ -8,6 +8,7 @@ import { TeachersComponent } from './pages/teachers/teachers.component';
 import { EditUserComponent } from './pages/users/edit-user/edit-user.component';
 import { AddUserComponent } from './pages/users/add-user/add-user.component';
 import {StudentsComponent} from './pages/students/students.component';
+import { SchedulesComponent } from './pages/schedules/schedules.component';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -24,6 +25,7 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'students', component: StudentsComponent, data: { breadcrumb: 'Quản lí học sinh' } },
       { path: 'courses', component: CoursesComponent, data: { breadcrumb: 'Quản lí khóa học' } },
       { path: 'classes', component: ClassesComponent, data: { breadcrumb: 'Quản lí lớp học' } },
+      { path: 'schedules', component: SchedulesComponent, data: { breadcrumb: 'Quản lí lịch học' } },
       { path: 'stats', component: StatsComponent, data: { breadcrumb: 'Thống kê' } }
     ]
   }

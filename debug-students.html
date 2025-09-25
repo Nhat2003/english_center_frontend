@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Students API</title>
+</head>
+<body>
+    <h1>Test Students API</h1>
+    <button onclick="testStudentsAPI()">Test Students API</button>
+    <div id="result"></div>
+
+    <script>
+        async function testStudentsAPI() {
+            try {
+                const response = await fetch('http://localhost:8080/students?page=0&size=10');
+                const data = await response.json();
+                document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('result').innerHTML = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

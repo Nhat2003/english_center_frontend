@@ -1,14 +1,15 @@
-  import { Component } from '@angular/core';
-  import { NzModalService } from 'ng-zorro-antd/modal';
-  import { TeachersFormComponent } from './teachers-form/teachers-form.component';
-  import { CommonModule } from '@angular/common';
-  import { NzTableModule } from 'ng-zorro-antd/table';
-  import { NzButtonModule } from 'ng-zorro-antd/button';
-  import { FormsModule } from '@angular/forms';
-  import { NzIconModule } from 'ng-zorro-antd/icon';
-  import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-  import { NzModalModule } from 'ng-zorro-antd/modal';
-  import { TeacherService } from '../../../../core/services/teacher.service';
+import { Component } from '@angular/core';
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { TeachersFormComponent } from './teachers-form/teachers-form.component';
+import { CommonModule } from '@angular/common';
+import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { FormsModule } from '@angular/forms';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { TeacherService } from '../../../../core/services/teacher.service';
 
   interface Teacher {
   id: number;
@@ -29,7 +30,11 @@ export class TeachersComponent {
   pageSize = 5;
   loading = false;
 
-  constructor(private modal: NzModalService, private teacherService: TeacherService) {}
+  constructor(
+    private modal: NzModalService,
+    private teacherService: TeacherService,
+    private message: NzMessageService
+  ) {}
 
   get paginatedTeachers() {
     const start = (this.pageIndex - 1) * this.pageSize;
@@ -50,10 +55,14 @@ export class TeachersComponent {
       nzTitle: 'Thêm giáo viên',
       nzContent: TeachersFormComponent,
       nzFooter: null,
-      nzWidth: 600
+      nzWidth: 600,
+      nzComponentParams: {
+        mode: 'create'
+      }
     });
     modalRef.afterClose.subscribe(result => {
       if (result) {
+        this.message.success('Thêm giáo viên thành công!');
         this.fetchTeachers();
       }
     });
@@ -77,7 +86,9 @@ export class TeachersComponent {
         }));
         this.loading = false;
       },
-      error: () => {
+      error: (error) => {
+        console.error('Error loading teachers:', error);
+        this.message.error('Lỗi khi tải danh sách giáo viên!');
         this.loading = false;
       }
     });
@@ -91,9 +102,12 @@ export class TeachersComponent {
         this.loading = true;
         this.teacherService.deleteTeacher(teacher.id).subscribe({
           next: () => {
+            this.message.success('Xóa giáo viên thành công!');
             this.fetchTeachers();
           },
-          error: () => {
+          error: (error) => {
+            console.error('Error deleting teacher:', error);
+            this.message.error('Lỗi khi xóa giáo viên!');
             this.loading = false;
           }
         });
@@ -102,8 +116,35 @@ export class TeachersComponent {
   }
 
   editTeacher(teacher: Teacher) {
-    // TODO: Hiện modal hoặc chuyển trang để sửa giáo viên
-    console.log('Edit teacher:', teacher);
+    const modalRef = this.modal.create({
+      nzTitle: 'Chỉnh sửa giáo viên',
+      nzContent: TeachersFormComponent,
+      nzFooter: null,
+      nzWidth: 600,
+      nzComponentParams: {
+        teacher: { id: teacher.id }, // Chỉ truyền id để component tự load dữ liệu
+        mode: 'edit'
+      }
+    });
+
+    modalRef.afterClose.subscribe(result => {
+      if (result) {
+        this.message.success('Cập nhật giáo viên thành công!');
+        this.fetchTeachers();
+      }
+    });
+  }
+  viewTeacher(teacher: Teacher) {
+    this.modal.create({
+      nzTitle: 'Thông tin giáo viên',
+      nzContent: TeachersFormComponent,
+      nzFooter: null,
+      nzWidth: 600,
+      nzComponentParams: {
+        teacher: { id: teacher.id }, // Chỉ truyền id để component tự load dữ liệu
+        mode: 'view'
+      }
+    });
   }
 
 }

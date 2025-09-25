@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { NzModalRef } from 'ng-zorro-antd/modal';
+import { NzMessageService } from 'ng-zorro-antd/message';
 import { Teacher } from '../../../../../core/models/teacher.model';
 import { TeacherService } from '../../../../../core/services/teacher.service';
 import { UserService } from '../../../../../core/services/user.service';
@@ -9,6 +11,9 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 
 @Component({
   selector: 'app-teachers-form',
@@ -16,32 +21,86 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 })
 export class TeachersFormComponent implements OnInit {
   @Input() teacher: Partial<Teacher> | null = null;
+  @Input() mode: 'create' | 'edit' | 'view' = 'create';
   @Output() save = new EventEmitter<Teacher>();
   @Output() cancel = new EventEmitter<void>();
   form: FormGroup;
   loading = false;
   availableUsers: User[] = [];
+  isViewMode = false;
+  teacherData: Teacher | null = null;
 
-  constructor(private fb: FormBuilder, private teacherService: TeacherService, private userService: UserService) {
+  constructor(
+    private fb: FormBuilder,
+    private teacherService: TeacherService,
+    private userService: UserService,
+    private modal: NzModalRef,
+    private message: NzMessageService
+  ) {
     this.form = this.fb.group({
       userId: [null, Validators.required],
-      fullName: [null, Validators.required],
+      fullName: [null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
+      email: [null, [Validators.required, Validators.email]],
       dob: [null, Validators.required],
       gender: [null, Validators.required],
-      phone: [null, Validators.required],
-      address: [null, Validators.required],
-      speciality: [null, Validators.required],
+      phone: [null, [Validators.required, Validators.pattern(/^[0-9]{10,11}$/)]],
+      address: [null, [Validators.required, Validators.minLength(10), Validators.maxLength(255)]],
+      speciality: [null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
       hiredAt: [null, Validators.required]
     });
   }
 
   ngOnInit() {
-    // Load available users for selection
-    this.loadAvailableUsers();
+    this.isViewMode = this.mode === 'view';
 
-    if (this.teacher) {
+    // Disable form trong view mode
+    if (this.isViewMode) {
+      this.form.disable();
+    }
+
+    // Load available users for selection (chỉ khi không phải view mode)
+    if (!this.isViewMode) {
+      this.loadAvailableUsers();
+    }
+
+    // Nếu có teacher data (edit hoặc view mode)
+    if (this.teacher && this.teacher.id) {
+      this.loadTeacherDetails(this.teacher.id);
+    } else if (this.teacher) {
+      // Trường hợp có data nhưng không có id (từ list component)
       this.form.patchValue(this.teacher);
     }
+  }
+
+  loadTeacherDetails(teacherId: number) {
+    this.loading = true;
+    this.teacherService.getTeacher(teacherId).subscribe({
+      next: (teacher) => {
+        this.teacherData = teacher;
+        this.form.patchValue({
+          userId: teacher.userId,
+          fullName: teacher.fullName,
+          email: teacher.email,
+          dob: teacher.dob,
+          gender: teacher.gender,
+          phone: teacher.phone,
+          address: teacher.address,
+          speciality: teacher.speciality,
+          hiredAt: teacher.hiredAt
+        });
+        this.loading = false;
+
+        // Load available users sau khi có dữ liệu teacher (cho edit mode)
+        if (this.mode === 'edit') {
+          this.loadAvailableUsers();
+        }
+      },
+      error: (error) => {
+        console.error('Error loading teacher details:', error);
+        this.message.error('Lỗi khi tải thông tin giáo viên!');
+        this.loading = false;
+      }
+    });
   }
 
   loadAvailableUsers() {
@@ -70,36 +129,94 @@ export class TeachersFormComponent implements OnInit {
   }
 
   onSubmit() {
+    if (this.isViewMode) {
+      this.modal.close(false);
+      return;
+    }
+
     if (this.form.valid) {
       this.loading = true;
       const data = this.form.value;
-      console.log('Creating teacher with data:', data);
-      console.log('userId being sent:', data.userId);
 
-      this.teacherService.createTeacher(data).subscribe({
-        next: (teacher) => {
-          this.loading = false;
-          console.log('Teacher created successfully:', teacher);
-          this.save.emit(teacher);
-        },
-        error: (error) => {
-          this.loading = false;
-          console.error('Error creating teacher:', error);
-          console.error('Error details:', error.error);
-          console.error('Error message:', error.error?.message);
-          console.error('Error status:', error.status);
-
-          // Hiển thị lỗi chi tiết cho user
-          alert(`Lỗi tạo giáo viên: ${error.error?.message || error.message || 'Unknown error'}`);
-        }
-      });
+      if (this.mode === 'edit' && this.teacherData?.id) {
+        // Update existing teacher
+        console.log('Updating teacher with data:', data);
+        this.teacherService.updateTeacher(this.teacherData.id, data).subscribe({
+          next: (teacher) => {
+            this.loading = false;
+            console.log('Teacher updated successfully:', teacher);
+            this.modal.close(true);
+          },
+          error: (error) => {
+            this.handleError(error, 'cập nhật');
+          }
+        });
+      } else {
+        // Create new teacher
+        console.log('Creating teacher with data:', data);
+        this.teacherService.createTeacher(data).subscribe({
+          next: (teacher) => {
+            this.loading = false;
+            console.log('Teacher created successfully:', teacher);
+            this.modal.close(true);
+          },
+          error: (error) => {
+            this.handleError(error, 'tạo');
+          }
+        });
+      }
     } else {
       console.log('Form is invalid:', this.form.errors);
       console.log('Form values:', this.form.value);
     }
   }
 
+  private handleError(error: any, action: string) {
+    this.loading = false;
+    console.error(`Error ${action} teacher:`, error);
+
+    let errorMessage = 'Lỗi không xác định';
+
+    if (error.status === 400 || error.status === 409) {
+      const backendMessage = error.error?.message || '';
+      if (backendMessage.includes('already exists') ||
+          backendMessage.includes('đã tồn tại') ||
+          backendMessage.includes('duplicate') ||
+          backendMessage.includes('userId')) {
+        errorMessage = 'Người dùng này đã có hồ sơ giáo viên hoặc học sinh!';
+      } else {
+        errorMessage = backendMessage || 'Dữ liệu không hợp lệ!';
+      }
+    } else if (error.status === 500) {
+      errorMessage = 'Lỗi hệ thống, vui lòng thử lại sau!';
+    } else {
+      errorMessage = error.error?.message || error.message || 'Lỗi không xác định';
+    }
+
+    this.message.error(errorMessage);
+  }
+
+
+
+  getCurrentDate(): string {
+    return new Date().toISOString().split('T')[0];
+  }
+
+  getGenderLabel(gender: string): string {
+    switch(gender?.toUpperCase()) {
+      case 'MALE': return 'Nam';
+      case 'FEMALE': return 'Nữ';
+      default: return gender || '';
+    }
+  }
+
+  formatDate(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN');
+  }
+
   onCancel() {
-    this.cancel.emit();
+    this.modal.close(false); // Đóng modal và trả về false
   }
 }

@@ -10,6 +10,7 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { Student } from '../../../../core/models/student.model';
 import { StudentService } from '../../../../core/services/student.service';
 import { NzModalService } from 'ng-zorro-antd/modal';
+import { NzMessageService } from 'ng-zorro-antd/message';
 import { StudentsFormComponent } from './students-form/students-form.component';
 
 @Component({
@@ -26,20 +27,23 @@ export class StudentsComponent implements OnInit {
 
   constructor(
     private studentService: StudentService,
-    private modal: NzModalService
+    private modal: NzModalService,
+    private message: NzMessageService
   ) {}
   openAddStudentModal() {
     const modalRef = this.modal.create({
-      nzTitle: 'Thêm học sinh',
+      nzTitle: 'Thêm học viên',
       nzContent: StudentsFormComponent,
       nzFooter: null,
-      nzWidth: 600
+      nzWidth: 600,
+      nzComponentParams: {
+        mode: 'create'
+      }
     });
     modalRef.afterClose.subscribe(result => {
       if (result) {
-        this.studentService.createStudent(result).subscribe(() => {
-          this.fetchStudents();
-        });
+        this.message.success('Thêm học viên thành công!');
+        this.fetchStudents(); // Refresh the list
       }
     });
   }
@@ -52,10 +56,12 @@ export class StudentsComponent implements OnInit {
         this.loading = true;
         this.studentService.deleteStudent(student.id).subscribe({
           next: () => {
+            this.message.success('Xóa học viên thành công!');
             this.fetchStudents();
           },
           error: () => {
             this.loading = false;
+            this.message.error('Không thể xóa học viên!');
           }
         });
       }
@@ -104,10 +110,36 @@ export class StudentsComponent implements OnInit {
   }
 
   viewStudent(student: Student) {
-    console.log('View student:', student);
+    this.modal.create({
+      nzTitle: 'Thông tin học viên',
+      nzContent: StudentsFormComponent,
+      nzFooter: null,
+      nzWidth: 600,
+      nzComponentParams: {
+        student: { id: student.id }, // Chỉ truyền id để component tự load dữ liệu
+        mode: 'view'
+      }
+    });
   }
+
   editStudent(student: Student) {
-    console.log('Edit student:', student);
+    const modalRef = this.modal.create({
+      nzTitle: 'Chỉnh sửa học viên',
+      nzContent: StudentsFormComponent,
+      nzFooter: null,
+      nzWidth: 600,
+      nzComponentParams: {
+        student: { id: student.id }, // Chỉ truyền id để component tự load dữ liệu
+        mode: 'edit'
+      }
+    });
+
+    modalRef.afterClose.subscribe(result => {
+      if (result) {
+        this.message.success('Cập nhật học viên thành công!');
+        this.fetchStudents();
+      }
+    });
   }
 // ...existing code...
 }

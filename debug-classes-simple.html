@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Classes API</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; cursor: pointer; }
+        .result { background: #f8f9fa; padding: 15px; margin: 10px 0; border: 1px solid #ddd; }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+    <h1>Debug Classes API</h1>
+
+    <div>
+        <h2>Test Create Class - Multiple Formats</h2>
+        <button onclick="testFormat1()">Test: schedule + courseId</button>
+        <button onclick="testFormat2()">Test: scheduleId + courseId</button>
+        <button onclick="testFormat3()">Test: minimal fields</button>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        function logResult(title, data, success = true) {
+            const resultDiv = document.getElementById('result');
+            const color = success ? 'green' : 'red';
+            resultDiv.innerHTML += `
+                <div style="border-left: 4px solid ${color}; padding-left: 10px; margin: 10px 0;">
+                    <h4>${title}</h4>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                </div>
+            `;
+        }
+
+        async function testFormat1() {
+            document.getElementById('result').innerHTML = '<h3>Testing Format 1: schedule + courseId</h3>';
+
+            const testData = {
+                name: "Test Class 1",
+                schedule: 1,
+                courseId: 1,
+                teacherId: 2,
+                studentIds: [3, 4, 5]
+            };
+
+            try {
+                console.log('Sending:', testData);
+
+                const response = await fetch('http://localhost:8080/classes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    logResult('✅ SUCCESS', data, true);
+                } else {
+                    logResult('❌ FAILED', { status: response.status, error: data }, false);
+                }
+            } catch (error) {
+                logResult('❌ ERROR', { error: error.message }, false);
+            }
+        }
+
+        async function testFormat2() {
+            document.getElementById('result').innerHTML = '<h3>Testing Format 2: scheduleId + courseId</h3>';
+
+            const testData = {
+                name: "Test Class 2",
+                scheduleId: 1,
+                courseId: 1,
+                teacherId: 2,
+                studentIds: [3, 4, 5]
+            };
+
+            try {
+                console.log('Sending:', testData);
+
+                const response = await fetch('http://localhost:8080/classes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    logResult('✅ SUCCESS', data, true);
+                } else {
+                    logResult('❌ FAILED', { status: response.status, error: data }, false);
+                }
+            } catch (error) {
+                logResult('❌ ERROR', { error: error.message }, false);
+            }
+        }
+
+        async function testFormat3() {
+            document.getElementById('result').innerHTML = '<h3>Testing Format 3: minimal fields</h3>';
+
+            const testData = {
+                name: "Test Class 3",
+                scheduleId: 1,
+                teacherId: 2,
+                studentIds: []
+            };
+
+            try {
+                console.log('Sending:', testData);
+
+                const response = await fetch('http://localhost:8080/classes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    logResult('✅ SUCCESS', data, true);
+                } else {
+                    logResult('❌ FAILED', { status: response.status, error: data }, false);
+                }
+            } catch (error) {
+                logResult('❌ ERROR', { error: error.message }, false);
+            }
+        }
+    </script>
+</body>
+</html>
