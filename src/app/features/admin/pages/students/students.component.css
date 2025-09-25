@@ -36,6 +36,17 @@
 }
 
 /* Button styles */
+.action-buttons .ant-btn {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 2px !important;
+  padding: 0 !important;
+}
+
 .btn-view {
   border-color: #52c41a;
   color: #52c41a;

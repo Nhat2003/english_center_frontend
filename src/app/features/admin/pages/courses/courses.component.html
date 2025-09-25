@@ -23,31 +23,31 @@
   >
     <thead>
       <tr>
-        <th>STT</th>
-        <th>Tên khóa học</th>
-        <th>Mô tả</th>
-        <th>Thời lượng</th>
-        <th>Học phí</th>
-        <th>Trình độ</th>
-        <th>Hành động</th>
+        <th nzAlign="center">STT</th>
+        <th nzAlign="center">Tên khóa học</th>
+        <th nzAlign="center">Mô tả</th>
+        <th nzAlign="center">Thời lượng</th>
+        <th nzAlign="center">Học phí</th>
+        <th nzAlign="center">Trình độ</th>
+        <th nzAlign="center">Hành động</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let c of courses; index as i">
-        <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
-        <td>
+        <td nzAlign="center">{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+        <td nzAlign="center">
           <div class="course-name">
             <span nz-icon nzType="book" nzTheme="outline" class="course-icon"></span>
             <strong>{{ c.name }}</strong>
           </div>
         </td>
-        <td>{{ c.description || 'Chưa có mô tả' }}</td>
-        <td>{{ c.duration }} tuần</td>
-        <td>{{ c.fee | currency:'VND':'symbol':'1.0-0' }}</td>
-        <td>
+        <td nzAlign="center">{{ c.description || 'Chưa có mô tả' }}</td>
+        <td nzAlign="center">{{ c.duration }} tuần</td>
+        <td nzAlign="center">{{ c.fee | currency:'VND':'symbol':'1.0-0' }}</td>
+        <td nzAlign="center">
           <nz-tag [nzColor]="getLevelColor(c.level)">{{ c.level }}</nz-tag>
         </td>
-        <td>
+        <td nzAlign="center">
           <div class="action-buttons">
             <button
               nz-button
@@ -78,7 +78,7 @@
               nzShape="circle"
               nzSize="small"
               class="btn-delete"
-              nz-tooltip="Xóa"
+              nz-tooltip="Xóa khóa học"
               (click)="deleteCourse(c)"
             >
               <span nz-icon nzType="delete" nzTheme="outline"></span>

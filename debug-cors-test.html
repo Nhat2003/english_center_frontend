@@ -5,7 +5,7 @@
 </head>
 <body>
     <h2>CORS Test Tool</h2>
-    
+
     <div>
         <h3>Test CORS với JavaScript fetch:</h3>
         <button onclick="testCORS()">Test CORS to Backend</button>
@@ -17,7 +17,7 @@
         async function testCORS() {
             const resultDiv = document.getElementById('corsResult');
             resultDiv.textContent = 'Testing CORS...';
-            
+
             try {
                 const response = await fetch('http://localhost:8080/users', {
                     method: 'GET',
@@ -26,15 +26,15 @@
                     },
                     credentials: 'include'
                 });
-                
+
                 const text = await response.text();
-                resultDiv.textContent = 
+                resultDiv.textContent =
                     `CORS Test Result:\n` +
                     `Status: ${response.status} ${response.statusText}\n` +
                     `Response: ${text}`;
-                    
+
             } catch (error) {
-                resultDiv.textContent = 
+                resultDiv.textContent =
                     `CORS Test Error:\n` +
                     `${error.message}\n\n` +
                     `This indicates a CORS configuration issue.`;
@@ -44,14 +44,14 @@
         async function testWithToken() {
             const token = localStorage.getItem('token');
             const resultDiv = document.getElementById('corsResult');
-            
+
             if (!token) {
                 resultDiv.textContent = 'No token found! Please login first in the main app.';
                 return;
             }
-            
+
             resultDiv.textContent = 'Testing with token...';
-            
+
             try {
                 const response = await fetch('http://localhost:8080/users', {
                     method: 'GET',
@@ -61,15 +61,15 @@
                     },
                     credentials: 'include'
                 });
-                
+
                 const text = await response.text();
-                resultDiv.textContent = 
+                resultDiv.textContent =
                     `Token Test Result:\n` +
                     `Status: ${response.status} ${response.statusText}\n` +
                     `Response: ${text}`;
-                    
+
             } catch (error) {
-                resultDiv.textContent = 
+                resultDiv.textContent =
                     `Token Test Error:\n` +
                     `${error.message}\n\n` +
                     `This indicates a CORS or authentication issue.`;

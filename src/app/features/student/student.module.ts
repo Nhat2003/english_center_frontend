@@ -17,6 +17,9 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
+import { NzMessageModule } from 'ng-zorro-antd/message';
+import { NzBadgeModule } from 'ng-zorro-antd/badge';
+import { NzInputModule } from 'ng-zorro-antd/input';
 
 // Components
 import { StudentLayoutComponent } from './student-layout/student-layout.component';
@@ -48,7 +51,10 @@ import { STUDENT_ROUTES } from './student.routes';
     NzTagModule,
     NzDropDownModule,
     NzAvatarModule,
-    NzProgressModule
+    NzProgressModule,
+    NzMessageModule,
+    NzBadgeModule,
+    NzInputModule
   ]
 })
 export class StudentModule { }

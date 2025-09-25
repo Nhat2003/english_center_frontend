@@ -8,6 +8,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 
 import { AddUserComponent } from '../add-user/add-user.component';
 import { EditUserComponent } from '../edit-user/edit-user.component';
@@ -113,6 +114,25 @@ export class UserListComponent implements OnInit {
     });
   }
 
+
+  viewUser(user: User) {
+    this.modal.info({
+      nzTitle: `Thông tin người dùng: ${user.username}`,
+      nzContent: `
+        <div style="padding: 16px 0;">
+          <p><strong>Tên đăng nhập:</strong> ${user.username}</p>
+          <p><strong>Họ tên:</strong> ${user.fullName || 'Chưa cập nhật'}</p>
+          <p><strong>Email:</strong> ${user.email || 'Chưa cập nhật'}</p>
+          <p><strong>Vai trò:</strong> ${user.role}</p>
+          <p><strong>Trạng thái:</strong> ${user.isActive ? 'Hoạt động' : 'Không hoạt động'}</p>
+          <p><strong>Quyền root:</strong> ${user.root ? 'Có' : 'Không'}</p>
+          <p><strong>Status:</strong> ${user.status}</p>
+        </div>
+      `,
+      nzWidth: 500,
+      nzOkText: 'Đóng'
+    });
+  }
 
   deleteUser(user: User) {
     if (typeof user.id !== 'number') {

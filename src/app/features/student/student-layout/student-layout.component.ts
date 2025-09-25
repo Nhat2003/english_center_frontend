@@ -14,7 +14,8 @@ export class StudentLayoutComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private message: NzMessageService
   ) {}
 
   ngOnInit() {
@@ -25,6 +26,7 @@ export class StudentLayoutComponent implements OnInit {
 
   logout() {
     this.authService.logout();
+    this.message.success('Đăng xuất thành công!');
     this.router.navigate(['/auth/login']);
   }
 }

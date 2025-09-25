@@ -1,0 +1,85 @@
+/* Custom Chart Styles */
+.enrollment-data {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.data-point {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.month-label {
+  min-width: 80px;
+  font-size: 12px;
+  color: #8c8c8c;
+  font-weight: 500;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1890ff, #40a9ff);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.value {
+  min-width: 30px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #262626;
+  text-align: right;
+}
+
+.popularity-data {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.course-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.course-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.course-name {
+  font-size: 13px;
+  color: #262626;
+  font-weight: 500;
+}
+
+.course-percentage {
+  font-size: 12px;
+  color: #8c8c8c;
+  font-weight: 600;
+}
+
+.course-bar {
+  height: 6px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.course-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}

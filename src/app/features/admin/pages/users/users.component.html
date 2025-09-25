@@ -1,0 +1,19 @@
+<!-- Users Management Container -->
+<div class="users-container">
+  <!-- Header Section -->
+  <div class="users-header">
+    <h1 class="users-title">
+      <span nz-icon nzType="team" nzTheme="outline"></span>
+      Quản lý người dùng
+    </h1>
+    <button nz-button nzType="primary" class="btn-add-user" routerLink="add-user">
+      <span nz-icon nzType="plus"></span>
+      Thêm người dùng
+    </button>
+  </div>
+
+  <!-- Users Table -->
+  <div class="users-table-container">
+    <router-outlet></router-outlet>
+  </div>
+</div>

@@ -23,31 +23,31 @@
   >
     <thead>
       <tr>
-        <th>STT</th>
-        <th>Tên lớp</th>
-        <th>Giáo viên phụ trách</th>
-        <th>Khóa học</th>
-        <th>Số học viên</th>
-        <th>Lịch học</th>
-        <th>Hành động</th>
+        <th nzAlign="center">STT</th>
+        <th nzAlign="center">Tên lớp</th>
+        <th nzAlign="center">Giáo viên phụ trách</th>
+        <th nzAlign="center">Khóa học</th>
+        <th nzAlign="center">Số học viên</th>
+        <th nzAlign="center">Lịch học</th>
+        <th nzAlign="center">Hành động</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let cl of classes; index as i">
-        <td>{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
-        <td>
+        <td nzAlign="center">{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+        <td nzAlign="center">
           <div class="class-name">
             <span nz-icon nzType="apartment" nzTheme="outline" class="class-icon"></span>
             <strong>{{ cl.name }}</strong>
           </div>
         </td>
-        <td>{{ cl.teacherName || 'Chưa phân công' }}</td>
-        <td>{{ cl.courseName || 'Chưa chọn khóa học' }}</td>
-        <td>
+        <td nzAlign="center">{{ cl.teacherName || 'Chưa phân công' }}</td>
+        <td nzAlign="center">{{ cl.courseName || 'Chưa chọn khóa học' }}</td>
+        <td nzAlign="center">
           <nz-tag nzColor="blue">{{ cl.studentIds?.length || 0 }} học viên</nz-tag>
         </td>
-        <td>{{ cl.scheduleName || 'Chưa xếp lịch' }}</td>
-        <td>
+        <td nzAlign="center">{{ cl.scheduleName || 'Chưa xếp lịch' }}</td>
+        <td nzAlign="center">
           <div class="action-buttons">
             <button
               nz-button
@@ -78,7 +78,7 @@
               nzShape="circle"
               nzSize="small"
               class="btn-delete"
-              nz-tooltip="Xóa"
+              nz-tooltip="Xóa lớp học"
               (click)="deleteClass(cl)"
             >
               <span nz-icon nzType="delete" nzTheme="outline"></span>

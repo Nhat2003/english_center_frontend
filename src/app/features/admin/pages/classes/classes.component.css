@@ -47,6 +47,46 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Button styles */
+.action-buttons .ant-btn {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 2px !important;
+  padding: 0 !important;
+}
+
+.btn-view {
+  border-color: #52c41a;
+  color: #52c41a;
+}
+
+.btn-view:hover {
+  border-color: #73d13d;
+  color: #73d13d;
+}
+
+.btn-edit:hover {
+  border-color: #40a9ff;
+  background-color: #40a9ff;
+}
+
+.btn-delete {
+  background-color: #fc4f5274 !important;
+  border-color: #ffffff97 !important;
+  color: #ff0000 !important;
+}
+
+.btn-delete:hover,
+.btn-delete:focus {
+  background-color: #d9363e !important;
+  border-color: #d9363e !important;
+  color: #fff !important;
+}
+
 .class-name {
   display: flex;
   align-items: center;
