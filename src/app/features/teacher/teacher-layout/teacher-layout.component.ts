@@ -10,6 +10,7 @@ import { AuthService, User } from '../../../core/services/auth.service';
 export class TeacherLayoutComponent implements OnInit {
   isCollapsed = false;
   currentUser: User | null = null;
+  newNotifications = 3; // Number of new notifications for badge
 
   constructor(
     private authService: AuthService,

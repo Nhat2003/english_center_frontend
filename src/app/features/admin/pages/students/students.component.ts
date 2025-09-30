@@ -12,6 +12,7 @@ import { StudentService } from '../../../../core/services/student.service';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { StudentsFormComponent } from './students-form/students-form.component';
+import { ImportStudentsComponent } from './import-students/import-students.component';
 
 @Component({
   selector: 'app-students',
@@ -75,21 +76,49 @@ export class StudentsComponent implements OnInit {
 
   fetchStudents() {
     this.loading = true;
-    this.studentService.getStudents(this.pageIndex - 1, this.pageSize).subscribe({
+    console.log('Fetching students with pagination:', { pageIndex: this.pageIndex, pageSize: this.pageSize });
+
+    // Test với API đơn giản trước
+    this.studentService.getStudentsWithoutPagination().subscribe({
       next: (data: any) => {
-        // Nếu backend trả về { content: Student[], totalElements: number }
-        if (data && data.content && data.totalElements !== undefined) {
-          this.students = data.content;
-          this.total = data.totalElements;
-        } else if (Array.isArray(data)) {
-          // Nếu backend trả về mảng đơn giản
+        console.log('Students API response (without pagination):', data);
+        if (Array.isArray(data)) {
           this.students = data;
           this.total = data.length;
+        } else {
+          console.warn('Unexpected API response format:', data);
+          this.students = [];
+          this.total = 0;
         }
         this.loading = false;
       },
-      error: () => {
-        this.loading = false;
+      error: (error) => {
+        console.error('Failed to fetch students (without pagination):', error);
+        // Fallback: try with pagination
+        console.log('Trying with pagination...');
+        this.studentService.getStudents(this.pageIndex - 1, this.pageSize).subscribe({
+          next: (data: any) => {
+            console.log('Students API response (with pagination):', data);
+            if (data && data.content && data.totalElements !== undefined) {
+              this.students = data.content;
+              this.total = data.totalElements;
+            } else if (Array.isArray(data)) {
+              this.students = data;
+              this.total = data.length;
+            } else {
+              console.warn('Unexpected API response format:', data);
+              this.students = [];
+              this.total = 0;
+            }
+            this.loading = false;
+          },
+          error: (error) => {
+            console.error('Failed to fetch students (with pagination):', error);
+            this.students = [];
+            this.total = 0;
+            this.loading = false;
+          }
+        });
       }
     });
   }
@@ -141,5 +170,23 @@ export class StudentsComponent implements OnInit {
       }
     });
   }
-// ...existing code...
+  openImportModal() {
+    const modalRef = this.modal.create({
+      nzTitle: 'Import danh sách học viên từ Excel',
+      nzContent: ImportStudentsComponent,
+      nzFooter: null,
+      nzWidth: 800,
+      nzBodyStyle: { padding: '0' }
+    });
+
+    modalRef.afterClose.subscribe(result => {
+      if (result && result.success) {
+        this.message.success(`Import thành công ${result.successCount} học viên!`);
+        if (result.errorCount > 0) {
+          this.message.warning(`Có ${result.errorCount} học viên không thể import`);
+        }
+        this.fetchStudents(); // Refresh the list
+      }
+    });
+  }
 }

@@ -1,0 +1,256 @@
+import { Injectable } from '@angular/core';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+
+export interface ExcelStudent {
+  fullName: string;
+  email: string;
+  dob: string;
+  gender: string;
+  phone: string;
+  address: string;
+  className: string;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ExcelService {
+
+  constructor() { }
+
+  /**
+   * Đọc file Excel và chuyển đổi thành array object
+   */
+  readExcelFile(file: File): Promise<ExcelStudent[]> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+
+          // Lấy sheet đầu tiên
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+
+          // Chuyển đổi sang JSON với header từ row đầu tiên
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+            header: 1, // Sử dụng array thay vì object
+            defval: '', // Giá trị mặc định cho cell trống
+            blankrows: false // Bỏ qua row trống
+          });
+
+          if (jsonData.length === 0) {
+            reject(new Error('File Excel trống hoặc không có dữ liệu'));
+            return;
+          }
+
+          // Lấy header (row đầu tiên)
+          const headers = jsonData[0] as string[];
+
+          // Chuyển đổi data từ row 2 trở đi
+          const students: ExcelStudent[] = [];
+
+          for (let i = 1; i < jsonData.length; i++) {
+            const row = jsonData[i] as any[];
+            if (row && row.length > 0 && row.some(cell => cell !== '')) {
+              const student: ExcelStudent = {
+                fullName: this.getCellValue(row, headers, ['Họ tên', 'Full Name', 'fullName', 'name']),
+                email: this.getCellValue(row, headers, ['Email', 'email']),
+                dob: this.formatDate(this.getCellValue(row, headers, ['Ngày sinh', 'Date of Birth', 'dob', 'birth'])),
+                gender: this.formatGender(this.getCellValue(row, headers, ['Giới tính', 'Gender', 'gender'])),
+                phone: this.getCellValue(row, headers, ['Số điện thoại', 'Phone', 'phone', 'sdt']),
+                address: this.getCellValue(row, headers, ['Địa chỉ', 'Address', 'address']),
+                className: this.getCellValue(row, headers, ['Lớp học', 'Class', 'className', 'class'])
+              };
+
+              // Validate dữ liệu cơ bản
+              if (student.fullName && student.email) {
+                students.push(student);
+              }
+            }
+          }
+
+          if (students.length === 0) {
+            reject(new Error('Không tìm thấy dữ liệu hợp lệ trong file Excel'));
+            return;
+          }
+
+          resolve(students);
+        } catch (error) {
+          reject(new Error(`Lỗi đọc file Excel: ${error.message || error}`));
+        }
+      };
+
+      reader.onerror = () => {
+        reject(new Error('Lỗi đọc file'));
+      };
+
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  /**
+   * Lấy giá trị cell dựa trên tên cột có thể có
+   */
+  private getCellValue(row: any[], headers: string[], possibleNames: string[]): string {
+    for (const name of possibleNames) {
+      const index = headers.findIndex(h =>
+        h && h.toLowerCase().trim() === name.toLowerCase().trim()
+      );
+      if (index !== -1 && row[index] !== undefined && row[index] !== null) {
+        return String(row[index]).trim();
+      }
+    }
+    return '';
+  }
+
+  /**
+   * Format ngày sinh
+   */
+  private formatDate(dateValue: string): string {
+    if (!dateValue) return '';
+
+    try {
+      // Nếu là số (Excel date serial number)
+      if (!isNaN(Number(dateValue))) {
+        const excelDate = new Date((Number(dateValue) - 25569) * 86400 * 1000);
+        return excelDate.toISOString().split('T')[0];
+      }
+
+      // Nếu là string, thử parse các format phổ biến
+      const formats = [
+        /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/, // dd/mm/yyyy
+        /^(\d{4})-(\d{1,2})-(\d{1,2})$/, // yyyy-mm-dd
+        /^(\d{1,2})-(\d{1,2})-(\d{4})$/, // dd-mm-yyyy
+      ];
+
+      for (const format of formats) {
+        const match = dateValue.match(format);
+        if (match) {
+          let day, month, year;
+          if (format === formats[1]) { // yyyy-mm-dd
+            [, year, month, day] = match;
+          } else { // dd/mm/yyyy or dd-mm-yyyy
+            [, day, month, year] = match;
+          }
+
+          const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+          if (!isNaN(date.getTime())) {
+            return date.toISOString().split('T')[0];
+          }
+        }
+      }
+
+      // Thử parse trực tiếp
+      const date = new Date(dateValue);
+      if (!isNaN(date.getTime())) {
+        return date.toISOString().split('T')[0];
+      }
+    } catch (error) {
+      console.warn('Không thể parse ngày:', dateValue);
+    }
+
+    return dateValue; // Trả về giá trị gốc nếu không parse được
+  }
+
+  /**
+   * Format giới tính
+   */
+  private formatGender(genderValue: string): string {
+    if (!genderValue) return '';
+
+    const gender = genderValue.toLowerCase().trim();
+    if (gender === 'nam' || gender === 'male' || gender === 'm') {
+      return 'Male';
+    }
+    if (gender === 'nữ' || gender === 'nu' || gender === 'female' || gender === 'f') {
+      return 'Female';
+    }
+
+    return genderValue; // Trả về giá trị gốc nếu không nhận diện được
+  }
+
+  /**
+   * Tạo file Excel mẫu để download
+   */
+  downloadSampleExcel(): void {
+    const sampleData = [
+      {
+        'Họ tên': 'Nguyễn Văn A',
+        'Email': 'nguyenvana@example.com',
+        'Ngày sinh': '01/01/2000',
+        'Giới tính': 'Nam',
+        'Số điện thoại': '0123456789',
+        'Địa chỉ': '123 Đường ABC, Quận 1, TP.HCM',
+        'Lớp học': 'English A1'
+      },
+      {
+        'Họ tên': 'Trần Thị B',
+        'Email': 'tranthib@example.com',
+        'Ngày sinh': '15/05/1999',
+        'Giới tính': 'Nữ',
+        'Số điện thoại': '0987654321',
+        'Địa chỉ': '456 Đường XYZ, Quận 2, TP.HCM',
+        'Lớp học': 'English A2'
+      }
+    ];
+
+    const worksheet = XLSX.utils.json_to_sheet(sampleData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Danh sách học sinh');
+
+    // Tạo file Excel
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+
+    saveAs(blob, 'Mau_Danh_Sach_Hoc_Sinh.xlsx');
+  }
+
+  /**
+   * Validate dữ liệu trước khi import
+   */
+  validateStudentData(students: ExcelStudent[]): { valid: ExcelStudent[], errors: string[] } {
+    const valid: ExcelStudent[] = [];
+    const errors: string[] = [];
+
+    students.forEach((student, index) => {
+      const rowNumber = index + 2; // +2 vì bắt đầu từ row 2 trong Excel
+      const rowErrors: string[] = [];
+
+      // Validate required fields
+      if (!student.fullName || student.fullName.trim().length === 0) {
+        rowErrors.push(`Dòng ${rowNumber}: Thiếu họ tên`);
+      }
+
+      if (!student.email || student.email.trim().length === 0) {
+        rowErrors.push(`Dòng ${rowNumber}: Thiếu email`);
+      } else {
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(student.email)) {
+          rowErrors.push(`Dòng ${rowNumber}: Email không hợp lệ`);
+        }
+      }
+
+      // Validate phone number
+      if (student.phone && student.phone.trim().length > 0) {
+        const phoneRegex = /^[0-9+\-\s()]{10,15}$/;
+        if (!phoneRegex.test(student.phone.replace(/\s/g, ''))) {
+          rowErrors.push(`Dòng ${rowNumber}: Số điện thoại không hợp lệ`);
+        }
+      }
+
+      if (rowErrors.length === 0) {
+        valid.push(student);
+      } else {
+        errors.push(...rowErrors);
+      }
+    });
+
+    return { valid, errors };
+  }
+}

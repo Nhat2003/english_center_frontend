@@ -1,163 +1,188 @@
-<div class="student-dashboard">
-  <!-- Welcome Section -->
+<!-- Student Dashboard - Tổng quan -->
+<div class="dashboard-container">
+  <!-- Welcome Section - Chào mừng học sinh -->
   <div class="welcome-section">
-    <nz-card nzTitle="Xin chào học viên!" [nzBordered]="false" class="welcome-card">
-      <p>Chào mừng <strong>{{ currentUser?.fullName || currentUser?.username }}</strong> trở lại lớp học! Hãy tiếp tục hành trình học tiếng Anh của bạn.</p>
-    </nz-card>
-  </div>
-
-  <!-- Statistics Cards -->
-  <div nz-row [nzGutter]="[16, 16]" class="stats-section">
-    <div nz-col nzXs="24" nzSm="12" nzMd="6">
-      <nz-card [nzBordered]="false" class="stat-card">
-        <nz-statistic
-          nzTitle="Khóa học đã đăng ký"
-          [nzValue]="studentStats.enrolledCourses"
-          [nzValueStyle]="{ color: '#1890ff' }"
-          nzPrefix="📚">
-        </nz-statistic>
-      </nz-card>
-    </div>
-
-    <div nz-col nzXs="24" nzSm="12" nzMd="6">
-      <nz-card [nzBordered]="false" class="stat-card">
-        <nz-statistic
-          nzTitle="Lớp học sắp tới"
-          [nzValue]="studentStats.upcomingClasses"
-          [nzValueStyle]="{ color: '#52c41a' }"
-          nzPrefix="📅">
-        </nz-statistic>
-      </nz-card>
-    </div>
-
-    <div nz-col nzXs="24" nzSm="12" nzMd="6">
-      <nz-card [nzBordered]="false" class="stat-card">
-        <nz-statistic
-          nzTitle="Bài tập chưa nộp"
-          [nzValue]="studentStats.pendingAssignments"
-          [nzValueStyle]="{ color: '#faad14' }"
-          nzPrefix="📝">
-        </nz-statistic>
-      </nz-card>
-    </div>
-
-    <div nz-col nzXs="24" nzSm="12" nzMd="6">
-      <nz-card [nzBordered]="false" class="stat-card">
-        <nz-statistic
-          nzTitle="Điểm trung bình"
-          [nzValue]="studentStats.averageGrade"
-          [nzValueStyle]="{ color: '#722ed1' }"
-          nzSuffix="/10"
-          nzPrefix="⭐">
-        </nz-statistic>
-      </nz-card>
-    </div>
-  </div>
-
-  <!-- Content Row -->
-  <div nz-row [nzGutter]="[16, 16]" class="content-section">
-    <!-- Today's Classes -->
-    <div nz-col nzXs="24" nzLg="14">
-      <nz-card nzTitle="Lịch học hôm nay" [nzExtra]="scheduleExtra" [nzBordered]="false">
-        <ng-template #scheduleExtra>
-          <button nz-button nzType="link" nzSize="small">
-            <span nz-icon nzType="calendar"></span>
-            Xem tất cả
-          </button>
-        </ng-template>
-
-        <nz-table #scheduleTable [nzData]="todaySchedule" [nzShowPagination]="false" nzSize="small">
-          <thead>
-            <tr>
-              <th>Thời gian</th>
-              <th>Môn học</th>
-              <th>Giáo viên</th>
-              <th>Phòng</th>
-              <th>Trạng thái</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let schedule of scheduleTable.data">
-              <td>{{ schedule.time }}</td>
-              <td>{{ schedule.subject }}</td>
-              <td>{{ schedule.teacher }}</td>
-              <td>{{ schedule.room }}</td>
-              <td>
-                <nz-tag [nzColor]="schedule.status === 'upcoming' ? 'blue' : 'green'">
-                  {{ schedule.status === 'upcoming' ? 'Sắp tới' : 'Đã học' }}
-                </nz-tag>
-              </td>
-            </tr>
-          </tbody>
-        </nz-table>
-      </nz-card>
-    </div>
-
-    <!-- Pending Fees & Notifications -->
-    <div nz-col nzXs="24" nzLg="10">
-      <!-- Fee Status -->
-      <nz-card nzTitle="Tình trạng học phí" [nzBordered]="false" style="margin-bottom: 16px;">
-        <div class="fee-status">
-          <div class="fee-item" *ngFor="let fee of feeStatus">
-            <div class="fee-course">{{ fee.course }}</div>
-            <div class="fee-amount" [ngClass]="fee.status">
-              {{ fee.amount }}
-              <nz-tag [nzColor]="fee.status === 'paid' ? 'green' : 'red'">
-                {{ fee.status === 'paid' ? 'Đã đóng' : 'Chưa đóng' }}
-              </nz-tag>
-            </div>
-          </div>
+    <nz-card class="welcome-card">
+      <div class="welcome-content">
+        <div class="welcome-text">
+          <h1>Xin chào, {{ currentUser?.fullName || 'Nam' }}! 👋</h1>
+          <p>Chúc bạn có một ngày học tập hiệu quả và vui vẻ!</p>
         </div>
-        <button nz-button nzType="primary" nzBlock style="margin-top: 16px;">
-          <span nz-icon nzType="credit-card"></span>
-          Đóng học phí
-        </button>
-      </nz-card>
-
-      <!-- Recent Grades -->
-      <nz-card nzTitle="Điểm số mới nhất" [nzBordered]="false">
-        <div class="grade-list">
-          <div class="grade-item" *ngFor="let grade of recentGrades">
-            <div class="grade-subject">{{ grade.subject }}</div>
-            <div class="grade-score" [ngClass]="getGradeColor(grade.score)">
-              {{ grade.score }}/10
-            </div>
-            <div class="grade-date">{{ grade.date }}</div>
-          </div>
-        </div>
-      </nz-card>
-    </div>
-  </div>
-
-  <!-- Quick Actions -->
-  <div class="quick-actions-section">
-    <nz-card nzTitle="Thao tác nhanh" [nzBordered]="false">
-      <div nz-row [nzGutter]="[16, 16]">
-        <div nz-col nzXs="24" nzSm="12" nzMd="8" nzLg="6">
-          <button nz-button nzType="primary" nzSize="large" nzBlock>
-            <span nz-icon nzType="credit-card"></span>
-            Đóng học phí
-          </button>
-        </div>
-        <div nz-col nzXs="24" nzSm="12" nzMd="8" nzLg="6">
-          <button nz-button nzType="default" nzSize="large" nzBlock>
-            <span nz-icon nzType="file-text"></span>
-            Nộp bài tập
-          </button>
-        </div>
-        <div nz-col nzXs="24" nzSm="12" nzMd="8" nzLg="6">
-          <button nz-button nzType="default" nzSize="large" nzBlock>
-            <span nz-icon nzType="book"></span>
-            Tài liệu học tập
-          </button>
-        </div>
-        <div nz-col nzXs="24" nzSm="12" nzMd="8" nzLg="6">
-          <button nz-button nzType="default" nzSize="large" nzBlock>
-            <span nz-icon nzType="message"></span>
-            Liên hệ giáo viên
-          </button>
+        <div class="welcome-avatar">
+          <nz-avatar [nzSize]="64" nzIcon="user" class="user-avatar"></nz-avatar>
         </div>
       </div>
     </nz-card>
+  </div>
+
+  <!-- Thông tin nhanh -->
+  <div class="quick-info">
+    <nz-row [nzGutter]="16">
+      <!-- Buổi học tiếp theo -->
+      <nz-col span="8">
+        <nz-card class="info-card next-class">
+          <div class="card-content">
+            <div class="card-icon">
+              <span nz-icon nzType="calendar" class="icon"></span>
+            </div>
+            <div class="card-info">
+              <h3>Buổi học tiếp theo</h3>
+              <p class="next-class-info">{{ nextClass.subject }}</p>
+              <p class="next-class-time">{{ nextClass.time }} - {{ nextClass.date }}</p>
+              <p class="next-class-teacher">GV: {{ nextClass.teacher }}</p>
+              <button nz-button nzType="primary" nzSize="small" class="join-btn">
+                <span nz-icon nzType="video-camera"></span>
+                Vào lớp học
+              </button>
+            </div>
+          </div>
+        </nz-card>
+      </nz-col>
+
+      <!-- Bài tập cần nộp -->
+      <nz-col span="8">
+        <nz-card class="info-card assignments">
+          <div class="card-content">
+            <div class="card-icon">
+              <span nz-icon nzType="file-text" class="icon"></span>
+            </div>
+            <div class="card-info">
+              <h3>Bài tập cần nộp</h3>
+              <p class="assignment-count">{{ pendingAssignments }} bài tập</p>
+              <p class="assignment-deadline">Hạn nộp gần nhất: {{ nearestDeadline }}</p>
+              <button nz-button nzType="default" nzSize="small" routerLink="/student/assignments">
+                <span nz-icon nzType="arrow-right"></span>
+                Xem chi tiết
+              </button>
+            </div>
+          </div>
+        </nz-card>
+      </nz-col>
+
+      <!-- Tình trạng học phí -->
+      <nz-col span="8">
+        <nz-card class="info-card tuition">
+          <div class="card-content">
+            <div class="card-icon">
+              <span nz-icon nzType="credit-card" class="icon"></span>
+            </div>
+            <div class="card-info">
+              <h3>Tình trạng học phí</h3>
+              <p class="tuition-status" [class.paid]="tuitionStatus.isPaid" [class.unpaid]="!tuitionStatus.isPaid">
+                {{ tuitionStatus.status }}
+              </p>
+              <p class="tuition-amount" *ngIf="!tuitionStatus.isPaid">
+                Còn nợ: {{ tuitionStatus.amount | currency:'VND':'symbol':'1.0-0' }}
+              </p>
+              <button nz-button nzType="primary" nzDanger nzSize="small" *ngIf="!tuitionStatus.isPaid" routerLink="/student/payments">
+                <span nz-icon nzType="dollar"></span>
+                Đóng học phí
+              </button>
+            </div>
+          </div>
+        </nz-card>
+      </nz-col>
+    </nz-row>
+  </div>
+
+  <!-- Thông báo mới nhất -->
+  <div class="notifications-section">
+    <nz-card nzTitle="📢 Thông báo mới nhất">
+      <div class="notification-item" *ngFor="let notification of latestNotifications; let i = index">
+        <div class="notification-content">
+          <div class="notification-header">
+            <h4 class="notification-title">{{ notification.title }}</h4>
+            <nz-tag [nzColor]="notification.type === 'urgent' ? 'red' : 'blue'" nzSize="small">
+              {{ notification.type === 'urgent' ? 'Khẩn cấp' : 'Thông thường' }}
+            </nz-tag>
+          </div>
+          <p class="notification-message">{{ notification.message }}</p>
+          <div class="notification-meta">
+            <span class="notification-date">{{ notification.date }}</span>
+            <span class="notification-sender">Từ: {{ notification.sender }}</span>
+          </div>
+        </div>
+        <nz-divider *ngIf="i < latestNotifications.length - 1"></nz-divider>
+      </div>
+      <div class="view-all-notifications">
+        <button nz-button nzType="link" routerLink="/student/notifications">
+          Xem tất cả thông báo
+          <span nz-icon nzType="arrow-right"></span>
+        </button>
+      </div>
+    </nz-card>
+  </div>
+
+  <!-- Thống kê học tập -->
+  <div class="study-stats">
+    <nz-row [nzGutter]="16">
+      <!-- Tiến độ học tập -->
+      <nz-col span="12">
+        <nz-card nzTitle="📊 Tiến độ học tập">
+          <div class="stat-item" *ngFor="let course of studyCourses">
+            <div class="course-info">
+              <h4>{{ course.name }}</h4>
+              <p>Lớp: {{ course.className }} - GV: {{ course.teacher }}</p>
+            </div>
+            <div class="progress-info">
+              <div class="progress-text">
+                <span>{{ course.completedLessons }}/{{ course.totalLessons }} bài</span>
+                <span class="percentage">{{ course.progress }}%</span>
+              </div>
+              <nz-progress
+                [nzPercent]="course.progress"
+                nzStrokeColor="#3bb273"
+                [nzStrokeWidth]="8">
+              </nz-progress>
+            </div>
+          </div>
+        </nz-card>
+      </nz-col>
+
+      <!-- Lịch học tuần này -->
+      <nz-col span="12">
+        <nz-card nzTitle="📅 Lịch học tuần này">
+          <div class="schedule-item" *ngFor="let schedule of weeklySchedule">
+            <div class="schedule-date">
+              <span class="day">{{ schedule.day }}</span>
+              <span class="date">{{ schedule.date }}</span>
+            </div>
+            <div class="schedule-info">
+              <h4>{{ schedule.subject }}</h4>
+              <p>{{ schedule.time }} - {{ schedule.teacher }}</p>
+              <p>{{ schedule.room }}</p>
+            </div>
+            <div class="schedule-action">
+              <button nz-button nzType="primary" nzSize="small" *ngIf="schedule.hasOnlineLink">
+                <span nz-icon nzType="video-camera"></span>
+                Vào lớp
+              </button>
+            </div>
+          </div>
+          <div class="view-full-schedule">
+            <button nz-button nzType="link" routerLink="/student/schedule">
+              Xem lịch đầy đủ
+              <span nz-icon nzType="arrow-right"></span>
+            </button>
+          </div>
+        </nz-card>
+      </nz-col>
+    </nz-row>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <h2>Truy cập nhanh</h2>
+    <nz-row [nzGutter]="16">
+      <nz-col span="4" *ngFor="let action of quickActions">
+        <nz-card class="action-card" (click)="navigateTo(action.link)" hoverable>
+          <div class="action-content">
+            <span [innerHTML]="action.emoji" class="action-emoji"></span>
+            <h3>{{ action.title }}</h3>
+            <p>{{ action.description }}</p>
+          </div>
+        </nz-card>
+      </nz-col>
+    </nz-row>
   </div>
 </div>

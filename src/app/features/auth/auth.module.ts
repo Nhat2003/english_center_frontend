@@ -14,7 +14,7 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 
 // Components
 import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
+
 
 // Routes
 import { AUTH_ROUTES } from './auth.routes';
@@ -22,7 +22,7 @@ import { AUTH_ROUTES } from './auth.routes';
 @NgModule({
   declarations: [
     LoginComponent,
-    RegisterComponent
+
   ],
   imports: [
     CommonModule,

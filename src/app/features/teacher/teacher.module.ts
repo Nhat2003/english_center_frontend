@@ -17,6 +17,9 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 
+import { NzBadgeModule } from 'ng-zorro-antd/badge';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
+
 // Components
 import { TeacherLayoutComponent } from './teacher-layout/teacher-layout.component';
 import { TeacherDashboardComponent } from './dashboard/dashboard.component';
@@ -46,7 +49,9 @@ import { TEACHER_ROUTES } from './teacher.routes';
     NzTableModule,
     NzTagModule,
     NzDropDownModule,
-    NzAvatarModule
+    NzAvatarModule,
+    NzBadgeModule,
+    NzEmptyModule
   ]
 })
 export class TeacherModule { }

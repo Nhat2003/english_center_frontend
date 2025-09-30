@@ -24,6 +24,7 @@
     <thead>
       <tr>
         <th>Tên đăng nhập</th>
+        <th>Họ và tên</th>
         <th>Vai trò</th>
         <th>Trạng thái</th>
         <th>Hành động</th>
@@ -32,10 +33,11 @@
     <tbody>
   <tr *ngFor="let user of paginatedUsers">
         <td>{{ user.username }}</td>
+        <td>{{ user.fullName || 'Chưa cập nhật' }}</td>
         <td>{{ user.role }}</td>
         <td>
-          <nz-tag *ngIf="user.isActive" style="color: #5bc069;" [nzColor]="'#d9eed9'">Hoạt động</nz-tag>
-          <nz-tag *ngIf="!user.isActive" [nzColor]="'#d9d9d9'">Không hoạt động</nz-tag>
+          <nz-tag *ngIf="isUserActive(user)" style="color: #5bc069;" [nzColor]="'#d9eed9'">Hoạt động</nz-tag>
+          <nz-tag *ngIf="!isUserActive(user)" [nzColor]="'#d9d9d9'">Không hoạt động</nz-tag>
         </td>
         <td>
           <div class="action-buttons">

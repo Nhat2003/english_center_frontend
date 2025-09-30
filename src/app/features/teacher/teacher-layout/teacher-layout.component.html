@@ -2,6 +2,14 @@
   <!-- Header -->
   <nz-header class="header">
     <div class="logo">
+          <button
+        nz-button
+        nzType="text"
+        nzSize="large"
+        (click)="isCollapsed = !isCollapsed"
+        class="trigger">
+        <span nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></span>
+      </button>
       <span nz-icon nzType="graduation-cap" nzTheme="outline"></span>
       <span class="title">English Center - Teacher</span>
     </div>
@@ -30,14 +38,7 @@
         </ul>
       </nz-dropdown>
 
-      <button
-        nz-button
-        nzType="text"
-        nzSize="large"
-        (click)="isCollapsed = !isCollapsed"
-        class="trigger">
-        <span nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></span>
-      </button>
+
     </div>
   </nz-header>
 
@@ -51,40 +52,47 @@
       nzWidth="250px">
       <ul nz-menu nzMode="inline" [nzInlineCollapsed]="isCollapsed" class="sidebar-menu">
 
-        <!-- Dashboard -->
+        <!-- 🏠 Trang chủ -->
         <li nz-menu-item routerLink="/teacher/dashboard" routerLinkActive="ant-menu-item-selected">
-          <span nz-icon nzType="dashboard"></span>
-          <span>Tổng quan</span>
+          <span class="menu-emoji">🏠</span>
+          <span>Trang chủ</span>
         </li>
 
-        <!-- Lớp học của tôi -->
-        <li nz-menu-item routerLink="/teacher/my-classes" routerLinkActive="ant-menu-item-selected">
-          <span nz-icon nzType="team"></span>
-          <span>Lớp học của tôi</span>
-        </li>
-
-        <!-- Lịch giảng dạy -->
+        <!-- 📅 Lịch dạy -->
         <li nz-menu-item routerLink="/teacher/schedule" routerLinkActive="ant-menu-item-selected">
-          <span nz-icon nzType="calendar"></span>
-          <span>Lịch giảng dạy</span>
+          <span class="menu-emoji">📅</span>
+          <span>Lịch dạy</span>
         </li>
 
-        <!-- Học viên -->
-        <li nz-menu-item routerLink="/teacher/students" routerLinkActive="ant-menu-item-selected">
-          <span nz-icon nzType="user"></span>
-          <span>Học viên</span>
+        <!-- 👨‍🎓 Danh sách lớp & học sinh -->
+        <li nz-menu-item routerLink="/teacher/classes" routerLinkActive="ant-menu-item-selected">
+          <span class="menu-emoji">👨‍🎓</span>
+          <span>Danh sách lớp & học sinh</span>
         </li>
 
-        <!-- Điểm danh -->
-        <li nz-menu-item routerLink="/teacher/attendance" routerLinkActive="ant-menu-item-selected">
-          <span nz-icon nzType="check-circle"></span>
-          <span>Điểm danh</span>
+        <!-- 📝 Quản lý bài tập -->
+        <li nz-menu-item routerLink="/teacher/assignments" routerLinkActive="ant-menu-item-selected">
+          <span class="menu-emoji">📝</span>
+          <span>Quản lý bài tập</span>
         </li>
 
-        <!-- Đánh giá -->
-        <li nz-menu-item routerLink="/teacher/assessments" routerLinkActive="ant-menu-item-selected">
-          <span nz-icon nzType="file-text"></span>
-          <span>Đánh giá & Điểm</span>
+        <!-- 🎥 Phòng học online -->
+        <li nz-menu-item routerLink="/teacher/online-classes" routerLinkActive="ant-menu-item-selected">
+          <span class="menu-emoji">🎥</span>
+          <span>Phòng học online</span>
+        </li>
+
+        <!-- 📚 Tài liệu giảng dạy -->
+        <li nz-menu-item routerLink="/teacher/materials" routerLinkActive="ant-menu-item-selected">
+          <span class="menu-emoji">📚</span>
+          <span>Tài liệu giảng dạy</span>
+        </li>
+
+        <!-- 📢 Thông báo cho học sinh -->
+        <li nz-menu-item routerLink="/teacher/notifications" routerLinkActive="ant-menu-item-selected">
+          <span class="menu-emoji">📢</span>
+          <span>Thông báo cho học sinh</span>
+          <nz-badge [nzCount]="newNotifications" *ngIf="newNotifications > 0" class="notification-badge"></nz-badge>
         </li>
 
       </ul>

@@ -33,7 +33,7 @@ export class AuthService {
   private readonly TOKEN_KEY = 'token';
   private readonly API_URL = environment.apiUrl;
 
-  private currentUserSubject = new BehaviorSubject<User | null>(this.getCurrentUser());
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
   // Fake users để test (fallback khi backend không có)
@@ -43,7 +43,13 @@ export class AuthService {
     { id: 3, username: 'student', password: '123', role: 'STUDENT', fullName: 'Học viên', email: 'student@englishcenter.com' }
   ];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    // Load user từ localStorage khi service khởi tạo
+    const storedUser = this.getCurrentUser();
+    if (storedUser) {
+      this.currentUserSubject.next(storedUser);
+    }
+  }
 
   login(username: string, password: string): Observable<LoginResponse> {
     const loginRequest: LoginRequest = { username, password };
@@ -54,7 +60,8 @@ export class AuthService {
         map(response => {
           console.log('Backend response:', response);
 
-          // Backend trả về format: { token: "...", user: { id, username, role, ... } }
+          // Backend cần trả về format: { token: "...", user: { id, username, role, fullName, email... } }
+          // Lưu ý: Backend cần có cột fullName trong bảng User
           if (response && response.user && response.user.id && response.user.username && response.user.role) {
             const user: User = {
               id: response.user.id,

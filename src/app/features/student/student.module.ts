@@ -20,6 +20,8 @@ import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { NzMessageModule } from 'ng-zorro-antd/message';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzTimelineModule } from 'ng-zorro-antd/timeline';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
 
 // Components
 import { StudentLayoutComponent } from './student-layout/student-layout.component';
@@ -54,7 +56,9 @@ import { STUDENT_ROUTES } from './student.routes';
     NzProgressModule,
     NzMessageModule,
     NzBadgeModule,
-    NzInputModule
+    NzInputModule,
+    NzTimelineModule,
+    NzDividerModule
   ]
 })
 export class StudentModule { }

@@ -39,6 +39,12 @@ import { ClassesFormComponent } from './pages/classes/classes-form/classes-form.
 import { NzMessageModule } from 'ng-zorro-antd/message';
 import { SchedulesComponent } from './pages/schedules/schedules.component';
 import { SchedulesFormComponent } from './pages/schedules/schedules-form/schedules-form.component';
+import { ImportStudentsComponent } from './pages/students/import-students/import-students.component';
+import { NzUploadModule } from 'ng-zorro-antd/upload';
+import { NzProgressModule } from 'ng-zorro-antd/progress';
+import { NzStepsModule } from 'ng-zorro-antd/steps';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
+import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 @NgModule({
   declarations: [
     UserListComponent,
@@ -54,7 +60,8 @@ import { SchedulesFormComponent } from './pages/schedules/schedules-form/schedul
     CoursesFormComponent,
     ClassesFormComponent,
     SchedulesComponent,
-    SchedulesFormComponent
+    SchedulesFormComponent,
+    ImportStudentsComponent
 
   ],
   imports: [
@@ -80,6 +87,11 @@ import { SchedulesFormComponent } from './pages/schedules/schedules-form/schedul
     NzMenuModule,
     AdminLayoutModule,
     NzMessageModule,
+    NzUploadModule,
+    NzProgressModule,
+    NzStepsModule,
+    NzAlertModule,
+    NzCollapseModule,
     RouterModule.forChild(ADMIN_ROUTES)
   ]
 })

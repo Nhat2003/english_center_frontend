@@ -8,9 +8,14 @@
 	</div>
 	<div class="page-actions">
 		<span class="total">Tổng số: {{ total }}</span>
-		<button nz-button nzType="primary" class="btn-add" (click)="openAddStudentModal()">
-			<span nz-icon nzType="plus"></span> Thêm học sinh
-		</button>
+		<div class="action-buttons-group">
+			<button nz-button nzType="default" class="btn-import" (click)="openImportModal()">
+				<span nz-icon nzType="cloud-upload"></span> Import Excel
+			</button>
+			<button nz-button nzType="primary" class="btn-add" (click)="openAddStudentModal()">
+				<span nz-icon nzType="plus"></span> Thêm học sinh
+			</button>
+		</div>
 	</div>
 </div>
 

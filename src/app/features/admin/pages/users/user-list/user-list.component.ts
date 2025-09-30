@@ -37,7 +37,10 @@ export class UserListComponent implements OnInit {
 
   loadUsers(): void {
     this.userService.getUsers().subscribe({
-      next: (data) => (this.users = data),
+      next: (data) => {
+        this.users = data;
+        console.log('Users data from backend:', data); // Debug log
+      },
       error: (err) => console.error(' Lỗi load users:', err),
     });
   }
@@ -49,6 +52,20 @@ export class UserListComponent implements OnInit {
   get paginatedUsers() {
     const start = (this.pageIndex - 1) * this.pageSize;
     return this.users.slice(start, start + this.pageSize);
+  }
+
+  // Kiểm tra trạng thái active của user
+  isUserActive(user: User): boolean {
+    // Kiểm tra theo boolean isActive trước
+    if (typeof user.isActive === 'boolean') {
+      return user.isActive;
+    }
+    // Nếu không có isActive, kiểm tra theo status string
+    if (user.status) {
+      return user.status.toUpperCase() === 'ACTIVE';
+    }
+    // Default false nếu không có thông tin
+    return false;
   }
 
   onPageIndexChange(index: number) {

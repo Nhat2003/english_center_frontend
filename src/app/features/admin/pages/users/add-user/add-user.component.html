@@ -9,6 +9,14 @@
     </nz-form-control>
   </nz-form-item>
 
+  <!-- Họ và tên -->
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired>Họ và tên</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Vui lòng nhập họ và tên!">
+      <input nz-input formControlName="fullName" placeholder="Nhập họ và tên" />
+    </nz-form-control>
+  </nz-form-item>
+
 
   <!-- Mật khẩu -->
   <nz-form-item>

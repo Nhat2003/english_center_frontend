@@ -99,3 +99,16 @@
 :host ::ng-deep .ant-pagination-options {
   margin-left: 16px;
 }
+
+/* Header Action Buttons Group */
+.action-buttons-group {
+  display: flex;
+  gap: 8px;
+}
+
+.action-buttons-group button {
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}

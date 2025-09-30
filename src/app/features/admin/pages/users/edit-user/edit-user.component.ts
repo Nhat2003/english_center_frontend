@@ -39,6 +39,7 @@ export class EditUserComponent implements OnInit {
 
   ngOnChanges(): void {
     if (this.userForm) {
+      console.log('Edit user data:', this.userData);
       let role = this.userData?.role || null;
       if (typeof role === 'string') {
         // Map role chữ hoa từ backend về đúng format
@@ -46,14 +47,13 @@ export class EditUserComponent implements OnInit {
       } else {
         role = this.roles[0];
       }
-      let isActive = true;
-      if (typeof this.userData?.isActive === 'boolean') {
-        isActive = this.userData.isActive;
-      } else if (typeof this.userData?.isActive === 'string') {
-        isActive = this.backendStatusMap[this.userData.isActive.toUpperCase()] ?? true;
-      }
+
+      // Logic xử lý trạng thái giống như user-list
+      let isActive = this.isUserActive(this.userData);
+
       this.userForm.patchValue({
         username: this.userData?.username || '',
+        fullName: this.userData?.fullName || '',
   // email: this.userData?.email || '',
         role: role,
         isActive: isActive,
@@ -62,13 +62,21 @@ export class EditUserComponent implements OnInit {
     }
   }
 
-  initForm() {
-    let isActive = true;
-    if (typeof this.userData?.isActive === 'boolean') {
-      isActive = this.userData.isActive;
-    } else if (typeof this.userData?.isActive === 'string') {
-      isActive = this.backendStatusMap[this.userData.isActive.toUpperCase()] ?? true;
+  // Hàm kiểm tra trạng thái user giống như user-list
+  isUserActive(user: any): boolean {
+    if (typeof user?.isActive === 'boolean') {
+      return user.isActive;
     }
+    if (user?.status && typeof user.status === 'string') {
+      return user.status.toUpperCase() === 'ACTIVE';
+    }
+    return false; // Default false if no valid status found
+  }
+
+  initForm() {
+    // Logic xử lý trạng thái thống nhất
+    let isActive = this.isUserActive(this.userData);
+
     let role = this.userData?.role || null;
     if (typeof role === 'string') {
       role = this.backendRoleMap[role.toUpperCase()] || this.roles[0];
@@ -77,6 +85,7 @@ export class EditUserComponent implements OnInit {
     }
     this.userForm = this.fb.group({
       username: [this.userData?.username || '', [Validators.required]],
+      fullName: [this.userData?.fullName || '', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
   // email: [this.userData?.email || '', [Validators.required, Validators.email]],
       role: [role, [Validators.required]],
       isActive: [isActive, [Validators.required]],

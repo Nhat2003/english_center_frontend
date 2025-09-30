@@ -1,140 +1,401 @@
-.student-dashboard {
+/* Student Dashboard - Tổng quan */
+.dashboard-container {
   padding: 24px;
-  background: #f0f2f5;
-  min-height: calc(100vh - 64px);
+  background-color: #f0f2f5;
+  min-height: 100vh;
 }
 
+/* Welcome Section */
 .welcome-section {
   margin-bottom: 24px;
 }
 
 .welcome-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3bb273 0%, #2e8b57 100%);
+  border: none;
   color: white;
 }
 
-.welcome-card ::ng-deep .ant-card-head-title {
+.welcome-card .ant-card-body {
+  padding: 24px 32px;
+}
+
+.welcome-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.welcome-text h1 {
   color: white;
-  font-weight: bold;
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 600;
 }
 
-.stats-section {
-  margin-bottom: 24px;
-}
-
-.stat-card {
-  text-align: center;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.stat-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-}
-
-.content-section {
-  margin-bottom: 24px;
-}
-
-.fee-status {
-  space-y: 12px;
-}
-
-.fee-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.fee-course {
-  font-weight: 500;
-}
-
-.fee-amount {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.fee-amount.pending {
-  color: #ff4d4f;
-}
-
-.fee-amount.paid {
-  color: #52c41a;
-}
-
-.grade-list {
-  space-y: 8px;
-}
-
-.grade-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.grade-subject {
-  font-weight: 500;
-}
-
-.grade-score {
-  font-weight: bold;
+.welcome-text p {
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
   font-size: 16px;
 }
 
-.grade-score.excellent {
+.user-avatar {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* Thông tin nhanh */
+.quick-info {
+  margin-bottom: 32px;
+}
+
+.info-card {
+  height: 100%;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.info-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.card-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.next-class .card-icon {
+  background: linear-gradient(135deg, #1890ff, #096dd9);
+}
+
+.assignments .card-icon {
+  background: linear-gradient(135deg, #fa8c16, #d46b08);
+}
+
+.tuition .card-icon {
+  background: linear-gradient(135deg, #52c41a, #389e0d);
+}
+
+.card-icon .icon {
+  color: white;
+  font-size: 20px;
+}
+
+.card-info {
+  flex: 1;
+}
+
+.card-info h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.next-class-info {
+  font-weight: 600;
+  color: #1890ff;
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.next-class-time,
+.next-class-teacher {
+  margin: 0 0 4px;
+  color: #666;
+  font-size: 14px;
+}
+
+.assignment-count {
+  font-size: 20px;
+  font-weight: bold;
+  color: #fa8c16;
+  margin: 0 0 4px;
+}
+
+.assignment-deadline {
+  color: #666;
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.tuition-status {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.tuition-status.paid {
   color: #52c41a;
 }
 
-.grade-score.good {
-  color: #1890ff;
+.tuition-status.unpaid {
+  color: #f5222d;
 }
 
-.grade-score.average {
-  color: #faad14;
+.tuition-amount {
+  color: #f5222d;
+  font-weight: 600;
+  margin: 0 0 8px;
+  font-size: 16px;
 }
 
-.grade-score.poor {
-  color: #ff4d4f;
+.join-btn {
+  margin-top: 8px;
 }
 
-.grade-date {
+/* Thông báo */
+.notifications-section {
+  margin-bottom: 32px;
+}
+
+.notification-item {
+  padding: 16px 0;
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.notification-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.notification-message {
+  color: #666;
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+
+.notification-meta {
+  display: flex;
+  justify-content: space-between;
   font-size: 12px;
-  color: #8c8c8c;
+  color: #999;
 }
 
-.quick-actions-section {
-  margin-top: 24px;
+.view-all-notifications {
+  text-align: center;
+  margin-top: 16px;
 }
 
-/* Responsive design */
+/* Thống kê học tập */
+.study-stats {
+  margin-bottom: 32px;
+}
+
+.stat-item {
+  padding: 16px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.stat-item:last-child {
+  border-bottom: none;
+}
+
+.course-info h4 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.course-info p {
+  margin: 0 0 12px;
+  color: #666;
+  font-size: 14px;
+}
+
+.progress-info {
+  margin-bottom: 8px;
+}
+
+.progress-text {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.percentage {
+  font-weight: 600;
+  color: #3bb273;
+}
+
+/* Lịch học tuần */
+.schedule-item {
+  display: flex;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.schedule-item:last-child {
+  border-bottom: none;
+}
+
+.schedule-date {
+  width: 60px;
+  text-align: center;
+  margin-right: 16px;
+}
+
+.schedule-date .day {
+  display: block;
+  font-weight: bold;
+  color: #3bb273;
+  font-size: 16px;
+}
+
+.schedule-date .date {
+  display: block;
+  color: #666;
+  font-size: 14px;
+}
+
+.schedule-info {
+  flex: 1;
+}
+
+.schedule-info h4 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.schedule-info p {
+  margin: 0 0 2px;
+  color: #666;
+  font-size: 14px;
+}
+
+.schedule-action {
+  margin-left: 16px;
+}
+
+.view-full-schedule {
+  text-align: center;
+  margin-top: 16px;
+}
+
+/* Quick Actions */
+.quick-actions {
+  margin-bottom: 32px;
+}
+
+.quick-actions h2 {
+  color: #2c3e50;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.action-card {
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  height: 140px;
+  border-radius: 12px;
+}
+
+.action-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+}
+
+.action-content {
+  padding: 20px 16px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-emoji {
+  font-size: 28px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.action-content h3 {
+  color: #2c3e50;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.action-content p {
+  color: #666;
+  font-size: 12px;
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .welcome-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+  }
+}
+
 @media (max-width: 768px) {
-  .student-dashboard {
+  .dashboard-container {
     padding: 16px;
   }
-
-  .stats-section .ant-col {
-    margin-bottom: 16px;
+  
+  .welcome-card .ant-card-body {
+    padding: 20px;
   }
-
-  .content-section .ant-col {
-    margin-bottom: 16px;
+  
+  .welcome-text h1 {
+    font-size: 24px;
   }
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .student-dashboard {
-    background: #141414;
+  
+  .card-content {
+    flex-direction: column;
+    text-align: center;
   }
-
-  .fee-item,
-  .grade-item {
-    border-bottom-color: #303030;
+  
+  .card-icon {
+    align-self: center;
+    margin-bottom: 12px;
+  }
+  
+  .schedule-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .schedule-date {
+    width: auto;
+    margin-right: 0;
+  }
+  
+  .schedule-action {
+    margin-left: 0;
+    align-self: stretch;
   }
 }

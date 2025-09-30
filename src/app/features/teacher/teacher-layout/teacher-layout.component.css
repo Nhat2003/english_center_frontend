@@ -84,6 +84,23 @@
   background-color: #1890ff !important;
 }
 
+/* Menu Emoji Styling */
+.menu-emoji {
+  font-size: 16px;
+  margin-right: 8px;
+  display: inline-block;
+  width: 20px;
+  text-align: center;
+}
+
+/* Notification Badge */
+.notification-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+}
+
 .inner-layout {
   padding: 0;
 }
