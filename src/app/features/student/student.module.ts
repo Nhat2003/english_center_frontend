@@ -22,10 +22,13 @@ import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzTimelineModule } from 'ng-zorro-antd/timeline';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
 
 // Components
 import { StudentLayoutComponent } from './student-layout/student-layout.component';
-import { StudentDashboardComponent } from './dashboard/dashboard.component';
+import { StudentDashboardComponent } from './pages/dashboard/dashboard.component';
+import { StudentScheduleComponent } from './pages/schedule/student-schedule.component';
 
 // Routes
 import { STUDENT_ROUTES } from './student.routes';
@@ -33,7 +36,8 @@ import { STUDENT_ROUTES } from './student.routes';
 @NgModule({
   declarations: [
     StudentLayoutComponent,
-    StudentDashboardComponent
+    StudentDashboardComponent,
+    StudentScheduleComponent
   ],
   imports: [
     CommonModule,
@@ -58,7 +62,9 @@ import { STUDENT_ROUTES } from './student.routes';
     NzBadgeModule,
     NzInputModule,
     NzTimelineModule,
-    NzDividerModule
+    NzDividerModule,
+    NzEmptyModule,
+    NzSpinModule
   ]
 })
 export class StudentModule { }

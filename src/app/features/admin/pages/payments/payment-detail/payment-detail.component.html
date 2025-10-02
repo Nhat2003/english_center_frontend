@@ -1,0 +1,170 @@
+<div class="payment-detail-container">
+  <nz-card nzTitle="Chi tiết thanh toán" [nzExtra]="extraTemplate" [nzLoading]="loading">
+    <ng-template #extraTemplate>
+      <button nz-button nzType="default" (click)="goBack()">
+        <i nz-icon nzType="arrow-left"></i>
+        Quay lại
+      </button>
+    </ng-template>
+
+    <div *ngIf="payment" class="payment-detail-content">
+      <!-- Payment Information -->
+      <nz-row [nzGutter]="24">
+        <nz-col [nzSpan]="12">
+          <nz-card nzTitle="Thông tin thanh toán" nzSize="small">
+            <nz-descriptions nzBordered [nzColumn]="1">
+              <nz-descriptions-item nzTitle="ID thanh toán">
+                <nz-tag nzColor="blue">{{ payment.id }}</nz-tag>
+              </nz-descriptions-item>
+              <nz-descriptions-item nzTitle="Số tiền">
+                <span class="amount">{{ formatCurrency(payment.amount) }}</span>
+              </nz-descriptions-item>
+              <nz-descriptions-item nzTitle="Phương thức thanh toán">
+                {{ getPaymentMethodText(payment.paymentMethod) }}
+              </nz-descriptions-item>
+              <nz-descriptions-item nzTitle="Trạng thái">
+                <nz-tag [nzColor]="getStatusColor(payment.status)">
+                  {{ getStatusText(payment.status) }}
+                </nz-tag>
+              </nz-descriptions-item>
+              <nz-descriptions-item nzTitle="Ngày thanh toán">
+                {{ payment.paymentDate | date:'dd/MM/yyyy HH:mm:ss' }}
+              </nz-descriptions-item>
+              <nz-descriptions-item nzTitle="Mã giao dịch" *ngIf="payment.transactionId">
+                <nz-tag nzColor="purple">{{ payment.transactionId }}</nz-tag>
+              </nz-descriptions-item>
+            </nz-descriptions>
+          </nz-card>
+        </nz-col>
+
+        <nz-col [nzSpan]="12">
+          <nz-card nzTitle="Thông tin học sinh & lớp học" nzSize="small">
+            <nz-descriptions nzBordered [nzColumn]="1">
+              <nz-descriptions-item nzTitle="Học sinh">
+                <span class="student-name">{{ payment.studentName }}</span>
+              </nz-descriptions-item>
+              <nz-descriptions-item nzTitle="Lớp học">
+                <span class="class-name">{{ payment.className }}</span>
+              </nz-descriptions-item>
+            </nz-descriptions>
+          </nz-card>
+        </nz-col>
+      </nz-row>
+
+      <!-- Description -->
+      <nz-row [nzGutter]="24" *ngIf="payment.description" style="margin-top: 24px;">
+        <nz-col [nzSpan]="24">
+          <nz-card nzTitle="Ghi chú" nzSize="small">
+            <p class="description">{{ payment.description }}</p>
+          </nz-card>
+        </nz-col>
+      </nz-row>
+
+      <!-- Timeline -->
+      <nz-row [nzGutter]="24" style="margin-top: 24px;">
+        <nz-col [nzSpan]="24">
+          <nz-card nzTitle="Lịch sử thay đổi" nzSize="small">
+            <nz-timeline>
+              <nz-timeline-item nzColor="blue">
+                <p>Thanh toán được tạo</p>
+                <p class="timeline-time">{{ payment.createdAt | date:'dd/MM/yyyy HH:mm:ss' }}</p>
+              </nz-timeline-item>
+              <nz-timeline-item
+                *ngIf="payment.updatedAt && payment.updatedAt !== payment.createdAt"
+                [nzColor]="getStatusColor(payment.status)">
+                <p>Trạng thái cập nhật: {{ getStatusText(payment.status) }}</p>
+                <p class="timeline-time">{{ payment.updatedAt | date:'dd/MM/yyyy HH:mm:ss' }}</p>
+              </nz-timeline-item>
+            </nz-timeline>
+          </nz-card>
+        </nz-col>
+      </nz-row>
+
+      <!-- Actions -->
+      <nz-row [nzGutter]="24" style="margin-top: 24px;">
+        <nz-col [nzSpan]="24">
+          <nz-card nzTitle="Thao tác" nzSize="small">
+            <div class="action-buttons">
+              <button
+                *ngIf="payment.status === 'PENDING'"
+                nz-button
+                nzType="primary"
+                (click)="updatePaymentStatus('COMPLETED')"
+                style="margin-right: 8px;">
+                <i nz-icon nzType="check"></i>
+                Đánh dấu hoàn thành
+              </button>
+
+              <button
+                *ngIf="payment.status === 'PENDING'"
+                nz-button
+                nzType="default"
+                nzDanger
+                (click)="updatePaymentStatus('FAILED')"
+                style="margin-right: 8px;">
+                <i nz-icon nzType="close"></i>
+                Đánh dấu thất bại
+              </button>
+
+              <button
+                *ngIf="payment.status === 'COMPLETED'"
+                nz-button
+                nzType="default"
+                (click)="updatePaymentStatus('REFUNDED')"
+                style="margin-right: 8px;">
+                <i nz-icon nzType="rollback"></i>
+                Hoàn tiền
+              </button>
+
+              <button
+                *ngIf="payment.status === 'FAILED' || payment.status === 'REFUNDED'"
+                nz-button
+                nzType="primary"
+                (click)="updatePaymentStatus('PENDING')"
+                style="margin-right: 8px;">
+                <i nz-icon nzType="reload"></i>
+                Đặt lại chờ xử lý
+              </button>
+            </div>
+
+            <nz-alert
+              *ngIf="payment.status === 'COMPLETED'"
+              nzType="success"
+              nzMessage="Thanh toán đã hoàn thành"
+              nzDescription="Thanh toán này đã được xử lý thành công."
+              nzShowIcon
+              style="margin-top: 16px;">
+            </nz-alert>
+
+            <nz-alert
+              *ngIf="payment.status === 'PENDING'"
+              nzType="warning"
+              nzMessage="Thanh toán chờ xử lý"
+              nzDescription="Thanh toán này đang chờ được xác nhận và xử lý."
+              nzShowIcon
+              style="margin-top: 16px;">
+            </nz-alert>
+
+            <nz-alert
+              *ngIf="payment.status === 'FAILED'"
+              nzType="error"
+              nzMessage="Thanh toán thất bại"
+              nzDescription="Thanh toán này đã bị đánh dấu là thất bại."
+              nzShowIcon
+              style="margin-top: 16px;">
+            </nz-alert>
+
+            <nz-alert
+              *ngIf="payment.status === 'REFUNDED'"
+              nzType="info"
+              nzMessage="Thanh toán đã hoàn tiền"
+              nzDescription="Thanh toán này đã được hoàn tiền cho học sinh."
+              nzShowIcon
+              style="margin-top: 16px;">
+            </nz-alert>
+          </nz-card>
+        </nz-col>
+      </nz-row>
+    </div>
+  </nz-card>
+</div>

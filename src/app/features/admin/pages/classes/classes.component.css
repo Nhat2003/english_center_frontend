@@ -151,9 +151,10 @@
   margin-top: 16px;
   margin-bottom: 8px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   padding: 16px 24px;
 }
+
 
 :host ::ng-deep .ant-pagination-item {
   border-radius: 4px;
@@ -161,9 +162,9 @@
 }
 
 :host ::ng-deep .ant-pagination-item-active {
-  background: #1890ff;
+  background: #3bb273;
   color: #fff;
-  border-color: #1890ff;
+  border-color: #3bb273;
 }
 
 :host ::ng-deep .ant-pagination-item-active a {

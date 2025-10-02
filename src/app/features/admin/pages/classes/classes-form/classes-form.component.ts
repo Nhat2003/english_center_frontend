@@ -191,8 +191,18 @@ export class ClassesFormComponent implements OnInit {
         this.isLoadingSchedules = false;
       },
       error: (error) => {
-        console.error('Error loading schedules:', error);
-        this.isLoadingSchedules = false;
+        console.error('Error loading schedules from API:', error);
+        // Fallback to mock data if API fails
+        this.scheduleService.getMockSchedules().subscribe({
+          next: (mockSchedules) => {
+            this.schedules = mockSchedules;
+            this.isLoadingSchedules = false;
+          },
+          error: () => {
+            this.schedules = [];
+            this.isLoadingSchedules = false;
+          }
+        });
       }
     });
   }

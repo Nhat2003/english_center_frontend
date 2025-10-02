@@ -391,6 +391,7 @@ button + button {
   text-align: center;
 }
 
+
 /* ================== RESPONSIVE ================== */
 @media (max-width: 768px) {
   nz-table {
@@ -401,3 +402,5 @@ button + button {
     font-size: 18px;
   }
 }
+
+

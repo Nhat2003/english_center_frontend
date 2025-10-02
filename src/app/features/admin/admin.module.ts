@@ -45,6 +45,15 @@ import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { NzStepsModule } from 'ng-zorro-antd/steps';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzCollapseModule } from 'ng-zorro-antd/collapse';
+import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzStatisticModule } from 'ng-zorro-antd/statistic';
+import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
+import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
+import { NzTimelineModule } from 'ng-zorro-antd/timeline';
+import { PaymentListComponent } from './pages/payments/payment-list/payment-list.component';
+import { AddPaymentComponent } from './pages/payments/add-payment/add-payment.component';
+import { PaymentDetailComponent } from './pages/payments/payment-detail/payment-detail.component';
+import { PaymentsComponent } from './pages/payments/payments.component';
 @NgModule({
   declarations: [
     UserListComponent,
@@ -61,7 +70,11 @@ import { NzCollapseModule } from 'ng-zorro-antd/collapse';
     ClassesFormComponent,
     SchedulesComponent,
     SchedulesFormComponent,
-    ImportStudentsComponent
+    ImportStudentsComponent,
+    PaymentListComponent,
+    AddPaymentComponent,
+    PaymentDetailComponent,
+    PaymentsComponent
 
   ],
   imports: [
@@ -92,6 +105,12 @@ import { NzCollapseModule } from 'ng-zorro-antd/collapse';
     NzStepsModule,
     NzAlertModule,
     NzCollapseModule,
+    NzCardModule,
+    NzStatisticModule,
+    NzInputNumberModule,
+    NzDescriptionsModule,
+    NzTimelineModule,
+    NzDatePickerModule,
     RouterModule.forChild(ADMIN_ROUTES)
   ]
 })

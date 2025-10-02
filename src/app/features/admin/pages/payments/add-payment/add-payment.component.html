@@ -1,0 +1,152 @@
+<div class="add-payment-container">
+  <nz-card nzTitle="Thêm thanh toán mới" [nzExtra]="extraTemplate">
+    <ng-template #extraTemplate>
+      <button nz-button nzType="default" (click)="onCancel()">
+        <i nz-icon nzType="arrow-left"></i>
+        Quay lại
+      </button>
+    </ng-template>
+
+    <form nz-form [formGroup]="paymentForm" (ngSubmit)="onSubmit()">
+      <nz-row [nzGutter]="24">
+        <nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6" nzRequired>Học sinh</nz-form-label>
+            <nz-form-control [nzSpan]="18" nzErrorTip="Vui lòng chọn học sinh">
+              <nz-select
+                formControlName="studentId"
+                nzPlaceHolder="Chọn học sinh"
+                nzShowSearch
+                nzAllowClear
+                (ngModelChange)="onStudentChange($event)"
+                style="width: 100%">
+                <nz-option
+                  *ngFor="let student of students"
+                  [nzLabel]="student.fullName + ' - ' + student.email"
+                  [nzValue]="student.id">
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </nz-col>
+
+        <nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6" nzRequired>Lớp học</nz-form-label>
+            <nz-form-control [nzSpan]="18" nzErrorTip="Vui lòng chọn lớp học">
+              <nz-select
+                formControlName="classId"
+                nzPlaceHolder="Chọn lớp học"
+                nzShowSearch
+                nzAllowClear
+                style="width: 100%">
+                <nz-option
+                  *ngFor="let class of filteredClasses"
+                  [nzLabel]="class.className + ' - ' + class.courseName"
+                  [nzValue]="class.id">
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </nz-col>
+      </nz-row>
+
+      <nz-row [nzGutter]="24">
+        <nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6" nzRequired>Số tiền</nz-form-label>
+            <nz-form-control [nzSpan]="18" nzErrorTip="Vui lòng nhập số tiền hợp lệ">
+              <nz-input-number
+                formControlName="amount"
+                nzPlaceHolder="Nhập số tiền"
+                [nzMin]="1"
+                [nzMax]="999999999"
+                [nzStep]="10000"
+                [nzFormatter]="formatCurrency"
+                style="width: 100%">
+              </nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+        </nz-col>
+
+        <nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6" nzRequired>Phương thức</nz-form-label>
+            <nz-form-control [nzSpan]="18" nzErrorTip="Vui lòng chọn phương thức thanh toán">
+              <nz-select
+                formControlName="paymentMethod"
+                nzPlaceHolder="Chọn phương thức thanh toán"
+                style="width: 100%">
+                <nz-option
+                  *ngFor="let method of paymentMethods"
+                  [nzLabel]="method.label"
+                  [nzValue]="method.value">
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </nz-col>
+      </nz-row>
+
+      <nz-row [nzGutter]="24">
+        <nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6">Mã giao dịch</nz-form-label>
+            <nz-form-control [nzSpan]="18">
+              <input
+                nz-input
+                formControlName="transactionId"
+                placeholder="Nhập mã giao dịch (nếu có)"
+                type="text">
+            </nz-form-control>
+          </nz-form-item>
+        </nz-col>
+
+        <nz-col [nzSpan]="12">
+          <!-- Empty column for spacing -->
+        </nz-col>
+      </nz-row>
+
+      <nz-row [nzGutter]="24">
+        <nz-col [nzSpan]="24">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="3">Ghi chú</nz-form-label>
+            <nz-form-control [nzSpan]="21">
+              <textarea
+                nz-input
+                formControlName="description"
+                placeholder="Nhập ghi chú (tùy chọn)"
+                rows="4">
+              </textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </nz-col>
+      </nz-row>
+
+      <nz-form-item>
+        <nz-form-control [nzOffset]="3" [nzSpan]="21">
+          <button
+            nz-button
+            nzType="primary"
+            nzSize="large"
+            [nzLoading]="loading"
+            [disabled]="paymentForm.invalid"
+            style="margin-right: 8px;">
+            <i nz-icon nzType="plus"></i>
+            Tạo thanh toán
+          </button>
+
+          <button
+            nz-button
+            nzType="default"
+            nzSize="large"
+            (click)="onCancel()"
+            [disabled]="loading">
+            <i nz-icon nzType="close"></i>
+            Hủy bỏ
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </nz-card>
+</div>
