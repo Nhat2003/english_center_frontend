@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ScheduleService } from '../../../../core/services/schedule.service';
-import { Schedule } from '../../../../core/models/schedule.model';
+import { FixedSchedule, formatDaysOfWeekDisplay, formatTimeRange } from '../../../../core/models/fixed-schedule.model';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
 
@@ -11,96 +11,62 @@ import { NzMessageService } from 'ng-zorro-antd/message';
   styleUrls: ['./schedules.component.css']
 })
 export class SchedulesComponent implements OnInit {
-  schedules: Schedule[] = [];
-  isLoading = false;  constructor(
+  fixedSchedules: FixedSchedule[] = [];
+  isLoadingFixed = false;  constructor(
     private scheduleService: ScheduleService,
     private modal: NzModalService,
     private message: NzMessageService
   ) {}
 
   ngOnInit() {
-    this.fetchSchedules();
+    this.fetchFixedSchedules();
   }
 
-  fetchSchedules() {
-    this.isLoading = true;
-    this.scheduleService.getSchedules().subscribe({
-      next: (data: Schedule[]) => {
-        this.schedules = data || [];
-        this.isLoading = false;
-        console.log('Loaded schedules from API:', this.schedules);
+
+
+
+
+  fetchFixedSchedules() {
+    this.isLoadingFixed = true;
+    this.scheduleService.getFixedSchedules().subscribe({
+      next: (data: FixedSchedule[]) => {
+        this.fixedSchedules = data || [];
+        this.isLoadingFixed = false;
+        console.log('Loaded fixed schedules from API:', this.fixedSchedules);
+        this.message.success(`Đã tải ${this.fixedSchedules.length} lịch cố định`);
       },
       error: (error) => {
-        console.error('Error fetching schedules from API:', error);
-        console.log('Fallback to mock data...');
-
-        // Fallback to mock data if API fails
-        this.scheduleService.getMockSchedules().subscribe({
-          next: (mockData: Schedule[]) => {
-            this.schedules = mockData || [];
-            this.isLoading = false;
-            this.message.warning('Đang sử dụng dữ liệu demo (không kết nối được API)');
-          },
-          error: () => {
-            this.schedules = [];
-            this.isLoading = false;
-            this.message.error('Không thể tải danh sách lịch học');
-          }
-        });
+        console.error('Error fetching fixed schedules from API:', error);
+        this.fixedSchedules = [];
+        this.isLoadingFixed = false;
+        this.message.error('Không thể tải danh sách lịch cố định');
       }
     });
   }
 
-  viewSchedule(schedule: Schedule) {
-    const detailsHtml = schedule.details?.map(detail => {
-      const dayName = this.getDayName(detail.dayOfWeek);
-      return `<p><strong>${dayName}:</strong> ${detail.startTime} - ${detail.endTime}</p>`;
-    }).join('') || '<p>Không có chi tiết lịch học</p>';
-
+  viewFixedSchedule(schedule: FixedSchedule) {
     this.modal.info({
-      nzTitle: 'Chi tiết lịch học',
+      nzTitle: 'Chi tiết lịch cố định',
       nzContent: `
         <div>
-          <p><strong>Tên:</strong> ${schedule.name}</p>
-          <p><strong>Mô tả:</strong> ${schedule.description || 'Không có'}</p>
-          <div><strong>Lịch học:</strong></div>
-          ${detailsHtml}
+          <p><strong>Tên ca học:</strong> ${schedule.name}</p>
+          <p><strong>Ngày trong tuần:</strong> ${formatDaysOfWeekDisplay(schedule.daysOfWeek)}</p>
+          <p><strong>Thời gian:</strong> ${formatTimeRange(schedule.startTime, schedule.endTime)}</p>
         </div>
       `,
       nzWidth: 500
     });
   }
 
-  getDayName(dayOfWeek: string): string {
-    const dayMap: { [key: string]: string } = {
-      'MONDAY': 'Thứ 2',
-      'TUESDAY': 'Thứ 3',
-      'WEDNESDAY': 'Thứ 4',
-      'THURSDAY': 'Thứ 5',
-      'FRIDAY': 'Thứ 6',
-      'SATURDAY': 'Thứ 7',
-      'SUNDAY': 'Chủ nhật'
-    };
-    return dayMap[dayOfWeek] || dayOfWeek;
+
+
+  // Helper methods for fixed schedules
+  formatDaysOfWeekDisplay(daysOfWeek: string | null): string {
+    return formatDaysOfWeekDisplay(daysOfWeek);
   }
 
-  getScheduleTimeRange(schedule: Schedule): string {
-    if (!schedule.details || schedule.details.length === 0) {
-      return 'Chưa xác định';
-    }
-
-    const times = schedule.details.map(d => `${d.startTime}-${d.endTime}`);
-    const uniqueTimes = [...new Set(times)];
-    return uniqueTimes.join(', ');
-  }
-
-  getScheduleDays(schedule: Schedule): string {
-    if (!schedule.details || schedule.details.length === 0) {
-      return 'Chưa xác định';
-    }
-
-    const days = schedule.details.map(d => this.getDayName(d.dayOfWeek));
-    return days.join(', ');
+  formatTimeRange(startTime: string | null, endTime: string | null): string {
+    return formatTimeRange(startTime, endTime);
   }
 
 }

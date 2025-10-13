@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 // ng-zorro modules
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
@@ -24,11 +25,15 @@ import { NzTimelineModule } from 'ng-zorro-antd/timeline';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzCalendarModule } from 'ng-zorro-antd/calendar';
 
 // Components
 import { StudentLayoutComponent } from './student-layout/student-layout.component';
 import { StudentDashboardComponent } from './pages/dashboard/dashboard.component';
 import { StudentScheduleComponent } from './pages/schedule/student-schedule.component';
+
+// Services
+import { StudentScheduleService } from '../../core/services/student-schedule.service';
 
 // Routes
 import { STUDENT_ROUTES } from './student.routes';
@@ -43,6 +48,7 @@ import { STUDENT_ROUTES } from './student.routes';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    HttpClientModule,
     RouterModule.forChild(STUDENT_ROUTES),
     // ng-zorro modules
     NzLayoutModule,
@@ -64,7 +70,11 @@ import { STUDENT_ROUTES } from './student.routes';
     NzTimelineModule,
     NzDividerModule,
     NzEmptyModule,
-    NzSpinModule
+    NzSpinModule,
+    NzCalendarModule
+  ],
+  providers: [
+    StudentScheduleService
   ]
 })
 export class StudentModule { }

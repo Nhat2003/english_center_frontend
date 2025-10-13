@@ -28,7 +28,6 @@
         <th nzAlign="center">Mô tả</th>
         <th nzAlign="center">Thời lượng</th>
         <th nzAlign="center">Học phí</th>
-        <th nzAlign="center">Trình độ</th>
         <th nzAlign="center">Hành động</th>
       </tr>
     </thead>
@@ -42,11 +41,8 @@
           </div>
         </td>
         <td nzAlign="center">{{ c.description || 'Chưa có mô tả' }}</td>
-        <td nzAlign="center">{{ c.duration }} tuần</td>
+        <td nzAlign="center">{{ c.duration }} buổi</td>
         <td nzAlign="center">{{ c.fee | currency:'VND':'symbol':'1.0-0' }}</td>
-        <td nzAlign="center">
-          <nz-tag [nzColor]="getLevelColor(c.level)">{{ c.level }}</nz-tag>
-        </td>
         <td nzAlign="center">
           <div class="action-buttons">
             <button

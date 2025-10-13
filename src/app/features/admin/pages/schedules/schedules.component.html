@@ -6,64 +6,66 @@
     <p class="page-subtitle">Quản lý thông tin lịch học và thời khóa biểu</p>
   </div>
   <div class="page-actions">
-    <span class="total">Tổng số: {{ schedules.length }}</span>
+    <span class="total">Tổng số: {{ fixedSchedules.length }}</span>
+    <nz-button-group>
+      <button nz-button (click)="fetchFixedSchedules()" [nzLoading]="isLoadingFixed">
+        <i nz-icon nzType="reload"></i> Tải lại
+      </button>
+    </nz-button-group>
   </div>
 </div>
 
 <div class="card">
+
   <nz-table
     [nzBordered]="false"
-    [nzData]="schedules"
+    [nzData]="fixedSchedules"
     [nzShowPagination]="false"
     [nzSize]="'middle'"
-    [nzLoading]="isLoading"
+    [nzLoading]="isLoadingFixed"
   >
     <thead>
       <tr>
-        <th nzAlign="center">STT</th>
-        <th nzAlign="center">Tên lịch học</th>
-        <th nzAlign="center">Mô tả</th>
-        <th nzAlign="center">Thời gian</th>
+        <th nzAlign="center">ID</th>
+        <th nzAlign="center">Tên ca học</th>
         <th nzAlign="center">Ngày trong tuần</th>
+        <th nzAlign="center">Thời gian</th>
         <th nzAlign="center">Hành động</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let schedule of schedules; index as i">
-        <td nzAlign="center">{{ i + 1 }}</td>
+      <tr *ngFor="let schedule of fixedSchedules; let i = index">
+        <td nzAlign="center">{{ schedule.id }}</td>
+        <td nzAlign="center">{{ schedule.name }}</td>
         <td nzAlign="center">
-          <div class="schedule-name">
-            <span nz-icon nzType="calendar" nzTheme="outline" class="schedule-icon"></span>
-            <strong>{{ schedule.name }}</strong>
-          </div>
-        </td>
-        <td nzAlign="center">{{ schedule.description || 'Không có mô tả' }}</td>
-        <td nzAlign="center">
-          <span>{{ getScheduleTimeRange(schedule) }}</span>
+          <nz-tag nzColor="blue">
+            {{ formatDaysOfWeekDisplay(schedule.daysOfWeek) }}
+          </nz-tag>
         </td>
         <td nzAlign="center">
-          <div class="days-tags-container">
-            <nz-tag nzColor="blue" *ngFor="let day of getScheduleDays(schedule).split(', ')">
-              {{ day }}
-            </nz-tag>
-          </div>
+          <nz-tag nzColor="green" *ngIf="schedule.startTime && schedule.endTime">
+            {{ formatTimeRange(schedule.startTime, schedule.endTime) }}
+          </nz-tag>
+          <nz-tag nzColor="red" *ngIf="!schedule.startTime || !schedule.endTime">
+            Chưa xác định
+          </nz-tag>
         </td>
         <td nzAlign="center">
-          <div class="action-buttons">
+          <nz-button-group nzSize="small">
             <button
               nz-button
-              nzType="default"
-              nzShape="circle"
+              nzType="primary"
               nzSize="small"
-              class="btn-view"
+              (click)="viewFixedSchedule(schedule)"
               nz-tooltip="Xem chi tiết"
-              (click)="viewSchedule(schedule)"
             >
-              <span nz-icon nzType="eye" nzTheme="outline"></span>
+              <i nz-icon nzType="eye"></i>
             </button>
-          </div>
+          </nz-button-group>
         </td>
       </tr>
     </tbody>
   </nz-table>
 </div>
+
+

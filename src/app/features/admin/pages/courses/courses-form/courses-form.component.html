@@ -15,7 +15,7 @@
     </nz-form-item>
 
     <nz-form-item>
-      <nz-form-label [nzRequired]="true" nzFor="duration">Thời lượng (tuần)</nz-form-label>
+      <nz-form-label [nzRequired]="true" nzFor="duration">Thời lượng (buổi)</nz-form-label>
       <nz-form-control>
         <input nz-input type="number" formControlName="duration" id="duration" placeholder="Nhập thời lượng" min="1" />
       </nz-form-control>
@@ -28,16 +28,6 @@
       </nz-form-control>
     </nz-form-item>
 
-    <nz-form-item>
-      <nz-form-label [nzRequired]="true" nzFor="level">Trình độ</nz-form-label>
-      <nz-form-control>
-        <nz-select formControlName="level" id="level" nzPlaceHolder="Chọn trình độ">
-          <nz-option nzValue="Beginner" nzLabel="Beginner"></nz-option>
-          <nz-option nzValue="Intermediate" nzLabel="Intermediate"></nz-option>
-          <nz-option nzValue="Advanced" nzLabel="Advanced"></nz-option>
-        </nz-select>
-      </nz-form-control>
-    </nz-form-item>
 
     <div class="form-footer">
       <button nz-button nzType="default" (click)="onCancel()" type="button">

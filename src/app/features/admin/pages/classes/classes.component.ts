@@ -8,7 +8,7 @@ import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzTagModule } from 'ng-zorro-antd/tag';
-import { Class } from '../../../../core/models/class.model';
+import { Class, formatClassScheduleDisplay, formatClassDateRange } from '../../../../core/models/class.model';
 import { ClassService } from '../../../../core/services/class.service';
 import { ClassesFormComponent } from './classes-form/classes-form.component';
 
@@ -138,5 +138,14 @@ export class ClassesComponent implements OnInit {
         });
       }
     });
+  }
+
+  // Helper methods for template
+  formatScheduleDisplay(fixedSchedule: any): string {
+    return formatClassScheduleDisplay(fixedSchedule);
+  }
+
+  formatDateRange(startDate: string, endDate: string): string {
+    return formatClassDateRange(startDate, endDate);
   }
 }

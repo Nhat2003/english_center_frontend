@@ -40,6 +40,31 @@
         <i nz-icon nzType="reload"></i>
         Làm mới
       </button>
+
+      <button nz-button nzType="primary" (click)="simpleTest()" [nzLoading]="loading" style="margin-left: 8px;">
+        <i nz-icon nzType="api"></i>
+        Test API
+      </button>
+
+      <button nz-button nzType="dashed" (click)="testMultipleDates()" style="margin-left: 8px;">
+        <i nz-icon nzType="search"></i>
+        Test 7 ngày
+      </button>
+
+      <button nz-button nzType="dashed" (click)="debugUserInfo()" style="margin-left: 8px;">
+        <i nz-icon nzType="user"></i>
+        Debug User
+      </button>
+
+      <button nz-button nzType="dashed" (click)="debugScheduleData()" style="margin-left: 8px;">
+        <i nz-icon nzType="bug"></i>
+        Debug Data
+      </button>
+
+      <button nz-button nzType="dashed" (click)="testNewScheduleAPIs()" style="margin-left: 8px;">
+        <i nz-icon nzType="api"></i>
+        Test New APIs
+      </button>
     </div>
   </div>
 
@@ -70,15 +95,15 @@
 
           <div class="schedule-content">
             <h4 class="class-name">{{ schedule.className }}</h4>
-            <p class="course-name">{{ schedule.courseName }}</p>
+            <p class="course-name" [class.null-course]="!schedule.courseName">{{ getCourseDisplayName(schedule.courseName) }}</p>
             <div class="schedule-details">
               <span class="teacher">
                 <i nz-icon nzType="user"></i>
                 {{ schedule.teacherName }}
               </span>
-              <span class="room">
+              <span class="room" [class.null-room]="!schedule.room">
                 <i nz-icon nzType="environment"></i>
-                {{ schedule.room }}
+                {{ getRoomDisplayName(schedule.room) }}
               </span>
             </div>
             <p *ngIf="schedule.description" class="description">
@@ -99,7 +124,7 @@
           </div>
           <div class="upcoming-content">
             <h5>{{ schedule.className }}</h5>
-            <p>{{ schedule.teacherName }} - {{ schedule.room }}</p>
+            <p>{{ schedule.teacherName }} - <span [class.null-room]="!schedule.room">{{ getRoomDisplayName(schedule.room) }}</span></p>
           </div>
         </div>
       </div>
@@ -156,7 +181,7 @@
             </div>
             <div class="schedule-title">{{ schedule.className }}</div>
             <div class="schedule-teacher">{{ schedule.teacherName }}</div>
-            <div class="schedule-room">{{ schedule.room }}</div>
+            <div class="schedule-room" [class.null-room]="!schedule.room">{{ getRoomDisplayName(schedule.room) }}</div>
             <nz-tag [nzColor]="getStatusColor(schedule.status)" nzSize="small">
               {{ getStatusText(schedule.status) }}
             </nz-tag>
@@ -169,45 +194,36 @@
   <!-- Calendar/Table View -->
   <div *ngIf="viewMode === 'calendar'" class="calendar-view">
     <nz-card nzTitle="Lịch học tháng này">
-      <nz-table
-        #calendarTable
-        [nzData]="calendarEvents"
-        [nzPageSize]="20"
-        [nzShowPagination]="true">
+      <!-- ng-zorro Calendar -->
+      <nz-calendar
+        [(ngModel)]="selectedDate"
+        [nzMode]="calendarMode"
+        (nzSelectChange)="onSelectChange($event)"
+        (nzPanelChange)="onPanelChange($event)">
 
-        <thead>
-          <tr>
-            <th>Ngày</th>
-            <th>Thời gian</th>
-            <th>Lớp học</th>
-            <th>Giáo viên</th>
-            <th>Phòng</th>
-            <th>Trạng thái</th>
-            <th>Ghi chú</th>
-          </tr>
-        </thead>
+        <!-- Custom date cell -->
+        <div *nzDateCell="let date" class="calendar-date-cell">
+          <div class="date-number">{{ date.getDate() }}</div>
+          <div *ngIf="getEventsForDate(date).length > 0" class="events-indicator">
+            <nz-badge
+              [nzCount]="getEventsForDate(date).length"
+              [nzStyle]="{ backgroundColor: '#52c41a' }">
+            </nz-badge>
+          </div>
 
-        <tbody>
-          <tr *ngFor="let event of calendarTable.data">
-            <td>{{ formatDate(event.start) }}</td>
-            <td>
-              {{ event.start.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) }} -
-              {{ event.end.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) }}
-            </td>
-            <td>
-              <strong>{{ event.className }}</strong>
-            </td>
-            <td>{{ event.teacher }}</td>
-            <td>{{ event.room }}</td>
-            <td>
-              <nz-tag [nzColor]="getStatusColor(event.status)">
-                {{ getStatusText(event.status) }}
-              </nz-tag>
-            </td>
-            <td>{{ event.description || '-' }}</td>
-          </tr>
-        </tbody>
-      </nz-table>
+          <!-- Show events for this date -->
+          <div *ngFor="let event of getEventsForDate(date)" class="calendar-event">
+            <div class="event-title">{{ event.className }}</div>
+            <div class="event-time">{{ formatTime(event.startTime) }}</div>
+          </div>
+        </div>
+
+        <!-- Custom month cell for month view -->
+        <div *nzMonthCell="let date" class="calendar-month-cell">
+          <div class="month-name">{{ date.getMonth() + 1 }}月</div>
+        </div>
+
+      </nz-calendar>
     </nz-card>
   </div>
 

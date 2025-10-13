@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class ClassService {
-  private apiUrl = `${environment.apiUrl}/classes`;
+  private apiUrl = `${environment.apiUrl}/class-rooms`; // Updated endpoint
 
   constructor(private http: HttpClient) {}
 

@@ -1,14 +1,35 @@
+// Interface cho response từ API /students/me/schedule
+export interface StudentScheduleResponse {
+  id: number;
+  scheduleId: number;
+  className: string;
+  courseName: string | null;
+  teacherName: string;
+  schedules: ScheduleDetail[];
+  room: string | null;
+  status: string | null;
+  description: string;
+}
+
+export interface ScheduleDetail {
+  dayOfWeek: 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
+  startTime: string;
+  endTime: string;
+}
+
+// Interface được sử dụng trong component (flatten data)
 export interface StudentSchedule {
   id: number;
+  scheduleId: number;
   className: string;
-  courseName: string;
+  courseName: string | null;
   teacherName: string;
   dayOfWeek: 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
   startTime: string;
   endTime: string;
-  room: string;
+  room: string | null;
   date?: Date;
-  status: 'SCHEDULED' | 'COMPLETED' | 'CANCELLED';
+  status: string | null;
   description?: string;
 }
 
@@ -29,7 +50,7 @@ export interface ScheduleCalendarEvent {
   end: Date;
   className: string;
   teacher: string;
-  room: string;
-  status: string;
+  room: string | null;
+  status: string | null;
   description?: string;
 }

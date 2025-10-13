@@ -25,10 +25,12 @@
       <tr>
         <th nzAlign="center">STT</th>
         <th nzAlign="center">Tên lớp</th>
-        <th nzAlign="center">Giáo viên phụ trách</th>
         <th nzAlign="center">Khóa học</th>
-        <th nzAlign="center">Số học viên</th>
+        <th nzAlign="center">Giáo viên</th>
+        <th nzAlign="center">Phòng học</th>
         <th nzAlign="center">Lịch học</th>
+        <th nzAlign="center">Thời gian</th>
+        <th nzAlign="center">Số học viên</th>
         <th nzAlign="center">Hành động</th>
       </tr>
     </thead>
@@ -41,12 +43,33 @@
             <strong>{{ cl.name }}</strong>
           </div>
         </td>
-        <td nzAlign="center">{{ cl.teacherName || 'Chưa phân công' }}</td>
-        <td nzAlign="center">{{ cl.courseName || 'Chưa chọn khóa học' }}</td>
         <td nzAlign="center">
-          <nz-tag nzColor="blue">{{ cl.studentIds?.length || 0 }} học viên</nz-tag>
+          <nz-tag nzColor="cyan">{{ cl.courseName }}</nz-tag>
         </td>
-        <td nzAlign="center">{{ cl.scheduleName || 'Chưa xếp lịch' }}</td>
+        <td nzAlign="center">{{ cl.teacherName }}</td>
+        <td nzAlign="center">
+          <nz-tag nzColor="purple">{{ cl.roomName }}</nz-tag>
+        </td>
+        <td nzAlign="center">
+          <nz-tag nzColor="blue" *ngIf="cl.fixedSchedule">
+            {{ cl.fixedSchedule.name }}
+          </nz-tag>
+          <nz-tag nzColor="red" *ngIf="!cl.fixedSchedule">
+            Chưa xếp lịch
+          </nz-tag>
+        </td>
+        <td nzAlign="center">
+          <div *ngIf="cl.fixedSchedule" style="font-size: 12px;">
+            <div>{{ formatScheduleDisplay(cl.fixedSchedule) }}</div>
+            <div style="color: #666; margin-top: 2px;">{{ formatDateRange(cl.startDate, cl.endDate) }}</div>
+          </div>
+          <span *ngIf="!cl.fixedSchedule" style="color: #999;">Chưa xác định</span>
+        </td>
+        <td nzAlign="center">
+          <nz-tag [nzColor]="cl.studentCount > 0 ? 'green' : 'orange'">
+            {{ cl.studentCount }} học viên
+          </nz-tag>
+        </td>
         <td nzAlign="center">
           <div class="action-buttons">
             <button

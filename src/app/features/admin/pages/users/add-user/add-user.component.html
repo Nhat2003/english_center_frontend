@@ -1,19 +1,19 @@
 <form nz-form [formGroup]="userForm" (ngSubmit)="submitForm()" class="p-4 max-w-xl mx-auto">
 
 
+   <!-- Họ và tên -->
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired>Họ và tên</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Vui lòng nhập họ và tên!">
+      <input nz-input formControlName="fullName" placeholder="Nhập họ và tên" />
+    </nz-form-control>
+  </nz-form-item>
+
 <!-- Username -->
   <nz-form-item>
     <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired>Tên đăng nhập</nz-form-label>
     <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Tên đăng nhập từ 3-20 ký tự!">
       <input nz-input formControlName="username" placeholder="Nhập tên đăng nhập" />
-    </nz-form-control>
-  </nz-form-item>
-
-  <!-- Họ và tên -->
-  <nz-form-item>
-    <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired>Họ và tên</nz-form-label>
-    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Vui lòng nhập họ và tên!">
-      <input nz-input formControlName="fullName" placeholder="Nhập họ và tên" />
     </nz-form-control>
   </nz-form-item>
 

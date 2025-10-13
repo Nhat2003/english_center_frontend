@@ -1,63 +1,211 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { HttpClient, HttpParams, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import {
+  StudentSchedule,
+  StudentScheduleResponse,
+  ScheduleWeekView,
+  ScheduleCalendarEvent
+} from '../models/student-schedule.model';
 import { environment } from '../../../environments/environment';
-import { StudentSchedule, ScheduleWeekView, ScheduleCalendarEvent } from '../models/student-schedule.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StudentScheduleService {
-  private apiUrl = `${environment.apiUrl}/student-schedules`;
+  private apiUrl = `${environment.apiUrl}/students`;
 
   constructor(private http: HttpClient) {}
 
-  // Lấy lịch học của học sinh theo tuần
-  getWeeklySchedule(studentId: number, weekStart?: Date): Observable<ScheduleWeekView> {
-    let params = new HttpParams().set('studentId', studentId.toString());
+  // Gọi API /students/me/schedule để lấy lịch học của student hiện tại
+  getMySchedule(): Observable<StudentSchedule[]> {
+    console.log('Calling /students/me/schedule API');
 
-    if (weekStart) {
-      params = params.set('weekStart', weekStart.toISOString());
-    }
+    // Debug: Check if we have token
+    const token = localStorage.getItem('token');
+    console.log('Current token:', token ? 'Token exists' : 'No token found');
+    console.log('Token value:', token);
 
-    return this.http.get<StudentSchedule[]>(`${this.apiUrl}/weekly`, { params })
+    return this.http.get<StudentScheduleResponse[]>(`${this.apiUrl}/me/schedule`)
       .pipe(
-        map(schedules => this.groupSchedulesByDay(schedules))
+        map(response => this.flattenScheduleData(response)),
+        catchError(this.handleError)
       );
   }
 
-  // Lấy lịch học theo tháng (cho calendar view)
-  getMonthlySchedule(studentId: number, month: Date): Observable<ScheduleCalendarEvent[]> {
-    let params = new HttpParams()
-      .set('studentId', studentId.toString())
-      .set('month', month.toISOString());
+  // Lấy lịch học theo ngày
+  getMyScheduleByDay(date: Date): Observable<StudentSchedule[]> {
+    const dateStr = date.toISOString().split('T')[0]; // Format: 2025-10-07
+    const params = new HttpParams()
+      .set('type', 'day')
+      .set('date', dateStr);
 
-    return this.http.get<StudentSchedule[]>(`${this.apiUrl}/monthly`, { params })
+    console.log(`Calling /students/me/schedule?type=day&date=${dateStr}`);
+
+    return this.http.get<StudentScheduleResponse[]>(`${this.apiUrl}/me/schedule`, { params })
       .pipe(
-        map(schedules => this.convertToCalendarEvents(schedules))
+        map(response => this.flattenScheduleData(response)),
+        catchError(this.handleError)
       );
+  }
+
+  // Lấy lịch học theo tuần
+  getMyScheduleByWeek(weekStart: Date): Observable<StudentSchedule[]> {
+    const year = weekStart.getFullYear();
+    const week = this.getWeekNumber(weekStart);
+
+    const params = new HttpParams()
+      .set('type', 'week')
+      .set('week', week.toString())
+      .set('year', year.toString());
+
+    console.log(`Calling /students/me/schedule?type=week&week=${week}&year=${year}`);
+
+    return this.http.get<StudentScheduleResponse[]>(`${this.apiUrl}/me/schedule`, { params })
+      .pipe(
+        map(response => this.flattenScheduleData(response)),
+        catchError(this.handleError)
+      );
+  }
+
+  // Lấy lịch học theo tháng
+  getMyScheduleByMonth(month: Date): Observable<StudentSchedule[]> {
+    const year = month.getFullYear();
+    const monthNum = month.getMonth() + 1; // JS months are 0-based
+
+    const params = new HttpParams()
+      .set('type', 'month')
+      .set('month', monthNum.toString())
+      .set('year', year.toString());
+
+    console.log(`Calling /students/me/schedule?type=month&month=${monthNum}&year=${year}`);
+
+    return this.http.get<StudentScheduleResponse[]>(`${this.apiUrl}/me/schedule`, { params })
+      .pipe(
+        map(response => this.flattenScheduleData(response)),
+        catchError(this.handleError)
+      );
+  }
+
+  // Method để test API với explicit headers (bypass interceptor issues)
+  getMyScheduleWithExplicitHeaders(): Observable<StudentSchedule[]> {
+    console.log('Calling /students/me/schedule API with explicit headers');
+
+    const token = localStorage.getItem('token');
+    console.log('Using token:', token);
+
+    if (!token) {
+      console.error('No token found in localStorage');
+      return throwError(() => new Error('No authentication token found'));
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+
+    console.log('Headers being sent:', headers.keys());
+
+    return this.http.get<StudentScheduleResponse[]>(`${this.apiUrl}/me/schedule`, { headers })
+      .pipe(
+        map(response => {
+          console.log('Success response:', response);
+          return this.flattenScheduleData(response);
+        }),
+        catchError(error => {
+          console.error('Explicit headers request failed:', error);
+          console.error('Error status:', error.status);
+          console.error('Error headers:', error.headers);
+          return this.handleError(error);
+        })
+      );
+  }
+
+  // Flatten dữ liệu từ API response thành format dùng trong component
+  private flattenScheduleData(responseData: StudentScheduleResponse[]): StudentSchedule[] {
+    const flattenedSchedules: StudentSchedule[] = [];
+
+    console.log('Raw API response data:', responseData);
+
+    if (!responseData || !Array.isArray(responseData)) {
+      console.warn('Invalid response data:', responseData);
+      return flattenedSchedules;
+    }
+
+    responseData.forEach(classData => {
+      if (!classData.schedules || !Array.isArray(classData.schedules)) {
+        console.warn('Invalid schedules data for class:', classData);
+        return;
+      }
+
+      classData.schedules.forEach(schedule => {
+        const scheduleItem: StudentSchedule = {
+          id: classData.id,
+          scheduleId: classData.scheduleId,
+          className: classData.className,
+          courseName: classData.courseName,
+          teacherName: classData.teacherName,
+          dayOfWeek: schedule.dayOfWeek,
+          startTime: schedule.startTime,
+          endTime: schedule.endTime,
+          room: classData.room,
+          status: classData.status,
+          description: classData.description
+        };
+
+        // Nếu có date từ API response (cho type=day), sử dụng nó
+        if ((classData as any).date) {
+          scheduleItem.date = new Date((classData as any).date);
+        }
+
+        flattenedSchedules.push(scheduleItem);
+      });
+    });
+
+    console.log('Flattened schedule data:', flattenedSchedules);
+    return flattenedSchedules;
+  }
+
+  // Lấy lịch học theo tuần dựa trên data từ API /students/me/schedule
+  getWeeklySchedule(studentId: number, weekStart: Date): Observable<ScheduleWeekView> {
+    return this.getMyScheduleByWeek(weekStart).pipe(
+      map(schedules => this.formatSchedulesToWeekView(schedules, weekStart))
+    );
   }
 
   // Lấy lịch học hôm nay
   getTodaySchedule(studentId: number): Observable<StudentSchedule[]> {
-    const params = new HttpParams().set('studentId', studentId.toString());
-
-    return this.http.get<StudentSchedule[]>(`${this.apiUrl}/today`, { params });
+    return this.getMyScheduleByDay(new Date());
   }
 
-  // Lấy lịch học sắp tới
-  getUpcomingSchedule(studentId: number, days: number = 7): Observable<StudentSchedule[]> {
-    let params = new HttpParams()
-      .set('studentId', studentId.toString())
-      .set('days', days.toString());
-
-    return this.http.get<StudentSchedule[]>(`${this.apiUrl}/upcoming`, { params });
+  // Lấy lịch học sắp tới trong n ngày
+  getUpcomingSchedule(studentId: number, days: number): Observable<StudentSchedule[]> {
+    const today = new Date();
+    return this.getMyScheduleByWeek(today).pipe(
+      map(schedules => this.filterUpcomingSchedule(schedules, days))
+    );
   }
 
-  // Helper methods
-  private groupSchedulesByDay(schedules: StudentSchedule[]): ScheduleWeekView {
-    const grouped: ScheduleWeekView = {
+  // Lấy events cho calendar view
+  getMonthlySchedule(studentId: number, month: Date): Observable<ScheduleCalendarEvent[]> {
+    return this.getMyScheduleByMonth(month).pipe(
+      map(schedules => this.formatSchedulesToCalendarEvents(schedules, month))
+    );
+  }
+
+  // Helper method để tính số tuần trong năm
+  private getWeekNumber(date: Date): number {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  }
+
+  // Helper method để format schedules thành week view
+  private formatSchedulesToWeekView(schedules: StudentSchedule[], weekStart: Date): ScheduleWeekView {
+    const weekView: ScheduleWeekView = {
       monday: [],
       tuesday: [],
       wednesday: [],
@@ -67,253 +215,164 @@ export class StudentScheduleService {
       sunday: []
     };
 
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+
     schedules.forEach(schedule => {
-      switch (schedule.dayOfWeek) {
-        case 'MONDAY': grouped.monday.push(schedule); break;
-        case 'TUESDAY': grouped.tuesday.push(schedule); break;
-        case 'WEDNESDAY': grouped.wednesday.push(schedule); break;
-        case 'THURSDAY': grouped.thursday.push(schedule); break;
-        case 'FRIDAY': grouped.friday.push(schedule); break;
-        case 'SATURDAY': grouped.saturday.push(schedule); break;
-        case 'SUNDAY': grouped.sunday.push(schedule); break;
+      if (schedule.date) {
+        const scheduleDate = new Date(schedule.date);
+        if (scheduleDate >= weekStart && scheduleDate <= weekEnd) {
+          const dayKey = this.getDayKeyFromDate(scheduleDate);
+          if (dayKey) {
+            weekView[dayKey].push(schedule);
+          }
+        }
+      } else {
+        // Nếu không có date cụ thể, sử dụng dayOfWeek
+        const dayKey = this.getDayKeyFromDayOfWeek(schedule.dayOfWeek);
+        if (dayKey) {
+          weekView[dayKey].push(schedule);
+        }
       }
     });
 
-    return grouped;
+    // Sort schedules by time for each day
+    Object.keys(weekView).forEach(day => {
+      weekView[day as keyof ScheduleWeekView].sort((a, b) =>
+        a.startTime.localeCompare(b.startTime)
+      );
+    });
+
+    return weekView;
   }
 
-  private convertToCalendarEvents(schedules: StudentSchedule[]): ScheduleCalendarEvent[] {
-    return schedules.map(schedule => ({
-      id: schedule.id,
-      title: `${schedule.className} - ${schedule.courseName}`,
-      start: this.combineDateTime(schedule.date!, schedule.startTime),
-      end: this.combineDateTime(schedule.date!, schedule.endTime),
-      className: schedule.className,
-      teacher: schedule.teacherName,
-      room: schedule.room,
-      status: schedule.status,
-      description: schedule.description
-    }));
-  }
-
-  private combineDateTime(date: Date, time: string): Date {
-    const [hours, minutes] = time.split(':');
-    const result = new Date(date);
-    result.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-    return result;
-  }
-
-  // Mock data methods
-  private getMockWeeklySchedule(): Observable<ScheduleWeekView> {
-    const mockData: ScheduleWeekView = {
-      monday: [
-        {
-          id: 1,
-          className: 'IELTS Advanced A1',
-          courseName: 'IELTS Preparation',
-          teacherName: 'Ms. Sarah Johnson',
-          dayOfWeek: 'MONDAY',
-          startTime: '09:00',
-          endTime: '11:00',
-          room: 'Room 101',
-          status: 'SCHEDULED',
-          description: 'IELTS Speaking & Listening practice'
-        },
-        {
-          id: 2,
-          className: 'Grammar Intermediate B2',
-          courseName: 'English Grammar',
-          teacherName: 'Mr. David Wilson',
-          dayOfWeek: 'MONDAY',
-          startTime: '14:00',
-          endTime: '16:00',
-          room: 'Room 203',
-          status: 'SCHEDULED',
-          description: 'Advanced grammar structures'
-        }
-      ],
-      tuesday: [
-        {
-          id: 3,
-          className: 'Business English C1',
-          courseName: 'Business Communication',
-          teacherName: 'Ms. Emily Brown',
-          dayOfWeek: 'TUESDAY',
-          startTime: '10:00',
-          endTime: '12:00',
-          room: 'Room 105',
-          status: 'SCHEDULED',
-          description: 'Business presentations and negotiations'
-        }
-      ],
-      wednesday: [
-        {
-          id: 4,
-          className: 'IELTS Advanced A1',
-          courseName: 'IELTS Preparation',
-          teacherName: 'Ms. Sarah Johnson',
-          dayOfWeek: 'WEDNESDAY',
-          startTime: '09:00',
-          endTime: '11:00',
-          room: 'Room 101',
-          status: 'SCHEDULED',
-          description: 'IELTS Writing practice'
-        }
-      ],
-      thursday: [
-        {
-          id: 5,
-          className: 'Grammar Intermediate B2',
-          courseName: 'English Grammar',
-          teacherName: 'Mr. David Wilson',
-          dayOfWeek: 'THURSDAY',
-          startTime: '14:00',
-          endTime: '16:00',
-          room: 'Room 203',
-          status: 'SCHEDULED',
-          description: 'Conditional sentences and passive voice'
-        }
-      ],
-      friday: [
-        {
-          id: 6,
-          className: 'Business English C1',
-          courseName: 'Business Communication',
-          teacherName: 'Ms. Emily Brown',
-          dayOfWeek: 'FRIDAY',
-          startTime: '10:00',
-          endTime: '12:00',
-          room: 'Room 105',
-          status: 'SCHEDULED',
-          description: 'Business writing and emails'
-        }
-      ],
-      saturday: [
-        {
-          id: 7,
-          className: 'IELTS Advanced A1',
-          courseName: 'IELTS Preparation',
-          teacherName: 'Ms. Sarah Johnson',
-          dayOfWeek: 'SATURDAY',
-          startTime: '08:00',
-          endTime: '10:00',
-          room: 'Room 101',
-          status: 'SCHEDULED',
-          description: 'IELTS Reading comprehension'
-        }
-      ],
-      sunday: []
-    };
-
-    return of(mockData);
-  }
-
-  private getMockMonthlySchedule(): Observable<ScheduleCalendarEvent[]> {
-    const events: ScheduleCalendarEvent[] = [];
+  // Helper method để lọc lịch học hôm nay
+  private filterTodaySchedule(schedules: StudentSchedule[]): StudentSchedule[] {
     const today = new Date();
+    const todayDayOfWeek = this.getDayOfWeekFromDate(today);
 
-    // Generate events for current month
-    for (let i = 0; i < 30; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
-
-      if (date.getDay() === 1 || date.getDay() === 3) { // Monday & Wednesday
-        events.push({
-          id: i * 10 + 1,
-          title: 'IELTS Advanced A1',
-          start: new Date(date.setHours(9, 0, 0, 0)),
-          end: new Date(date.setHours(11, 0, 0, 0)),
-          className: 'IELTS Advanced A1',
-          teacher: 'Ms. Sarah Johnson',
-          room: 'Room 101',
-          status: 'SCHEDULED'
-        });
+    return schedules.filter(schedule => {
+      if (schedule.date) {
+        const scheduleDate = new Date(schedule.date);
+        return this.isSameDay(scheduleDate, today);
+      } else {
+        return schedule.dayOfWeek === todayDayOfWeek;
       }
+    }).sort((a, b) => a.startTime.localeCompare(b.startTime));
+  }
 
-      if (date.getDay() === 2 || date.getDay() === 5) { // Tuesday & Friday
-        events.push({
-          id: i * 10 + 2,
-          title: 'Business English C1',
-          start: new Date(date.setHours(10, 0, 0, 0)),
-          end: new Date(date.setHours(12, 0, 0, 0)),
-          className: 'Business English C1',
-          teacher: 'Ms. Emily Brown',
-          room: 'Room 105',
-          status: 'SCHEDULED'
-        });
+  // Helper method để lọc lịch học sắp tới
+  private filterUpcomingSchedule(schedules: StudentSchedule[], days: number): StudentSchedule[] {
+    const today = new Date();
+    const endDate = new Date();
+    endDate.setDate(today.getDate() + days);
+
+    return schedules.filter(schedule => {
+      if (schedule.date) {
+        const scheduleDate = new Date(schedule.date);
+        return scheduleDate >= today && scheduleDate <= endDate;
       }
+      return false; // Chỉ lấy những schedule có date cụ thể
+    }).sort((a, b) => {
+      if (a.date && b.date) {
+        const dateCompare = new Date(a.date).getTime() - new Date(b.date).getTime();
+        if (dateCompare === 0) {
+          return a.startTime.localeCompare(b.startTime);
+        }
+        return dateCompare;
+      }
+      return 0;
+    });
+  }
+
+  // Helper method để format schedules thành calendar events
+  private formatSchedulesToCalendarEvents(schedules: StudentSchedule[], month: Date): ScheduleCalendarEvent[] {
+    const monthStart = new Date(month.getFullYear(), month.getMonth(), 1);
+    const monthEnd = new Date(month.getFullYear(), month.getMonth() + 1, 0);
+
+    return schedules
+      .filter(schedule => {
+        if (schedule.date) {
+          const scheduleDate = new Date(schedule.date);
+          return scheduleDate >= monthStart && scheduleDate <= monthEnd;
+        }
+        return false;
+      })
+      .map(schedule => {
+        const scheduleDate = new Date(schedule.date!);
+        const startTime = this.parseTime(schedule.startTime);
+        const endTime = this.parseTime(schedule.endTime);
+
+        const start = new Date(scheduleDate);
+        start.setHours(startTime.hours, startTime.minutes);
+
+        const end = new Date(scheduleDate);
+        end.setHours(endTime.hours, endTime.minutes);
+
+        return {
+          id: schedule.id,
+          title: `${schedule.className}${schedule.courseName ? ' - ' + schedule.courseName : ''}`,
+          start,
+          end,
+          className: schedule.className,
+          teacher: schedule.teacherName,
+          room: schedule.room,
+          status: schedule.status,
+          description: schedule.description
+        };
+      });
+  }
+
+  // Utility methods
+  private getDayKeyFromDate(date: Date): keyof ScheduleWeekView | null {
+    const dayIndex = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const dayKeys: (keyof ScheduleWeekView)[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    return dayKeys[dayIndex];
+  }
+
+  private getDayKeyFromDayOfWeek(dayOfWeek: string): keyof ScheduleWeekView | null {
+    const dayMap: { [key: string]: keyof ScheduleWeekView } = {
+      'MONDAY': 'monday',
+      'TUESDAY': 'tuesday',
+      'WEDNESDAY': 'wednesday',
+      'THURSDAY': 'thursday',
+      'FRIDAY': 'friday',
+      'SATURDAY': 'saturday',
+      'SUNDAY': 'sunday'
+    };
+    return dayMap[dayOfWeek] || null;
+  }
+
+  private getDayOfWeekFromDate(date: Date): string {
+    const dayMap = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+    return dayMap[date.getDay()];
+  }
+
+  private isSameDay(date1: Date, date2: Date): boolean {
+    return date1.getFullYear() === date2.getFullYear() &&
+           date1.getMonth() === date2.getMonth() &&
+           date1.getDate() === date2.getDate();
+  }
+
+  private parseTime(timeString: string): { hours: number; minutes: number } {
+    const [hours, minutes] = timeString.split(':').map(Number);
+    return { hours, minutes };
+  }
+
+  private handleError(error: HttpErrorResponse) {
+    console.error('Student Schedule API Error:', error);
+    console.error('Error status:', error.status);
+    console.error('Error message:', error.message);
+    console.error('Error body:', error.error);
+
+    if (error.status === 401) {
+      console.error('Unauthorized - Token may be expired');
+    } else if (error.status === 403) {
+      console.error('Forbidden - Insufficient permissions');
+    } else if (error.status === 404) {
+      console.error('Not Found - Schedule not found or API endpoint may not exist');
     }
 
-    return of(events);
-  }
-
-  private getMockTodaySchedule(): Observable<StudentSchedule[]> {
-    const today = new Date().getDay();
-    const mockWeekly = this.getMockWeeklySchedule();
-
-    return mockWeekly.pipe(
-      map(weekly => {
-        switch (today) {
-          case 1: return weekly.monday;
-          case 2: return weekly.tuesday;
-          case 3: return weekly.wednesday;
-          case 4: return weekly.thursday;
-          case 5: return weekly.friday;
-          case 6: return weekly.saturday;
-          case 0: return weekly.sunday;
-          default: return [];
-        }
-      })
-    );
-  }
-
-  private getMockUpcomingSchedule(): Observable<StudentSchedule[]> {
-    const upcoming: StudentSchedule[] = [
-      {
-        id: 1,
-        className: 'IELTS Advanced A1',
-        courseName: 'IELTS Preparation',
-        teacherName: 'Ms. Sarah Johnson',
-        dayOfWeek: 'MONDAY',
-        startTime: '09:00',
-        endTime: '11:00',
-        room: 'Room 101',
-        status: 'SCHEDULED',
-        date: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
-        description: 'IELTS Speaking practice'
-      },
-      {
-        id: 2,
-        className: 'Business English C1',
-        courseName: 'Business Communication',
-        teacherName: 'Ms. Emily Brown',
-        dayOfWeek: 'TUESDAY',
-        startTime: '10:00',
-        endTime: '12:00',
-        room: 'Room 105',
-        status: 'SCHEDULED',
-        date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // Day after tomorrow
-        description: 'Business presentations'
-      }
-    ];
-
-    return of(upcoming);
-  }
-
-  // Debug methods - for testing purposes
-  getMockWeeklyScheduleForDebug(): Observable<ScheduleWeekView> {
-    return this.getMockWeeklySchedule();
-  }
-
-  getMockTodayScheduleForDebug(): Observable<StudentSchedule[]> {
-    return this.getMockTodaySchedule();
-  }
-
-  getMockUpcomingScheduleForDebug(): Observable<StudentSchedule[]> {
-    return this.getMockUpcomingSchedule();
-  }
-
-  getMockMonthlyScheduleForDebug(): Observable<ScheduleCalendarEvent[]> {
-    return this.getMockMonthlySchedule();
+    return throwError(() => error);
   }
 }

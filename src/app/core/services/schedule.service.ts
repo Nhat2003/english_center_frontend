@@ -2,78 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { Schedule } from '../models/schedule.model';
+import { FixedSchedule, ScheduleItemDTO, Room } from '../models/fixed-schedule.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ScheduleService {
-  private baseUrl = `${environment.apiUrl}/schedules`;
-
-  // Mock data with new format
-  private mockSchedules: Schedule[] = [
-    {
-      id: 1,
-      name: "Lịch học 2,4,6 tối",
-      description: "Lịch học buổi tối các ngày 2,4,6",
-      details: [
-        {
-          dayOfWeek: "MONDAY",
-          startTime: "20:00",
-          endTime: "22:00"
-        },
-        {
-          dayOfWeek: "WEDNESDAY",
-          startTime: "20:00",
-          endTime: "22:00"
-        },
-        {
-          dayOfWeek: "FRIDAY",
-          startTime: "20:00",
-          endTime: "22:00"
-        }
-      ]
-    },
-    {
-      id: 2,
-      name: "Lịch học 3,5,7 sáng",
-      description: "Lịch học buổi sáng các ngày 3,5,7",
-      details: [
-        {
-          dayOfWeek: "TUESDAY",
-          startTime: "08:00",
-          endTime: "10:00"
-        },
-        {
-          dayOfWeek: "THURSDAY",
-          startTime: "08:00",
-          endTime: "10:00"
-        },
-        {
-          dayOfWeek: "SATURDAY",
-          startTime: "08:00",
-          endTime: "10:00"
-        }
-      ]
-    },
-    {
-      id: 3,
-      name: "Lịch học cuối tuần",
-      description: "Lịch học dành cho học viên bận trong tuần",
-      details: [
-        {
-          dayOfWeek: "SATURDAY",
-          startTime: "14:00",
-          endTime: "17:00"
-        },
-        {
-          dayOfWeek: "SUNDAY",
-          startTime: "14:00",
-          endTime: "17:00"
-        }
-      ]
-    }
-  ];
+  private baseUrl = `${environment.apiUrl}/schedule`; // Đổi từ 'schedules' thành 'schedule'
 
   constructor(private http: HttpClient) {}
 
@@ -107,6 +43,78 @@ export class ScheduleService {
 
   // Debug method - use mock data for testing
   getMockSchedules(): Observable<Schedule[]> {
-    return of(this.mockSchedules);
+    const mockData: Schedule[] = [
+      {
+        id: 1,
+        name: 'Mock Schedule 1',
+        description: 'Test schedule',
+        details: [
+          { dayOfWeek: 'MONDAY', startTime: '08:00:00', endTime: '10:00:00' }
+        ]
+      }
+    ];
+    return of(mockData);
   }
+
+  // ===== NEW API METHODS =====
+
+  // Get fixed schedules from new API
+  getFixedSchedules(): Observable<FixedSchedule[]> {
+    return this.http.get<FixedSchedule[]>(`${this.baseUrl}/fixed`);
+  }
+
+  // Get student schedule by ID
+  getStudentSchedule(studentId: number): Observable<FixedSchedule[]> {
+    return this.http.get<FixedSchedule[]>(`${this.baseUrl}/student/${studentId}`);
+  }
+
+  // Get class schedule by ID
+  getClassSchedule(classId: number): Observable<ScheduleItemDTO[]> {
+    return this.http.get<ScheduleItemDTO[]>(`${this.baseUrl}/class/${classId}`);
+  }
+
+  // Generate class schedule
+  generateClassSchedule(
+    classId: number,
+    startDate: string,
+    endDate: string,
+    daysOfWeek: string,
+    startTime: string,
+    endTime: string,
+    teacherId: number,
+    roomId: number
+  ): Observable<ScheduleItemDTO[]> {
+    const params = new HttpParams()
+      .set('startDate', startDate)
+      .set('endDate', endDate)
+      .set('daysOfWeek', daysOfWeek)
+      .set('startTime', startTime)
+      .set('endTime', endTime)
+      .set('teacherId', teacherId.toString())
+      .set('roomId', roomId.toString());
+
+    return this.http.post<ScheduleItemDTO[]>(`${this.baseUrl}/generate/${classId}`, null, { params });
+  }
+
+  // Get all rooms
+  getRooms(): Observable<Room[]> {
+    return this.http.get<Room[]>(`${this.baseUrl}/rooms`);
+  }
+
+  // Save fixed schedule
+  saveFixedSchedule(schedule: FixedSchedule): Observable<FixedSchedule> {
+    return this.http.post<FixedSchedule>(`${this.baseUrl}/fixed`, schedule);
+  }
+
+  // Update fixed schedule
+  updateFixedSchedule(id: number, schedule: FixedSchedule): Observable<FixedSchedule> {
+    return this.http.put<FixedSchedule>(`${this.baseUrl}/fixed/${id}`, schedule);
+  }
+
+  // Delete fixed schedule
+  deleteFixedSchedule(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/fixed/${id}`);
+  }
+
 }
+

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { AuthService, User } from '../../../../core/services/auth.service';
 import { StudentScheduleService } from '../../../../core/services/student-schedule.service';
+import { ScheduleService } from '../../../../core/services/schedule.service';
 import { StudentSchedule, ScheduleWeekView, ScheduleCalendarEvent } from '../../../../core/models/student-schedule.model';
 
 @Component({
@@ -28,6 +29,11 @@ export class StudentScheduleComponent implements OnInit {
   // Upcoming schedule
   upcomingSchedule: StudentSchedule[] = [];
 
+  // Calendar data for ng-zorro calendar
+  calendarMode: 'month' | 'year' = 'month';
+  selectedDate = new Date();
+  calendarEventsMap: { [key: string]: StudentSchedule[] } = {};
+
   // Week days for display
   weekDays = [
     { key: 'monday', label: 'Thứ 2', short: 'T2' },
@@ -42,6 +48,7 @@ export class StudentScheduleComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private scheduleService: StudentScheduleService,
+    private newScheduleService: ScheduleService,
     private message: NzMessageService
   ) {
     this.setWeekStart();
@@ -69,6 +76,8 @@ export class StudentScheduleComponent implements OnInit {
       this.loadCalendarEvents()
     ]).finally(() => {
       this.loading = false;
+      // Update calendar events after loading all data
+      this.updateCalendarEventsMap();
     });
   }
 
@@ -249,8 +258,149 @@ export class StudentScheduleComponent implements OnInit {
     return dayDate.toDateString() === today.toDateString();
   }
 
+  getRoomDisplayName(room: string): string {
+    return room || 'Chưa xác định phòng';
+  }
+
   refresh(): void {
     this.loadScheduleData();
     this.message.success('Đã cập nhật lịch học');
+  }
+
+  // ng-zorro calendar methods
+  onSelectChange(date: Date): void {
+    this.selectedDate = date;
+    const dateStr = date.toISOString().split('T')[0];
+    console.log('Selected date:', dateStr);
+
+    if (this.calendarEventsMap[dateStr]) {
+      this.message.info(`Có ${this.calendarEventsMap[dateStr].length} lịch học ngày này`);
+    } else {
+      this.message.info('Không có lịch học ngày này');
+    }
+  }
+
+  onPanelChange(change: { date: Date; mode: string }): void {
+    console.log('Panel changed:', change);
+    this.selectedDate = change.date;
+    if (change.mode === 'month') {
+      this.loadMonthlyScheduleData(change.date);
+    }
+  }
+
+  // Load monthly schedule data for calendar
+  loadMonthlyScheduleData(date: Date): void {
+    // Implementation to load monthly data
+    console.log('Loading monthly data for:', date);
+  }
+
+  // Get events for a specific date
+  getEventsForDate(date: Date): StudentSchedule[] {
+    const dateStr = date.toISOString().split('T')[0];
+    return this.calendarEventsMap[dateStr] || [];
+  }
+
+  // Update calendar events map
+  updateCalendarEventsMap(): void {
+    this.calendarEventsMap = {};
+
+    this.todaySchedule.forEach(schedule => {
+      const dateStr = new Date().toISOString().split('T')[0];
+      if (!this.calendarEventsMap[dateStr]) {
+        this.calendarEventsMap[dateStr] = [];
+      }
+      this.calendarEventsMap[dateStr].push(schedule);
+    });
+
+    console.log('Updated calendar events map:', this.calendarEventsMap);
+  }
+
+  // Debug and test methods
+  simpleTest(): void {
+    console.log('Simple test - reloading schedule data');
+    this.loadScheduleData();
+  }
+
+  testMultipleDates(): void {
+    console.log('Testing multiple dates - feature not implemented yet');
+    this.message.info('Feature coming soon');
+  }
+
+  debugUserInfo(): void {
+    console.log('=== DEBUG USER INFO ===');
+    console.log('Current user:', this.currentUser);
+    console.log('Loading state:', this.loading);
+    console.log('View mode:', this.viewMode);
+    this.message.info('Check console for debug info');
+  }
+
+  debugScheduleData(): void {
+    console.log('=== DEBUG SCHEDULE DATA ===');
+    console.log('Today schedule:', this.todaySchedule);
+    console.log('Weekly schedule:', this.weeklySchedule);
+    console.log('Upcoming schedule:', this.upcomingSchedule);
+    console.log('Calendar events map:', this.calendarEventsMap);
+    this.message.info('Check console for schedule data');
+  }
+
+  getCourseDisplayName(courseName: string): string {
+    return courseName || 'Chưa xác định khóa học';
+  }
+
+  // Test new Schedule Service APIs
+  testNewScheduleAPIs(): void {
+    console.log('=== TESTING NEW SCHEDULE APIs ===');
+    this.message.info('Testing new Schedule APIs - check console');
+    
+    // Test Fixed Schedules
+    this.newScheduleService.getFixedSchedules().subscribe({
+      next: (data) => {
+        console.log('✅ Fixed Schedules API Success:', data);
+      },
+      error: (error) => {
+        console.error('❌ Fixed Schedules API Error:', error);
+      }
+    });
+
+    // Test Rooms
+    this.newScheduleService.getRooms().subscribe({
+      next: (data) => {
+        console.log('✅ Rooms API Success:', data);
+      },
+      error: (error) => {
+        console.error('❌ Rooms API Error:', error);
+      }
+    });
+
+    // Test Student Schedule if user ID exists
+    if (this.currentUser?.id) {
+      this.newScheduleService.getStudentSchedule(this.currentUser.id).subscribe({
+        next: (data) => {
+          console.log('✅ Student Schedule API Success:', data);
+        },
+        error: (error) => {
+          console.error('❌ Student Schedule API Error:', error);
+        }
+      });
+    }
+
+    // Test Generate Schedule (demo with sample data)
+    this.newScheduleService.generateClassSchedule(
+      1, // classId
+      '2025-01-13', // startDate
+      '2025-01-20', // endDate
+      '1,3,5', // Monday, Wednesday, Friday
+      '18:00:00', // startTime
+      '20:00:00', // endTime
+      1, // teacherId
+      1  // roomId
+    ).subscribe({
+      next: (data) => {
+        console.log('✅ Generate Schedule API Success:', data);
+      },
+      error: (error) => {
+        console.error('❌ Generate Schedule API Error:', error);
+      }
+    });
   }
 }
