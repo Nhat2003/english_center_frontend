@@ -6,226 +6,93 @@
         <i nz-icon nzType="calendar" class="title-icon"></i>
         Lịch học của tôi
       </h2>
+      <div *ngIf="currentUser?.student" class="student-info">
+        <nz-tag nzColor="blue">
+          <i nz-icon nzType="user"></i>
+          {{ currentUser.student.fullName }}
+        </nz-tag>
+        <nz-tag nzColor="green">
+          <i nz-icon nzType="book"></i>
+          {{ currentUser.student.className }}
+        </nz-tag>
+        <nz-tag nzColor="orange">
+          ID: {{ currentUser.student.id }}
+        </nz-tag>
+      </div>
     </div>
 
     <div class="header-right">
-      <nz-button-group>
-        <button
-          nz-button
-          [nzType]="viewMode === 'today' ? 'primary' : 'default'"
-          (click)="changeViewMode('today')"
-          nzSize="default">
-          <i nz-icon nzType="clock-circle"></i>
-          Hôm nay
-        </button>
-        <button
-          nz-button
-          [nzType]="viewMode === 'week' ? 'primary' : 'default'"
-          (click)="changeViewMode('week')"
-          nzSize="default">
-          <i nz-icon nzType="calendar"></i>
-          Tuần
-        </button>
-        <button
-          nz-button
-          [nzType]="viewMode === 'calendar' ? 'primary' : 'default'"
-          (click)="changeViewMode('calendar')"
-          nzSize="default">
-          <i nz-icon nzType="table"></i>
-          Tháng
-        </button>
-      </nz-button-group>
 
-      <button nz-button nzType="default" (click)="refresh()" [nzLoading]="loading">
-        <i nz-icon nzType="reload"></i>
-        Làm mới
-      </button>
 
-      <button nz-button nzType="primary" (click)="simpleTest()" [nzLoading]="loading" style="margin-left: 8px;">
-        <i nz-icon nzType="api"></i>
-        Test API
-      </button>
 
-      <button nz-button nzType="dashed" (click)="testMultipleDates()" style="margin-left: 8px;">
-        <i nz-icon nzType="search"></i>
-        Test 7 ngày
-      </button>
-
-      <button nz-button nzType="dashed" (click)="debugUserInfo()" style="margin-left: 8px;">
-        <i nz-icon nzType="user"></i>
-        Debug User
-      </button>
-
-      <button nz-button nzType="dashed" (click)="debugScheduleData()" style="margin-left: 8px;">
-        <i nz-icon nzType="bug"></i>
-        Debug Data
-      </button>
-
-      <button nz-button nzType="dashed" (click)="testNewScheduleAPIs()" style="margin-left: 8px;">
-        <i nz-icon nzType="api"></i>
-        Test New APIs
-      </button>
     </div>
   </div>
 
-  <!-- Today View -->
-  <div *ngIf="viewMode === 'today'" class="today-view">
-    <nz-card nzTitle="Lịch học hôm nay" [nzExtra]="todayExtra">
-      <ng-template #todayExtra>
-        <nz-tag nzColor="blue">{{ getCurrentDate() }}</nz-tag>
-      </ng-template>
-
-      <div *ngIf="todaySchedule.length === 0" class="empty-schedule">
-        <nz-empty
-          nzNotFoundImage="simple"
-          nzNotFoundContent="Không có lịch học hôm nay">
-        </nz-empty>
-      </div>
-
-      <div *ngIf="todaySchedule.length > 0" class="today-schedule-list">
-        <div *ngFor="let schedule of todaySchedule" class="schedule-item">
-          <div class="schedule-time">
-            <div class="time-range">
-              {{ formatTime(schedule.startTime) }} - {{ formatTime(schedule.endTime) }}
-            </div>
-            <nz-tag [nzColor]="getStatusColor(schedule.status)" nzSize="small">
-              {{ getStatusText(schedule.status) }}
-            </nz-tag>
-          </div>
-
-          <div class="schedule-content">
-            <h4 class="class-name">{{ schedule.className }}</h4>
-            <p class="course-name" [class.null-course]="!schedule.courseName">{{ getCourseDisplayName(schedule.courseName) }}</p>
-            <div class="schedule-details">
-              <span class="teacher">
-                <i nz-icon nzType="user"></i>
-                {{ schedule.teacherName }}
-              </span>
-              <span class="room" [class.null-room]="!schedule.room">
-                <i nz-icon nzType="environment"></i>
-                {{ getRoomDisplayName(schedule.room) }}
-              </span>
-            </div>
-            <p *ngIf="schedule.description" class="description">
-              {{ schedule.description }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </nz-card>
-
-    <!-- Upcoming Classes -->
-    <nz-card nzTitle="Lớp học sắp tới" class="upcoming-card" *ngIf="upcomingSchedule.length > 0">
-      <div class="upcoming-list">
-        <div *ngFor="let schedule of upcomingSchedule" class="upcoming-item">
-          <div class="upcoming-date">
-            <div class="date">{{ formatDate(schedule.date!) }}</div>
-            <div class="time">{{ formatTime(schedule.startTime) }}</div>
-          </div>
-          <div class="upcoming-content">
-            <h5>{{ schedule.className }}</h5>
-            <p>{{ schedule.teacherName }} - <span [class.null-room]="!schedule.room">{{ getRoomDisplayName(schedule.room) }}</span></p>
-          </div>
-        </div>
-      </div>
-    </nz-card>
+  <!-- Week Navigation -->
+  <div class="week-navigation">
+    <div class="week-controls">
+      <button nz-button nzType="default" (click)="previousWeek()">
+        <i nz-icon nzType="left"></i>
+        Tuần trước
+      </button>
+      <button nz-button nzType="primary" (click)="goToCurrentWeek()">
+        Tuần hiện tại
+      </button>
+      <button nz-button nzType="default" (click)="nextWeek()">
+        Tuần sau
+        <i nz-icon nzType="right"></i>
+      </button>
+    </div>
+    <div class="week-range">
+      <h3>{{ getWeekDateRange() }}</h3>
+    </div>
   </div>
 
   <!-- Week View -->
-  <div *ngIf="viewMode === 'week'" class="week-view">
-    <div class="week-navigation">
-      <div class="week-controls">
-        <button nz-button nzType="default" (click)="previousWeek()">
-          <i nz-icon nzType="left"></i>
-          Tuần trước
-        </button>
-        <button nz-button nzType="primary" (click)="goToCurrentWeek()">
-          Tuần hiện tại
-        </button>
-        <button nz-button nzType="default" (click)="nextWeek()">
-          Tuần sau
-          <i nz-icon nzType="right"></i>
-        </button>
-      </div>
-      <div class="week-range">
-        <h3>{{ getWeekDateRange() }}</h3>
-      </div>
-    </div>
-
-    <div class="week-grid" *ngIf="weeklySchedule">
+  <div class="week-view">
+    <div class="week-grid">
       <div class="week-header">
         <div
-          *ngFor="let day of weekDays; let i = index"
+          *ngFor="let i of [0,1,2,3,4,5,6]"
           class="day-header"
           [class.today]="isToday(i)">
-          <div class="day-name">{{ day.label }}</div>
-          <div class="day-date">{{ formatDate(getDateForDay(i)) }}</div>
+          <div class="day-name">{{ getFullDayLabel(i) }}</div>
+          <div class="day-short">{{ getDayLabel(i) }}</div>
+          <div class="day-date">{{ getDayDate(i) }}</div>
         </div>
       </div>
 
       <div class="week-body">
         <div
-          *ngFor="let day of weekDays; let i = index"
+          *ngFor="let i of [0,1,2,3,4,5,6]"
           class="day-column"
           [class.today]="isToday(i)">
 
-          <div *ngIf="getDaySchedule(day.key).length === 0" class="no-classes">
+          <div *ngIf="getSchedulesForDay(i).length === 0" class="no-classes">
             <div class="empty-day">Không có lớp</div>
           </div>
 
           <div
-            *ngFor="let schedule of getDaySchedule(day.key)"
+            *ngFor="let schedule of getSchedulesForDay(i)"
             class="schedule-card">
             <div class="schedule-time-small">
-              {{ formatTime(schedule.startTime) }} - {{ formatTime(schedule.endTime) }}
+              {{ formatScheduleTime(schedule.start, schedule.end) }}
             </div>
-            <div class="schedule-title">{{ schedule.className }}</div>
+            <div class="schedule-title">{{ schedule.title }}</div>
+            <!-- <div class="schedule-class">{{ schedule.className }}</div>
+            <div class="schedule-course">{{ schedule.courseName }}</div> -->
             <div class="schedule-teacher">{{ schedule.teacherName }}</div>
-            <div class="schedule-room" [class.null-room]="!schedule.room">{{ getRoomDisplayName(schedule.room) }}</div>
-            <nz-tag [nzColor]="getStatusColor(schedule.status)" nzSize="small">
-              {{ getStatusText(schedule.status) }}
-            </nz-tag>
+            <div class="schedule-room">{{ schedule.roomName }}</div>
+            <div class="schedule-session">
+              {{ formatSessionInfo(schedule.sessionIndex, schedule.totalSessions) }}
+            </div>
+
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Calendar/Table View -->
-  <div *ngIf="viewMode === 'calendar'" class="calendar-view">
-    <nz-card nzTitle="Lịch học tháng này">
-      <!-- ng-zorro Calendar -->
-      <nz-calendar
-        [(ngModel)]="selectedDate"
-        [nzMode]="calendarMode"
-        (nzSelectChange)="onSelectChange($event)"
-        (nzPanelChange)="onPanelChange($event)">
-
-        <!-- Custom date cell -->
-        <div *nzDateCell="let date" class="calendar-date-cell">
-          <div class="date-number">{{ date.getDate() }}</div>
-          <div *ngIf="getEventsForDate(date).length > 0" class="events-indicator">
-            <nz-badge
-              [nzCount]="getEventsForDate(date).length"
-              [nzStyle]="{ backgroundColor: '#52c41a' }">
-            </nz-badge>
-          </div>
-
-          <!-- Show events for this date -->
-          <div *ngFor="let event of getEventsForDate(date)" class="calendar-event">
-            <div class="event-title">{{ event.className }}</div>
-            <div class="event-time">{{ formatTime(event.startTime) }}</div>
-          </div>
-        </div>
-
-        <!-- Custom month cell for month view -->
-        <div *nzMonthCell="let date" class="calendar-month-cell">
-          <div class="month-name">{{ date.getMonth() + 1 }}月</div>
-        </div>
-
-      </nz-calendar>
-    </nz-card>
-  </div>
 
   <!-- Loading State -->
   <div *ngIf="loading" class="loading-container">

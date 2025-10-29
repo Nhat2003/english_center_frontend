@@ -19,10 +19,15 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { NzMessageModule } from 'ng-zorro-antd/message';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzModalModule } from 'ng-zorro-antd/modal';
 
 // Components
 import { TeacherLayoutComponent } from './teacher-layout/teacher-layout.component';
 import { TeacherDashboardComponent } from './dashboard/dashboard.component';
+import { TeacherScheduleComponent } from './pages/schedule/teacher-schedule.component';
+import { TeacherClassesComponent } from './pages/classes/teacher-classes.component';
 
 // Routes
 import { TEACHER_ROUTES } from './teacher.routes';
@@ -30,7 +35,9 @@ import { TEACHER_ROUTES } from './teacher.routes';
 @NgModule({
   declarations: [
     TeacherLayoutComponent,
-    TeacherDashboardComponent
+    TeacherDashboardComponent,
+    TeacherScheduleComponent,
+    TeacherClassesComponent
   ],
   imports: [
     CommonModule,
@@ -51,7 +58,10 @@ import { TEACHER_ROUTES } from './teacher.routes';
     NzDropDownModule,
     NzAvatarModule,
     NzBadgeModule,
-    NzEmptyModule
+    NzEmptyModule,
+    NzMessageModule,
+    NzSpinModule,
+    NzModalModule
   ]
 })
 export class TeacherModule { }

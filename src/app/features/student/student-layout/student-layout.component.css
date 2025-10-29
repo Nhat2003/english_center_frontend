@@ -96,6 +96,17 @@
   color: #fff !important;
 }
 
+/* Menu icon styling */
+.sidebar-menu .ant-menu-item .anticon {
+  font-size: 16px;
+  margin-right: 8px;
+  color: #8c8c8c;
+}
+
+.sidebar-menu .ant-menu-item:hover .anticon {
+  color: #3bb273;
+}
+
 .inner-layout {
   padding: 0;
 }

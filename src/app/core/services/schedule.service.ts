@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { Schedule } from '../models/schedule.model';
-import { FixedSchedule, ScheduleItemDTO, Room } from '../models/fixed-schedule.model';
+import { FixedSchedule, ScheduleItemDTO, ScheduleItemForStudentDTO, ScheduleItemForTeacherDTO, Room } from '../models/fixed-schedule.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -63,9 +63,30 @@ export class ScheduleService {
     return this.http.get<FixedSchedule[]>(`${this.baseUrl}/fixed`);
   }
 
-  // Get student schedule by ID
-  getStudentSchedule(studentId: number): Observable<FixedSchedule[]> {
-    return this.http.get<FixedSchedule[]>(`${this.baseUrl}/student/${studentId}`);
+  // Get student schedule by ID with optional date range
+  getStudentSchedule(studentId: number, from?: string, to?: string): Observable<ScheduleItemForStudentDTO[]> {
+    let params = new HttpParams();
+    if (from) {
+      params = params.set('from', from);
+    }
+    if (to) {
+      params = params.set('to', to);
+    }
+
+    return this.http.get<ScheduleItemForStudentDTO[]>(`${this.baseUrl}/student/${studentId}`, { params });
+  }
+
+  // Get teacher schedule by ID with optional date range
+  getTeacherSchedule(teacherId: number, from?: string, to?: string): Observable<ScheduleItemForTeacherDTO[]> {
+    let params = new HttpParams();
+    if (from) {
+      params = params.set('from', from);
+    }
+    if (to) {
+      params = params.set('to', to);
+    }
+
+    return this.http.get<ScheduleItemForTeacherDTO[]>(`${this.baseUrl}/teacher/${teacherId}`, { params });
   }
 
   // Get class schedule by ID

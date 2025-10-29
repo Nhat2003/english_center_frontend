@@ -1,0 +1,57 @@
+<div class="teacher-classes-container">
+  <h2>Danh sách lớp của tôi</h2>
+  <nz-spin *ngIf="loadingClasses" nzTip="Đang tải lớp..."></nz-spin>
+  <nz-table *ngIf="!loadingClasses" [nzData]="classes" nzBordered>
+    <thead>
+      <tr>
+        <th>Tên lớp</th>
+        <th>Khóa học</th>
+        <th>Phòng học</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let classRoom of classes">
+        <td>{{ classRoom.name }}</td>
+        <td>{{ classRoom.courseName }}</td>
+        <td>{{ classRoom.roomName }}</td>
+        <td>
+          <button nz-button nzType="primary" nzSize="small" (click)="selectClass(classRoom)">
+            Xem danh sách sinh viên
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+
+  <!-- Modal danh sách sinh viên -->
+  <nz-modal
+    [(nzVisible)]="isStudentModalVisible"
+    nzTitle="Danh sách sinh viên của lớp {{ selectedClass?.name }}"
+    (nzOnCancel)="closeStudentModal()"
+    nzWidth="700px"
+    [nzFooter]="null">
+    <nz-spin *ngIf="loadingStudents" nzTip="Đang tải học sinh..."></nz-spin>
+    <nz-table *ngIf="!loadingStudents && students.length > 0" [nzData]="students" nzBordered>
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>Họ tên</th>
+          <th>Email</th>
+          <th>Ngày sinh</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let student of students; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ student.fullName || student.name || student.ten }}</td>
+          <td>{{ student.email }}</td>
+          <td>{{ student.dob | date: 'dd/MM/yyyy' }}</td>
+        </tr>
+      </tbody>
+    </nz-table>
+    <div *ngIf="!loadingStudents && students.length === 0" style="text-align:center; padding:24px;">
+      Không có học sinh nào trong lớp này.
+    </div>
+  </nz-modal>
+</div>

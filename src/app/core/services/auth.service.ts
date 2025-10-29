@@ -9,6 +9,32 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface Student {
+  id: number;
+  userId: number;
+  fullName: string;
+  dob: string;
+  gender: string;
+  phone: string;
+  address: string;
+  joinedAt: string;
+  email: string;
+  className: string;
+}
+
+export interface Teacher {
+  id: number;
+  userId: number;
+  fullName: string;
+  email: string;
+  dob: string;
+  gender: string;
+  phone: string;
+  address: string;
+  speciality: string;
+  hiredAt: string;
+}
+
 export interface User {
   id?: number;
   username: string;
@@ -18,6 +44,8 @@ export interface User {
   status?: string;
   root?: boolean;
   token?: string;
+  student?: Student;
+  teacher?: Teacher;
 }
 
 export interface LoginResponse {
@@ -60,26 +88,58 @@ export class AuthService {
         map(response => {
           console.log('Backend response:', response);
 
-          // Backend cần trả về format: { token: "...", user: { id, username, role, fullName, email... } }
-          // Lưu ý: Backend cần có cột fullName trong bảng User
+          // Backend trả về format mới: { token: "...", user: { id, username, role, status, root, student: {...} } }
           if (response && response.user && response.user.id && response.user.username && response.user.role) {
             const user: User = {
               id: response.user.id,
               username: response.user.username,
               role: response.user.role,
-              fullName: response.user.fullName || response.user.username,
-              email: response.user.email || `${response.user.username}@englishcenter.com`,
               status: response.user.status,
-              root: response.user.root
+              root: response.user.root,
+              // Thêm thông tin student nếu có
+              student: response.user.student ? {
+                id: response.user.student.id,
+                userId: response.user.student.userId,
+                fullName: response.user.student.fullName,
+                dob: response.user.student.dob,
+                gender: response.user.student.gender,
+                phone: response.user.student.phone,
+                address: response.user.student.address,
+                joinedAt: response.user.student.joinedAt,
+                email: response.user.student.email,
+                className: response.user.student.className
+              } : undefined,
+              // Thêm thông tin teacher nếu có
+              teacher: response.user.teacher ? {
+                id: response.user.teacher.id,
+                userId: response.user.teacher.userId,
+                fullName: response.user.teacher.fullName,
+                email: response.user.teacher.email,
+                dob: response.user.teacher.dob,
+                gender: response.user.teacher.gender,
+                phone: response.user.teacher.phone,
+                address: response.user.teacher.address,
+                speciality: response.user.teacher.speciality,
+                hiredAt: response.user.teacher.hiredAt
+              } : undefined,
+              // Fallback cho fullName và email
+              fullName: response.user.student?.fullName || response.user.teacher?.fullName || response.user.username,
+              email: response.user.student?.email || response.user.teacher?.email || `${response.user.username}@englishcenter.com`
             };
 
             // Sử dụng token từ backend
             const token = response.token;
             this.setCurrentUser(user, token);
 
+            const welcomeMessage = user.student ?
+              `Chào mừng ${user.student.fullName} (${user.student.className})!` :
+              user.teacher ?
+              `Chào mừng ${user.teacher.fullName} - ${user.teacher.speciality}!` :
+              'Đăng nhập thành công!';
+
             return {
               success: true,
-              message: 'Đăng nhập thành công!',
+              message: welcomeMessage,
               user: user,
               token: token
             };

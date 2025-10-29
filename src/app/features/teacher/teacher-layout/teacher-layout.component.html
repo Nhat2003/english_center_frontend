@@ -10,7 +10,7 @@
         class="trigger">
         <span nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></span>
       </button>
-      <span nz-icon nzType="graduation-cap" nzTheme="outline"></span>
+  <span nz-icon nzType="read" nzTheme="outline"></span>
       <span class="title">English Center - Teacher</span>
     </div>
 
@@ -52,45 +52,45 @@
       nzWidth="250px">
       <ul nz-menu nzMode="inline" [nzInlineCollapsed]="isCollapsed" class="sidebar-menu">
 
-        <!-- 🏠 Trang chủ -->
+        <!-- Trang chủ -->
         <li nz-menu-item routerLink="/teacher/dashboard" routerLinkActive="ant-menu-item-selected">
-          <span class="menu-emoji">🏠</span>
+          <span nz-icon nzType="home" class="menu-icon"></span>
           <span>Trang chủ</span>
         </li>
 
-        <!-- 📅 Lịch dạy -->
+        <!-- Lịch dạy -->
         <li nz-menu-item routerLink="/teacher/schedule" routerLinkActive="ant-menu-item-selected">
-          <span class="menu-emoji">📅</span>
+          <span nz-icon nzType="calendar" class="menu-icon"></span>
           <span>Lịch dạy</span>
         </li>
 
-        <!-- 👨‍🎓 Danh sách lớp & học sinh -->
+        <!-- Danh sách lớp & học sinh -->
         <li nz-menu-item routerLink="/teacher/classes" routerLinkActive="ant-menu-item-selected">
-          <span class="menu-emoji">👨‍🎓</span>
+          <span nz-icon nzType="team" class="menu-icon"></span>
           <span>Danh sách lớp & học sinh</span>
         </li>
 
-        <!-- 📝 Quản lý bài tập -->
+        <!-- Quản lý bài tập -->
         <li nz-menu-item routerLink="/teacher/assignments" routerLinkActive="ant-menu-item-selected">
-          <span class="menu-emoji">📝</span>
+          <span nz-icon nzType="file-text" class="menu-icon"></span>
           <span>Quản lý bài tập</span>
         </li>
 
-        <!-- 🎥 Phòng học online -->
+        <!-- Phòng học online -->
         <li nz-menu-item routerLink="/teacher/online-classes" routerLinkActive="ant-menu-item-selected">
-          <span class="menu-emoji">🎥</span>
+          <span nz-icon nzType="video-camera" class="menu-icon"></span>
           <span>Phòng học online</span>
         </li>
 
-        <!-- 📚 Tài liệu giảng dạy -->
+        <!-- Tài liệu giảng dạy -->
         <li nz-menu-item routerLink="/teacher/materials" routerLinkActive="ant-menu-item-selected">
-          <span class="menu-emoji">📚</span>
+          <span nz-icon nzType="book" class="menu-icon"></span>
           <span>Tài liệu giảng dạy</span>
         </li>
 
-        <!-- 📢 Thông báo cho học sinh -->
+        <!-- Thông báo cho học sinh -->
         <li nz-menu-item routerLink="/teacher/notifications" routerLinkActive="ant-menu-item-selected">
-          <span class="menu-emoji">📢</span>
+          <span nz-icon nzType="notification" class="menu-icon"></span>
           <span>Thông báo cho học sinh</span>
           <nz-badge [nzCount]="newNotifications" *ngIf="newNotifications > 0" class="notification-badge"></nz-badge>
         </li>

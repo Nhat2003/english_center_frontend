@@ -13,6 +13,7 @@ import { Observable } from 'rxjs';
 export class LoginComponent implements OnInit {
   form!: FormGroup;
   isLoading = false;
+  passwordVisible = false;
 
   constructor(
     private fb: FormBuilder,
@@ -76,6 +77,10 @@ export class LoginComponent implements OnInit {
       default:
         this.router.navigate(['/']);
     }
+  }
+
+  togglePasswordVisibility() {
+    this.passwordVisible = !this.passwordVisible;
   }
 
   getUsernameErrorTip(): string {

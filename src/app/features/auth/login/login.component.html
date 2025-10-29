@@ -3,7 +3,7 @@
     <div class="login-header">
       <nz-spin [nzSpinning]="isLoading">
         <div class="logo-section">
-          <span nz-icon nzType="user" nzTheme="outline" class="login-icon"></span>
+          <img src="assets/logo-ec.svg" alt="English Center" class="brand-logo" />
           <h2>Đăng nhập hệ thống</h2>
           <p>Chào mừng bạn đến với English Center</p>
         </div>
@@ -27,14 +27,24 @@
       <nz-form-item>
         <nz-form-label nzRequired nzFor="password">Mật khẩu</nz-form-label>
         <nz-form-control [nzErrorTip]="getPasswordErrorTip()">
-          <input
-            nz-input
-            id="password"
-            type="password"
-            formControlName="password"
-            placeholder="Nhập mật khẩu (demo: 123)"
-            autocomplete="current-password"
-          />
+          <nz-input-group [nzSuffix]="toggleTpl">
+            <input
+              nz-input
+              id="password"
+              [type]="passwordVisible ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="Nhập mật khẩu (demo: 123)"
+              autocomplete="current-password"
+            />
+          </nz-input-group>
+          <ng-template #toggleTpl>
+            <i
+              nz-icon
+              class="password-toggle"
+              [nzType]="passwordVisible ? 'eye-invisible' : 'eye'"
+              (click)="togglePasswordVisibility()"
+            ></i>
+          </ng-template>
         </nz-form-control>
       </nz-form-item>
 
@@ -56,7 +66,7 @@
       </nz-form-item>
 
       <div class="login-links">
-        <a routerLink="/auth/register">Chưa có tài khoản? Đăng ký</a>
+        <span></span>
         <a href="#" class="forgot-password">Quên mật khẩu?</a>
       </div>
     </form>

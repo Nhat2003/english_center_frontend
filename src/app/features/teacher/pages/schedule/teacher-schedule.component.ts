@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { AuthService, User, Student } from '../../../../core/services/auth.service';
+import { AuthService, User } from '../../../../core/services/auth.service';
 import { ScheduleService } from '../../../../core/services/schedule.service';
+import { HttpClient } from '@angular/common/http';
 import {
-  ScheduleItemForStudentDTO,
+  ScheduleItemForTeacherDTO,
   formatSessionInfo,
   formatScheduleTime,
   formatScheduleDate,
@@ -12,36 +13,42 @@ import {
 } from '../../../../core/models/fixed-schedule.model';
 
 @Component({
-  selector: 'app-student-schedule',
-  templateUrl: './student-schedule.component.html',
-  styleUrls: ['./student-schedule.component.css']
+  selector: 'app-teacher-schedule',
+  templateUrl: './teacher-schedule.component.html',
+  styleUrls: ['./teacher-schedule.component.css']
 })
-export class StudentScheduleComponent implements OnInit {
+export class TeacherScheduleComponent implements OnInit {
   currentUser: User | null = null;
   loading = false;
-  studentSchedules: ScheduleItemForStudentDTO[] = [];
+  teacherSchedules: ScheduleItemForTeacherDTO[] = [];
   currentWeekStart = new Date();
+
+  // Modal for student list
+  isStudentModalVisible = false;
+  selectedSchedule: ScheduleItemForTeacherDTO | null = null;
+  modalStudents: Array<{ id: number; fullName: string }> = [];
+  modalLoading = false;
 
   constructor(
     private authService: AuthService,
     private scheduleService: ScheduleService,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private http: HttpClient
   ) {
     this.setWeekStart();
   }
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
-
-    if (this.currentUser?.role === 'STUDENT' && this.currentUser?.student?.id) {
-      this.loadStudentSchedule();
+    if (this.currentUser?.role === 'TEACHER') {
+      this.loadTeacherSchedule();
     } else {
-      this.message.error('Vui lòng đăng nhập với tài khoản học sinh');
+      this.message.error('Vui lòng đăng nhập với tài khoản giáo viên');
     }
   }
 
-  loadStudentSchedule(): void {
-    if (!this.currentUser?.student?.id) return;
+  loadTeacherSchedule(): void {
+    if (this.currentUser?.role !== 'TEACHER') return;
 
     this.loading = true;
     const fromDate = this.formatDateForAPI(this.currentWeekStart);
@@ -49,16 +56,18 @@ export class StudentScheduleComponent implements OnInit {
     weekEnd.setDate(this.currentWeekStart.getDate() + 6);
     const toDate = this.formatDateForAPI(weekEnd);
 
-    this.scheduleService.getStudentSchedule(this.currentUser.student.id, fromDate, toDate).subscribe({
-      next: (data: ScheduleItemForStudentDTO[]) => {
-        this.studentSchedules = data;
+    // Sử dụng teacher.id nếu có, nếu không thì dùng fallback = 2
+    const teacherId = this.currentUser.teacher?.id || 2;
+    this.scheduleService.getTeacherSchedule(teacherId, fromDate, toDate).subscribe({
+      next: (data: ScheduleItemForTeacherDTO[]) => {
+        this.teacherSchedules = data;
         this.loading = false;
-        this.message.success(`Đã tải ${data.length} lịch học tuần này`);
+        this.message.success(`Đã tải ${data.length} lịch dạy tuần này`);
       },
-      error: (error) => {
-        this.studentSchedules = [];
+      error: () => {
+        this.teacherSchedules = [];
         this.loading = false;
-        this.message.error('Không thể tải lịch học');
+        this.message.error('Không thể tải lịch dạy');
       }
     });
   }
@@ -67,26 +76,26 @@ export class StudentScheduleComponent implements OnInit {
   previousWeek(): void {
     this.currentWeekStart.setDate(this.currentWeekStart.getDate() - 7);
     this.setWeekStart();
-    this.loadStudentSchedule();
+    this.loadTeacherSchedule();
   }
 
   nextWeek(): void {
     this.currentWeekStart.setDate(this.currentWeekStart.getDate() + 7);
     this.setWeekStart();
-    this.loadStudentSchedule();
+    this.loadTeacherSchedule();
   }
 
   goToCurrentWeek(): void {
     this.currentWeekStart = new Date();
     this.setWeekStart();
-    this.loadStudentSchedule();
+    this.loadTeacherSchedule();
   }
 
   refresh(): void {
-    this.loadStudentSchedule();
+    this.loadTeacherSchedule();
   }
 
-  // Helper methods
+
   private setWeekStart(): void {
     const today = new Date(this.currentWeekStart);
     const day = today.getDay();
@@ -121,12 +130,12 @@ export class StudentScheduleComponent implements OnInit {
   }
 
   // Schedule display methods
-  getSchedulesForDay(dayIndex: number): ScheduleItemForStudentDTO[] {
+  getSchedulesForDay(dayIndex: number): ScheduleItemForTeacherDTO[] {
     const targetDate = new Date(this.currentWeekStart);
     targetDate.setDate(this.currentWeekStart.getDate() + dayIndex);
     const dateStr = this.formatDateForAPI(targetDate);
 
-    return this.studentSchedules.filter(schedule => schedule.date === dateStr);
+    return this.teacherSchedules.filter(schedule => schedule.date === dateStr);
   }
 
   isToday(dayIndex: number): boolean {
@@ -168,4 +177,42 @@ export class StudentScheduleComponent implements OnInit {
   getScheduleStatus(sessionIndex: number, totalSessions: number) {
     return getScheduleStatus(sessionIndex, totalSessions);
   }
+
+  // Helper method to get student count text
+  getStudentCountText(students: any[]): string {
+    const count = students?.length || 0;
+    return count === 1 ? `${count} học sinh` : `${count} học sinh`;
+  }
+
+  // Modal methods
+  showStudentList(schedule: ScheduleItemForTeacherDTO): void {
+    this.selectedSchedule = schedule;
+    this.isStudentModalVisible = true;
+    this.modalLoading = true;
+    // Call API to get students by classId
+    const classId = schedule.classId;
+    this.http.get<any[]>(`http://localhost:8080/class-students/${classId}`).subscribe({
+      next: (students: any[]) => {
+        this.modalStudents = students.map(s => ({
+          id: s.id,
+          fullName: s.fullName || s.name || s.ten || '?'
+        }));
+        this.modalLoading = false;
+      },
+      error: () => {
+        this.modalStudents = [];
+        this.modalLoading = false;
+        this.message.error('Không thể tải danh sách học sinh');
+      }
+    });
+  }
+
+  closeStudentModal(): void {
+    this.isStudentModalVisible = false;
+    this.selectedSchedule = null;
+    this.modalStudents = [];
+    this.modalLoading = false;
+  }
+
+  // ...existing code...
 }

@@ -431,8 +431,8 @@
 }
 
 .schedule-teacher::before {
-  content: '👨‍🏫';
-  font-size: 10px;
+
+  font-size: 12px;
 }
 
 .schedule-room {
@@ -445,8 +445,8 @@
 }
 
 .schedule-room::before {
-  content: '📍';
-  font-size: 10px;
+
+  font-size: 12px;
 }
 
 .schedule-room.null-room::before {
