@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-// import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { TeacherService } from '../../../../core/services/teacher.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -13,15 +13,12 @@ export class TeacherClassesComponent implements OnInit {
   teacherId: number | null = null;
   classes: any[] = [];
   loadingClasses = false;
-  selectedClass: any = null;
-  students: any[] = [];
-  loadingStudents = false;
-  isStudentModalVisible = false;
 
   constructor(
-  private teacherService: TeacherService,
+    private teacherService: TeacherService,
     private authService: AuthService,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -36,7 +33,7 @@ export class TeacherClassesComponent implements OnInit {
 
   loadClasses(): void {
     this.loadingClasses = true;
-  this.teacherService.getClassesByTeacher(this.teacherId).subscribe({
+    this.teacherService.getClassesByTeacher(this.teacherId).subscribe({
       next: (data) => {
         this.classes = data;
         this.loadingClasses = false;
@@ -49,27 +46,8 @@ export class TeacherClassesComponent implements OnInit {
   }
 
   selectClass(classRoom: any): void {
-    this.selectedClass = classRoom;
-    this.isStudentModalVisible = true;
-    this.loadingStudents = true;
-    this.teacherService.getStudentsByClass(classRoom.id).subscribe({
-      next: (data) => {
-        this.students = data;
-        console.log('Danh sách sinh viên:', this.students);
-        this.loadingStudents = false;
-      },
-      error: () => {
-        this.loadingStudents = false;
-        this.message.error('Không thể tải danh sách học sinh.');
-      }
-    });
-  }
-
-  closeStudentModal(): void {
-    this.isStudentModalVisible = false;
-    this.selectedClass = null;
-    this.students = [];
-    this.loadingStudents = false;
+    // Chuyển đến trang quản lý lớp - mặc định là overview
+    this.router.navigate(['/teacher/classes', classRoom.id, 'overview']);
   }
 }
 

@@ -1,0 +1,211 @@
+<div class="assignment-detail">
+  <nz-spin *ngIf="loading" nzTip="Đang tải..."></nz-spin>
+
+  <div *ngIf="!loading && assignment" class="content">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="header-left">
+        <button nz-button nzType="text" (click)="goBack()" class="back-btn">
+          <span nz-icon nzType="arrow-left"></span>
+          Quay lại
+        </button>
+        <h2>{{ assignment.title }}</h2>
+      </div>
+      <div class="header-actions">
+        <button nz-button nzType="default">
+          <span nz-icon nzType="edit"></span>
+          Chỉnh sửa
+        </button>
+        <button nz-button nzType="primary" nzDanger>
+          <span nz-icon nzType="delete"></span>
+          Xóa bài tập
+        </button>
+      </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div nz-row [nzGutter]="16" class="stats-row">
+      <div nz-col [nzSpan]="6">
+        <nz-card>
+          <nz-statistic
+            [nzValue]="getTotalStudents()"
+            nzTitle="Tổng số sinh viên"
+            [nzValueStyle]="{ color: '#1890ff' }">
+            <ng-template #nzPrefix>
+              <span nz-icon nzType="team"></span>
+            </ng-template>
+          </nz-statistic>
+        </nz-card>
+      </div>
+      <div nz-col [nzSpan]="6">
+        <nz-card>
+          <nz-statistic
+            [nzValue]="getSubmittedCount()"
+            nzTitle="Đã nộp bài"
+            [nzValueStyle]="{ color: '#3bb273' }">
+            <ng-template #nzPrefix>
+              <span nz-icon nzType="file-done"></span>
+            </ng-template>
+          </nz-statistic>
+        </nz-card>
+      </div>
+      <div nz-col [nzSpan]="6">
+        <nz-card>
+          <nz-statistic
+            [nzValue]="getGradedCount()"
+            nzTitle="Đã chấm điểm"
+            [nzValueStyle]="{ color: '#faad14' }">
+            <ng-template #nzPrefix>
+              <span nz-icon nzType="check-circle"></span>
+            </ng-template>
+          </nz-statistic>
+        </nz-card>
+      </div>
+      <div nz-col [nzSpan]="6">
+        <nz-card>
+          <nz-statistic
+            [nzValue]="getAverageGrade()"
+            nzTitle="Điểm trung bình"
+            [nzValueStyle]="{ color: '#f5222d' }">
+            <ng-template #nzPrefix>
+              <span nz-icon nzType="trophy"></span>
+            </ng-template>
+          </nz-statistic>
+        </nz-card>
+      </div>
+    </div>
+
+    <!-- Assignment Info -->
+    <nz-card nzTitle="Thông tin bài tập" class="info-card">
+      <div nz-row [nzGutter]="[16, 16]">
+        <div nz-col [nzSpan]="12">
+          <div class="info-item">
+            <label>Lớp học:</label>
+            <span>{{ assignment.classRoom.name }}</span>
+          </div>
+        </div>
+        <div nz-col [nzSpan]="12">
+          <div class="info-item">
+            <label>Ngày đến hạn:</label>
+            <span class="due-date">{{ assignment.dueDate | date: 'dd/MM/yyyy' }}</span>
+          </div>
+        </div>
+        <div nz-col [nzSpan]="24">
+          <div class="info-item">
+            <label>Mô tả:</label>
+            <p class="description">{{ assignment.description }}</p>
+          </div>
+        </div>
+        <div nz-col [nzSpan]="24" *ngIf="assignment.fileUrl">
+          <div class="info-item">
+            <label>File đính kèm:</label>
+            <button nz-button nzType="link" (click)="downloadFile(assignment.fileUrl!)">
+              <span nz-icon nzType="paper-clip"></span>
+              Tải xuống file đính kèm
+            </button>
+          </div>
+        </div>
+      </div>
+    </nz-card>
+
+    <!-- Submissions Table -->
+    <nz-card nzTitle="Danh sách bài nộp" class="submissions-card">
+      <nz-table
+        [nzData]="assignment.submissions"
+        [nzShowPagination]="true"
+        [nzPageSize]="10"
+        nzSize="middle">
+        <thead>
+          <tr>
+            <th nzWidth="50px" nzAlign="center">#</th>
+            <th>Sinh viên</th>
+            <th nzWidth="150px" nzAlign="center">Thời gian nộp</th>
+            <th nzWidth="120px" nzAlign="center">Điểm</th>
+            <th nzWidth="200px">Nhận xét</th>
+            <th nzWidth="200px" nzAlign="center">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let submission of assignment.submissions; let i = index">
+            <td nzAlign="center">{{ i + 1 }}</td>
+            <td>
+              <div class="student-info">
+                <nz-avatar nzIcon="user" [nzSize]="32"></nz-avatar>
+                <div class="student-details">
+                  <div class="student-name">{{ submission.student.fullName }}</div>
+                  <div class="student-email">{{ submission.student.email }}</div>
+                </div>
+              </div>
+            </td>
+            <td nzAlign="center">
+              <div class="submitted-time">
+                {{ submission.submittedAt | date: 'dd/MM/yyyy' }}<br>
+                <small>{{ submission.submittedAt | date: 'HH:mm' }}</small>
+              </div>
+            </td>
+            <td nzAlign="center">
+              <nz-tag *ngIf="submission.grade !== null" [nzColor]="submission.grade >= 5 ? 'success' : 'error'">
+                {{ submission.grade }}/10
+              </nz-tag>
+              <nz-tag *ngIf="submission.grade === null" nzColor="default">
+                Chưa chấm
+              </nz-tag>
+            </td>
+            <td>
+              <span class="feedback">{{ submission.feedback || '-' }}</span>
+            </td>
+            <td nzAlign="center">
+              <div class="action-buttons">
+                <button nz-button nzType="link" nzSize="small" (click)="downloadFile(submission.fileUrl)">
+                  <span nz-icon nzType="download"></span>
+                  Tải xuống
+                </button>
+                <button nz-button nzType="primary" nzSize="small" (click)="openGradingModal(submission)">
+                  <span nz-icon nzType="edit"></span>
+                  Chấm điểm
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </nz-table>
+
+      <nz-empty *ngIf="assignment.submissions.length === 0" nzNotFoundContent="Chưa có bài nộp nào"></nz-empty>
+    </nz-card>
+  </div>
+
+  <!-- Grading Modal -->
+  <nz-modal
+    [(nzVisible)]="gradingVisible"
+    nzTitle="Chấm điểm bài tập"
+    (nzOnCancel)="closeGradingModal()"
+    (nzOnOk)="submitGrade()"
+    nzOkText="Lưu điểm"
+    nzCancelText="Hủy"
+    [nzWidth]="500">
+    <div class="grading-form">
+      <div class="form-group">
+        <label class="form-label"><span class="required">*</span> Điểm</label>
+        <nz-input-number
+          [(ngModel)]="gradeForm.grade"
+          [nzMin]="0"
+          [nzMax]="10"
+          [nzStep]="0.1"
+          [nzPrecision]="1"
+          nzPlaceHolder="Nhập điểm (0-10)"
+          style="width: 100%;">
+        </nz-input-number>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Nhận xét</label>
+        <textarea
+          nz-input
+          [(ngModel)]="gradeForm.feedback"
+          rows="5"
+          placeholder="Nhập nhận xét cho sinh viên...">
+        </textarea>
+      </div>
+    </div>
+  </nz-modal>
+</div>

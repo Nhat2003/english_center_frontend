@@ -10,8 +10,13 @@
         class="trigger">
         <span nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></span>
       </button>
-  <span nz-icon nzType="read" nzTheme="outline"></span>
-      <span class="title">English Center - Teacher</span>
+      <div class="logo-icon-wrapper">
+        <span nz-icon nzType="read" nzTheme="filled"></span>
+      </div>
+      <span class="title">
+        <span class="brand-name">TOEIC DOWNTOWN</span>
+        <span class="user-role">Teacher Portal</span>
+      </span>
     </div>
 
     <div class="header-right">
@@ -43,8 +48,9 @@
   </nz-header>
 
   <nz-layout>
-    <!-- Sidebar -->
+    <!-- Sidebar - Main Menu -->
     <nz-sider
+      *ngIf="!isClassManagementMode"
       class="sidebar"
       nzCollapsible
       [(nzCollapsed)]="isCollapsed"
@@ -67,26 +73,9 @@
         <!-- Danh sách lớp & học sinh -->
         <li nz-menu-item routerLink="/teacher/classes" routerLinkActive="ant-menu-item-selected">
           <span nz-icon nzType="team" class="menu-icon"></span>
-          <span>Danh sách lớp & học sinh</span>
+          <span>Danh sách lớp</span>
         </li>
 
-        <!-- Quản lý bài tập -->
-        <li nz-menu-item routerLink="/teacher/assignments" routerLinkActive="ant-menu-item-selected">
-          <span nz-icon nzType="file-text" class="menu-icon"></span>
-          <span>Quản lý bài tập</span>
-        </li>
-
-        <!-- Phòng học online -->
-        <li nz-menu-item routerLink="/teacher/online-classes" routerLinkActive="ant-menu-item-selected">
-          <span nz-icon nzType="video-camera" class="menu-icon"></span>
-          <span>Phòng học online</span>
-        </li>
-
-        <!-- Tài liệu giảng dạy -->
-        <li nz-menu-item routerLink="/teacher/materials" routerLinkActive="ant-menu-item-selected">
-          <span nz-icon nzType="book" class="menu-icon"></span>
-          <span>Tài liệu giảng dạy</span>
-        </li>
 
         <!-- Thông báo cho học sinh -->
         <li nz-menu-item routerLink="/teacher/notifications" routerLinkActive="ant-menu-item-selected">
@@ -95,6 +84,56 @@
           <nz-badge [nzCount]="newNotifications" *ngIf="newNotifications > 0" class="notification-badge"></nz-badge>
         </li>
 
+      </ul>
+    </nz-sider>
+
+    <!-- Sidebar - Class Management Menu -->
+    <nz-sider
+      *ngIf="isClassManagementMode"
+      class="sidebar"
+      nzCollapsible
+      [(nzCollapsed)]="isCollapsed"
+      [nzTrigger]="null"
+      nzWidth="250px">
+
+      <!-- Class Header -->
+      <div class="class-sidebar-header" *ngIf="!isCollapsed">
+        <h3 class="class-name">{{ currentClassInfo?.name || 'Quản lý lớp' }}</h3>
+        <button nz-button nzType="text" nzSize="small" (click)="backToClasses()" class="back-button">
+          <span nz-icon nzType="arrow-left"></span>
+          Quay lại
+        </button>
+      </div>
+      <div class="class-sidebar-header-collapsed" *ngIf="isCollapsed">
+        <button nz-button nzType="text" nzSize="small" (click)="backToClasses()" class="back-button-collapsed">
+          <span nz-icon nzType="arrow-left"></span>
+        </button>
+      </div>
+
+      <ul nz-menu nzMode="inline" [nzInlineCollapsed]="isCollapsed" class="sidebar-menu">
+        <!-- Tổng quan -->
+        <li nz-menu-item [routerLink]="['/teacher/classes', currentClassId, 'overview']" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="dashboard" class="menu-icon"></span>
+          <span>Tổng quan</span>
+        </li>
+
+        <!-- Danh sách sinh viên -->
+        <li nz-menu-item [routerLink]="['/teacher/classes', currentClassId, 'students']" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="team" class="menu-icon"></span>
+          <span>Danh sách sinh viên</span>
+        </li>
+
+        <!-- Bài tập -->
+        <li nz-menu-item [routerLink]="['/teacher/classes', currentClassId, 'assignments']" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="file-text" class="menu-icon"></span>
+          <span>Bài tập</span>
+        </li>
+
+        <!-- Tài liệu -->
+        <li nz-menu-item [routerLink]="['/teacher/classes', currentClassId, 'materials']" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="book" class="menu-icon"></span>
+          <span>Tài liệu</span>
+        </li>
       </ul>
     </nz-sider>
 

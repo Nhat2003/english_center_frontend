@@ -403,4 +403,84 @@ button + button {
   }
 }
 
+/* ================== GLOBAL TABLE RESPONSIVE WITH HORIZONTAL SCROLL ================== */
+/* Áp dụng cho tất cả các bảng trong hệ thống */
+nz-table-inner-scroll,
+.ant-table-wrapper,
+.ant-table-container {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile: Force horizontal scroll */
+@media (max-width: 768px) {
+  .ant-table {
+    min-width: 900px; /* Force horizontal scroll trên mobile */
+    font-size: 13px;
+  }
+
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    padding: 10px 6px;
+    white-space: nowrap; /* Prevent text wrapping */
+  }
+
+  /* Compact buttons on mobile */
+  .ant-table-tbody .ant-btn {
+    padding: 0 8px;
+    height: 26px;
+    font-size: 12px;
+  }
+}
+
+/* Very small screens: Smaller min-width */
+@media (max-width: 576px) {
+  .ant-table {
+    min-width: 800px; /* Smaller but still scrollable */
+    font-size: 12px;
+  }
+
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    padding: 8px 4px;
+  }
+
+  .ant-table-tbody .ant-btn {
+    padding: 0 6px;
+    height: 24px;
+    font-size: 11px;
+  }
+}
+
+/* Tablet: Moderate scroll */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .ant-table {
+    font-size: 13px;
+  }
+
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    padding: 10px 6px;
+  }
+}
+
+/* Custom scrollbar styling for better UX */
+.ant-table-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.ant-table-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.ant-table-container::-webkit-scrollbar-thumb {
+  background: #3bb273;
+  border-radius: 4px;
+}
+
+.ant-table-container::-webkit-scrollbar-thumb:hover {
+  background: #2e8b57;
+}
+
 

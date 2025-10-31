@@ -1,0 +1,193 @@
+:host {
+  --primary-color: #3bb273;
+}
+
+.student-documents {
+  padding: 0;
+}
+
+/* Page Header */
+.page-header {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.header-content h2 {
+  margin: 0 0 8px 0;
+  color: #262626;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.subtitle {
+  margin: 0;
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+/* Table */
+.documents-table {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.documents-table ::ng-deep .ant-table {
+  font-size: 13px;
+}
+
+.documents-table ::ng-deep .ant-table-thead > tr > th {
+  background-color: #fafafa;
+  font-weight: 600;
+  padding: 10px 8px;
+  color: #262626;
+}
+
+.documents-table ::ng-deep .ant-table-tbody > tr > td {
+  padding: 12px 8px;
+}
+
+.documents-table ::ng-deep .ant-table-tbody > tr:hover {
+  background-color: rgba(59, 178, 115, 0.03);
+}
+
+.file-icon {
+  margin-right: 8px;
+  font-size: 18px;
+  color: var(--primary-color);
+}
+
+.file-name {
+  color: #262626;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Download Button */
+.download-btn {
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  min-width: auto;
+  border-radius: 4px;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  color: var(--primary-color) !important;
+}
+
+.download-btn:hover {
+  background-color: rgba(59, 178, 115, 0.1) !important;
+  color: #2d9960 !important;
+}
+
+.download-btn span[nz-icon] {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Empty State */
+.empty-state {
+  padding: 60px 20px;
+  text-align: center;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.empty-description {
+  margin-top: 16px;
+  color: #8c8c8c;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Loading */
+nz-spin {
+  display: block;
+  padding: 60px 0;
+  text-align: center;
+}
+
+/* Tags */
+.documents-table ::ng-deep nz-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* Pagination */
+::ng-deep .ant-pagination {
+  margin-top: 16px;
+}
+
+::ng-deep .ant-pagination-item-active {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+::ng-deep .ant-pagination-item-active a {
+  color: #fff;
+}
+
+::ng-deep .ant-pagination-item:hover {
+  border-color: var(--primary-color);
+}
+
+::ng-deep .ant-pagination-item:hover a {
+  color: var(--primary-color);
+}
+
+::ng-deep .ant-pagination-prev:hover .ant-pagination-item-link,
+::ng-deep .ant-pagination-next:hover .ant-pagination-item-link {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+::ng-deep .ant-pagination-jump-prev:hover .ant-pagination-item-link-icon,
+::ng-deep .ant-pagination-jump-next:hover .ant-pagination-item-link-icon {
+  color: var(--primary-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page-header {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+  }
+
+  .header-content h2 {
+    font-size: 20px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+  }
+
+  .documents-table ::ng-deep .ant-table {
+    font-size: 12px;
+  }
+
+  .file-icon {
+    font-size: 16px;
+  }
+
+  .file-name {
+    font-size: 12px;
+  }
+
+  .download-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .download-btn span[nz-icon] {
+    font-size: 16px;
+  }
+}

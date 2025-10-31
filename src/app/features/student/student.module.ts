@@ -26,11 +26,17 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzCalendarModule } from 'ng-zorro-antd/calendar';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
+import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
+import { NzModalModule } from 'ng-zorro-antd/modal';
 
 // Components
 import { StudentLayoutComponent } from './student-layout/student-layout.component';
 import { StudentDashboardComponent } from './pages/dashboard/dashboard.component';
 import { StudentScheduleComponent } from './pages/schedule/student-schedule.component';
+import { StudentDocumentsComponent } from './pages/documents/student-documents.component';
+import { StudentAssignmentsComponent } from './pages/assignments/student-assignments.component';
 
 // Services
 import { StudentScheduleService } from '../../core/services/student-schedule.service';
@@ -42,7 +48,9 @@ import { STUDENT_ROUTES } from './student.routes';
   declarations: [
     StudentLayoutComponent,
     StudentDashboardComponent,
-    StudentScheduleComponent
+    StudentScheduleComponent,
+    StudentDocumentsComponent,
+    StudentAssignmentsComponent
   ],
   imports: [
     CommonModule,
@@ -71,7 +79,11 @@ import { STUDENT_ROUTES } from './student.routes';
     NzDividerModule,
     NzEmptyModule,
     NzSpinModule,
-    NzCalendarModule
+    NzCalendarModule,
+    NzToolTipModule,
+    NzAlertModule,
+    NzDescriptionsModule,
+    NzModalModule
   ],
   providers: [
     StudentScheduleService

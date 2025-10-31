@@ -3,6 +3,11 @@ import { TeacherLayoutComponent } from './teacher-layout/teacher-layout.componen
 import { TeacherDashboardComponent } from './dashboard/dashboard.component';
 import { TeacherScheduleComponent } from './pages/schedule/teacher-schedule.component';
 import { TeacherClassesComponent } from './pages/classes/teacher-classes.component';
+import { ClassOverviewComponent } from './pages/classes/class-overview/class-overview.component';
+import { ClassStudentsComponent } from './pages/classes/class-students/class-students.component';
+import { ClassAssignmentsComponent } from './pages/classes/class-assignments/class-assignments.component';
+import { ClassMaterialsComponent } from './pages/classes/class-materials/class-materials.component';
+import { AssignmentDetailComponent } from './pages/classes/assignment-detail/assignment-detail.component';
 
 export const TEACHER_ROUTES: Routes = [
   {
@@ -11,13 +16,17 @@ export const TEACHER_ROUTES: Routes = [
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: TeacherDashboardComponent },
-      // 7 main sections
-      { path: 'schedule', component: TeacherScheduleComponent }, // Lịch dạy
-      { path: 'classes', component: TeacherClassesComponent }, // Danh sách lớp & học sinh
-      { path: 'assignments', component: TeacherDashboardComponent }, // Quản lý bài tập
-      { path: 'online-classes', component: TeacherDashboardComponent }, // Phòng học online
-      { path: 'materials', component: TeacherDashboardComponent }, // Tài liệu giảng dạy
-      { path: 'notifications', component: TeacherDashboardComponent } // Thông báo cho học sinh
+      { path: 'schedule', component: TeacherScheduleComponent },
+      { path: 'classes', component: TeacherClassesComponent },
+      { path: 'classes/:id/overview', component: ClassOverviewComponent },
+      { path: 'classes/:id/students', component: ClassStudentsComponent },
+      { path: 'classes/:id/assignments', component: ClassAssignmentsComponent },
+      { path: 'classes/:id/assignments/:assignmentId', component: AssignmentDetailComponent },
+      { path: 'classes/:id/materials', component: ClassMaterialsComponent },
+      { path: 'assignments', component: TeacherDashboardComponent },
+      { path: 'online-classes', component: TeacherDashboardComponent },
+      { path: 'materials', component: TeacherDashboardComponent },
+      { path: 'notifications', component: TeacherDashboardComponent }
     ]
   }
 ];

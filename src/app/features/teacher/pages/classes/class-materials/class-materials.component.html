@@ -1,0 +1,125 @@
+<div class="class-materials">
+  <div class="header">
+    <h2>Tài liệu</h2>
+    <button nz-button nzType="primary" (click)="openUploadModal()">
+      <i nz-icon nzType="upload"></i>
+      Tải lên tài liệu
+    </button>
+  </div>
+
+  <nz-spin *ngIf="loading" nzTip="Đang tải tài liệu..."></nz-spin>
+
+  <nz-table
+    *ngIf="!loading && documents.length > 0"
+    [nzData]="documents"
+    [nzSize]="'small'"
+    [nzBordered]="true">
+    <thead>
+      <tr>
+        <th nzWidth="50px" nzAlign="center">#</th>
+        <th>Tên tài liệu</th>
+        <th nzWidth="100px" nzAlign="center">Loại</th>
+        <th nzWidth="100px" nzAlign="center">Kích thước</th>
+        <th nzWidth="140px" nzAlign="center">Ngày tải lên</th>
+        <th nzWidth="80px" nzAlign="center"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let document of documents; let i = index">
+        <td nzAlign="center">{{ i + 1 }}</td>
+        <td>
+          <i nz-icon [nzType]="getFileIcon(document.fileName)" class="file-icon-table"></i>
+          <span class="file-name-text">{{ document.fileName }}</span>
+        </td>
+        <td nzAlign="center">{{ getFileType(document) }}</td>
+        <td nzAlign="center">{{ formatFileSize(document.fileSize) }}</td>
+        <td nzAlign="center">{{ document.uploadedAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+        <td nzAlign="center">
+          <div class="action-buttons">
+            <button
+              nz-button
+              nzType="text"
+              nzSize="small"
+              class="download-btn"
+              (click)="downloadDocument(document)"
+              nz-tooltip="Tải xuống">
+              <i nz-icon nzType="download"></i>
+            </button>
+            <button
+              nz-button
+              nzType="text"
+              nzSize="small"
+              class="delete-btn"
+              (click)="deleteDocument(document)"
+              nz-tooltip="Xóa">
+              <i nz-icon nzType="delete"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+
+  <div *ngIf="!loading && documents.length === 0" class="empty-state">
+    <nz-empty nzNotFoundContent="Chưa có tài liệu nào">
+      <button nz-button nzType="primary" (click)="openUploadModal()">
+        Tải lên tài liệu đầu tiên
+      </button>
+    </nz-empty>
+  </div>
+
+  <!-- Upload Modal -->
+  <nz-modal
+    [(nzVisible)]="uploadModalVisible"
+    nzTitle="Tải lên tài liệu"
+    (nzOnCancel)="closeUploadModal()"
+    (nzOnOk)="uploadDocument()"
+    [nzOkLoading]="uploading"
+    nzOkText="Tải lên"
+    nzCancelText="Hủy"
+    [nzWidth]="500">
+    <div class="upload-form">
+      <div class="form-group">
+        <label class="form-label required">Chọn file</label>
+        <input
+          type="file"
+          #fileInput
+          (change)="handleFileSelect($event)"
+          style="display: none;">
+
+        <button
+          nz-button
+          nzType="default"
+          class="select-file-btn"
+          (click)="fileInput.click()"
+          *ngIf="!selectedFile"
+          style="width: 100%;">
+          <span nz-icon nzType="upload"></span>
+          Chọn file từ máy tính
+        </button>
+
+        <div class="selected-file" *ngIf="selectedFile">
+          <div class="file-info">
+            <span nz-icon [nzType]="getFileIcon(selectedFile.name)" class="file-icon"></span>
+            <div class="file-details">
+              <span class="file-name">{{ selectedFile.name }}</span>
+              <span class="file-size">{{ formatFileSize(selectedFile.size) }}</span>
+            </div>
+          </div>
+          <button
+            nz-button
+            nzType="text"
+            nzDanger
+            (click)="removeFile()">
+            <span nz-icon nzType="delete"></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="upload-note">
+        <i nz-icon nzType="info-circle" nzTheme="outline"></i>
+        <span>Hỗ trợ các định dạng: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT, ZIP, RAR, hình ảnh</span>
+      </div>
+    </div>
+  </nz-modal>
+</div>

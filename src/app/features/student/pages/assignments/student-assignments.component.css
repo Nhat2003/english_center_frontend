@@ -1,0 +1,365 @@
+:host {
+  --primary-color: #3bb273;
+}
+
+.student-assignments {
+  padding: 0;
+}
+
+/* Page Header */
+.page-header {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.header-content h2 {
+  margin: 0 0 8px 0;
+  color: #262626;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.subtitle {
+  margin: 0;
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+/* Assignments Grid */
+.assignments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+/* Assignment Card */
+.assignment-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+  border-left: 4px solid #d9d9d9;
+}
+
+.assignment-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.assignment-card.submitted {
+  border-left-color: var(--primary-color);
+}
+
+.assignment-card.graded {
+  border-left-color: #52c41a;
+}
+
+.assignment-card.overdue {
+  border-left-color: #ff4d4f;
+}
+
+.assignment-card ::ng-deep .ant-card-head {
+  background-color: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.assignment-card ::ng-deep .ant-card-head-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #262626;
+  padding: 12px 0;
+}
+
+.assignment-card ::ng-deep .ant-card-body {
+  padding: 16px;
+}
+
+/* Assignment Info */
+.assignment-info {
+  margin-bottom: 16px;
+}
+
+.description {
+  color: #595959;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.meta-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #8c8c8c;
+}
+
+.meta-item i[nz-icon] {
+  font-size: 14px;
+}
+
+.days-left {
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #595959;
+  margin-bottom: 12px;
+}
+
+.file-info i[nz-icon] {
+  color: var(--primary-color);
+}
+
+/* Grade Info */
+.grade-info {
+  background-color: #f6ffed;
+  border: 1px solid #b7eb8f;
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.grade-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.grade-label {
+  font-size: 14px;
+  color: #595959;
+}
+
+.grade-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #3bb273;
+}
+
+.feedback {
+  font-size: 13px;
+  color: #595959;
+  line-height: 1.5;
+}
+
+.feedback strong {
+  color: #262626;
+}
+
+/* Card Actions */
+.card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.card-actions button {
+  flex: 1;
+  min-width: 80px;
+}
+
+.card-actions ::ng-deep .ant-btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.card-actions ::ng-deep .ant-btn-primary:hover {
+  background-color: #2d9960;
+  border-color: #2d9960;
+}
+
+/* Empty State */
+.empty-state {
+  padding: 60px 20px;
+  text-align: center;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.empty-description {
+  margin-top: 16px;
+  color: #8c8c8c;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Loading */
+nz-spin {
+  display: block;
+  padding: 60px 0;
+  text-align: center;
+}
+
+/* Submit Modal */
+.submit-form {
+  padding: 20px 0;
+}
+
+.assignment-title-modal {
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.form-group {
+  margin: 16px 0;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #262626;
+  font-size: 14px;
+}
+
+.form-label.required::after {
+  content: " *";
+  color: #ff4d4f;
+}
+
+.select-file-btn {
+  height: 80px;
+  border: 2px dashed #d9d9d9;
+  background-color: #fafafa;
+  transition: all 0.3s;
+}
+
+.select-file-btn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.selected-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  border: 1px solid #d9d9d9;
+}
+
+.selected-file .file-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  background: none;
+  padding: 0;
+  margin: 0;
+}
+
+.file-icon {
+  font-size: 24px;
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.file-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.file-name {
+  font-weight: 500;
+  color: #262626;
+  font-size: 14px;
+}
+
+.file-size {
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+/* Detail Modal */
+.detail-content h3 {
+  margin: 0 0 20px 0;
+  color: #262626;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.detail-content a {
+  color: var(--primary-color);
+  cursor: pointer;
+}
+
+.detail-content a:hover {
+  color: #2d9960;
+}
+
+/* Modal buttons */
+::ng-deep .ant-modal-footer .ant-btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+::ng-deep .ant-modal-footer .ant-btn-primary:hover {
+  background-color: #2d9960;
+  border-color: #2d9960;
+}
+
+/* Tags */
+::ng-deep nz-tag {
+  font-size: 12px;
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .assignments-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .header-content h2 {
+    font-size: 20px;
+  }
+
+  .card-actions {
+    flex-direction: column;
+  }
+
+  .card-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .assignment-card ::ng-deep .ant-card-head-title {
+    font-size: 14px;
+  }
+
+  .description {
+    font-size: 13px;
+  }
+
+  .grade-value {
+    font-size: 18px;
+  }
+}

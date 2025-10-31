@@ -98,18 +98,6 @@
               {{ formatSessionInfo(schedule.sessionIndex, schedule.totalSessions) }}
             </div>
 
-            <!-- Nút xem danh sách học sinh -->
-            <div class="students-button" *ngIf="schedule.students && schedule.students.length > 0">
-              <button
-                nz-button
-                nzType="default"
-                nzSize="small"
-                (click)="showStudentList(schedule)"
-                class="view-students-btn">
-                <i nz-icon nzType="team"></i>
-                Xem danh sách ({{ schedule.students.length }} học sinh)
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -124,77 +112,4 @@
   </div>
 </div>
 
-<!-- Modal hiển thị danh sách học sinh -->
-<nz-modal
-  [(nzVisible)]="isStudentModalVisible"
-  nzTitle="Danh sách học sinh"
-  (nzOnCancel)="closeStudentModal()"
-  nzWidth="600px"
-  [nzFooter]="null">
-  <ng-container *nzModalContent>
-    <div class="student-modal-content">
-      <!-- Thông tin lớp học -->
-      <div class="class-info">
-        <h4>
-          <i nz-icon nzType="book"></i>
-          {{ selectedSchedule?.className }}
-        </h4>
-        <div class="class-details">
-          <nz-tag nzColor="blue">
-            <i nz-icon nzType="calendar"></i>
-            {{ formatScheduleDate(selectedSchedule?.date) }}
-          </nz-tag>
-          <nz-tag nzColor="green">
-            <i nz-icon nzType="clock-circle"></i>
-            {{ formatScheduleTime(selectedSchedule?.start, selectedSchedule?.end) }}
-          </nz-tag>
-          <nz-tag nzColor="orange">
-            <i nz-icon nzType="home"></i>
-            {{ selectedSchedule?.roomName }}
-          </nz-tag>
-        </div>
-      </div>
 
-      <!-- Danh sách học sinh + debug badge -->
-      <div *ngIf="modalLoading" style="text-align:center; padding:32px;">
-        <nz-spin nzTip="Đang tải danh sách học sinh..."></nz-spin>
-      </div>
-      <div *ngIf="!modalLoading && modalStudents?.length > 0; else noStudents" class="students-list-container">
-        <h5 style="margin-bottom: 16px; color: #262626; font-weight: 600;">
-          <i nz-icon nzType="team" style="margin-right: 8px; color: #52c41a;"></i>
-          Danh sách học sinh ({{ modalStudents?.length }})
-        </h5>
-        <!-- ...existing code... -->
-        <div class="student-items">
-          <div
-            *ngFor="let student of modalStudents; let i = index"
-            class="student-row">
-            <div class="student-stt">{{ i + 1 }}</div>
-            <div class="student-id">
-              <nz-tag nzColor="blue">{{ student.id }}</nz-tag>
-            </div>
-            <div class="student-name">
-              <i nz-icon nzType="user" style="margin-right: 8px; color: #52c41a;"></i>
-              {{ student.fullName || student.name || student.ten || '?' }}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <ng-template #noStudents>
-        <div style="text-align: center; padding: 40px; color: #999;">
-          <i nz-icon nzType="user" style="font-size: 32px; margin-bottom: 16px; display: block;"></i>
-          <p style="margin: 0; font-size: 16px;">Không có học sinh nào trong lớp này</p>
-        </div>
-      </ng-template>
-
-      <!-- Thống kê -->
-      <div class="student-summary">
-        <nz-tag nzColor="cyan">
-          <i nz-icon nzType="team"></i>
-          Tổng số học sinh: {{ modalStudents?.length || 0 }}
-        </nz-tag>
-      </div>
-    </div>
-  </ng-container>
-</nz-modal>

@@ -22,12 +22,22 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzMessageModule } from 'ng-zorro-antd/message';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 
 // Components
 import { TeacherLayoutComponent } from './teacher-layout/teacher-layout.component';
 import { TeacherDashboardComponent } from './dashboard/dashboard.component';
 import { TeacherScheduleComponent } from './pages/schedule/teacher-schedule.component';
 import { TeacherClassesComponent } from './pages/classes/teacher-classes.component';
+import { ClassOverviewComponent } from './pages/classes/class-overview/class-overview.component';
+import { ClassStudentsComponent } from './pages/classes/class-students/class-students.component';
+import { ClassAssignmentsComponent } from './pages/classes/class-assignments/class-assignments.component';
+import { ClassMaterialsComponent } from './pages/classes/class-materials/class-materials.component';
+import { AssignmentDetailComponent } from './pages/classes/assignment-detail/assignment-detail.component';
 
 // Routes
 import { TEACHER_ROUTES } from './teacher.routes';
@@ -37,7 +47,12 @@ import { TEACHER_ROUTES } from './teacher.routes';
     TeacherLayoutComponent,
     TeacherDashboardComponent,
     TeacherScheduleComponent,
-    TeacherClassesComponent
+    TeacherClassesComponent,
+    ClassOverviewComponent,
+    ClassStudentsComponent,
+    ClassAssignmentsComponent,
+    ClassMaterialsComponent,
+    AssignmentDetailComponent
   ],
   imports: [
     CommonModule,
@@ -61,7 +76,12 @@ import { TEACHER_ROUTES } from './teacher.routes';
     NzEmptyModule,
     NzMessageModule,
     NzSpinModule,
-    NzModalModule
+    NzModalModule,
+    NzCheckboxModule,
+    NzToolTipModule,
+    NzInputNumberModule,
+    NzInputModule,
+    NzDatePickerModule
   ]
 })
 export class TeacherModule { }

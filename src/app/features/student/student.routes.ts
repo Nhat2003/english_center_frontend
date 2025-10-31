@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 import { StudentLayoutComponent } from './student-layout/student-layout.component';
 import { StudentDashboardComponent } from './pages/dashboard/dashboard.component';
 import { StudentScheduleComponent } from './pages/schedule/student-schedule.component';
+import { StudentDocumentsComponent } from './pages/documents/student-documents.component';
+import { StudentAssignmentsComponent } from './pages/assignments/student-assignments.component';
 
 export const STUDENT_ROUTES: Routes = [
   {
@@ -11,10 +13,10 @@ export const STUDENT_ROUTES: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: StudentDashboardComponent },
       { path: 'schedule', component: StudentScheduleComponent },
-      { path: 'assignments', component: StudentDashboardComponent }, // Will create separate components later
+      { path: 'assignments', component: StudentAssignmentsComponent },
       { path: 'payments', component: StudentDashboardComponent },
       { path: 'online-classes', component: StudentDashboardComponent },
-      { path: 'documents', component: StudentDashboardComponent },
+      { path: 'documents', component: StudentDocumentsComponent },
       { path: 'notifications', component: StudentDashboardComponent }
     ]
   }

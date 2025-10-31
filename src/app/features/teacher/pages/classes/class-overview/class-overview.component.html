@@ -1,0 +1,35 @@
+<div class="class-overview">
+  <h2>Tổng quan lớp học</h2>
+  <nz-spin *ngIf="loading" nzTip="Đang tải..."></nz-spin>
+
+  <div *ngIf="!loading && classInfo" class="overview-content">
+    <nz-row [nzGutter]="16">
+      <nz-col [nzSpan]="8">
+        <nz-card nzTitle="Thông tin lớp" [nzBordered]="true">
+          <p><strong>Tên lớp:</strong> {{ classInfo.name }}</p>
+          <p><strong>Khóa học:</strong> {{ classInfo.courseName }}</p>
+          <p><strong>Phòng học:</strong> {{ classInfo.roomName }}</p>
+        </nz-card>
+      </nz-col>
+      <nz-col [nzSpan]="8">
+        <nz-card nzTitle="Thống kê" [nzBordered]="true">
+          <nz-statistic [nzValue]="studentCount" nzTitle="Số học sinh"></nz-statistic>
+          <nz-statistic [nzValue]="assignmentCount" nzTitle="Bài tập" class="mt-16"></nz-statistic>
+        </nz-card>
+      </nz-col>
+      <nz-col [nzSpan]="8">
+        <nz-card nzTitle="Tài liệu" [nzBordered]="true">
+          <nz-statistic [nzValue]="materialCount" nzTitle="Số tài liệu"></nz-statistic>
+        </nz-card>
+      </nz-col>
+    </nz-row>
+
+    <nz-card nzTitle="Lịch dạy gần đây" [nzBordered]="true" class="mt-16">
+      <p>Chưa có lịch dạy nào</p>
+    </nz-card>
+  </div>
+
+  <div *ngIf="!loading && !classInfo" class="empty-state">
+    <nz-empty nzNotFoundContent="Không tìm thấy thông tin lớp"></nz-empty>
+  </div>
+</div>

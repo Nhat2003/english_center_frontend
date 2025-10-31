@@ -1,0 +1,230 @@
+<div class="student-assignments">
+  <div class="page-header">
+    <div class="header-content">
+      <h2>Bài tập</h2>
+      <p class="subtitle">Danh sách bài tập và trạng thái nộp bài</p>
+    </div>
+  </div>
+
+  <nz-spin *ngIf="loading" nzTip="Đang tải bài tập..."></nz-spin>
+
+  <div class="assignments-grid" *ngIf="!loading && assignments.length > 0">
+    <nz-card 
+      *ngFor="let assignment of assignments"
+      [nzTitle]="assignment.title"
+      class="assignment-card"
+      [class.submitted]="assignment.submitted"
+      [class.graded]="assignment.submitted && assignment.grade !== undefined"
+      [class.overdue]="!assignment.submitted && isOverdue(assignment.dueDate)">
+      
+      <div class="card-header-extra" nz-card-extra>
+        <nz-tag [nzColor]="getStatusColor(assignment)">
+          {{ getStatusText(assignment) }}
+        </nz-tag>
+      </div>
+
+      <div class="assignment-info">
+        <p class="description">{{ assignment.description }}</p>
+        
+        <div class="meta-info">
+          <div class="meta-item">
+            <i nz-icon nzType="calendar"></i>
+            <span>Hạn nộp: {{ assignment.dueDate | date: 'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          
+          <div class="meta-item" *ngIf="!assignment.submitted && !isOverdue(assignment.dueDate)">
+            <i nz-icon nzType="clock-circle"></i>
+            <span class="days-left">Còn {{ getDaysLeft(assignment.dueDate) }} ngày</span>
+          </div>
+
+          <div class="meta-item" *ngIf="assignment.submitted">
+            <i nz-icon nzType="check-circle" [style.color]="'#3bb273'"></i>
+            <span>Đã nộp: {{ assignment.submittedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        </div>
+
+        <div class="file-info" *ngIf="assignment.fileName">
+          <i nz-icon nzType="paper-clip"></i>
+          <span>{{ assignment.fileName }}</span>
+        </div>
+
+        <div class="grade-info" *ngIf="assignment.grade !== undefined">
+          <div class="grade-box">
+            <span class="grade-label">Điểm:</span>
+            <span class="grade-value">{{ assignment.grade }}/10</span>
+          </div>
+          <div class="feedback" *ngIf="assignment.feedback">
+            <strong>Nhận xét:</strong> {{ assignment.feedback }}
+          </div>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button 
+          nz-button 
+          nzSize="small"
+          (click)="viewDetail(assignment)">
+          <i nz-icon nzType="eye"></i>
+          Chi tiết
+        </button>
+        
+        <button 
+          *ngIf="assignment.fileName"
+          nz-button 
+          nzSize="small"
+          (click)="downloadAssignment(assignment)">
+          <i nz-icon nzType="download"></i>
+          Tài liệu
+        </button>
+
+        <button 
+          *ngIf="!assignment.submitted && !isOverdue(assignment.dueDate)"
+          nz-button 
+          nzType="primary"
+          nzSize="small"
+          (click)="openSubmitModal(assignment)">
+          <i nz-icon nzType="upload"></i>
+          Nộp bài
+        </button>
+
+        <button 
+          *ngIf="assignment.submitted"
+          nz-button 
+          nzSize="small"
+          (click)="downloadSubmittedFile(assignment)">
+          <i nz-icon nzType="file-text"></i>
+          Bài đã nộp
+        </button>
+      </div>
+    </nz-card>
+  </div>
+
+  <div *ngIf="!loading && assignments.length === 0" class="empty-state">
+    <nz-empty 
+      nzNotFoundImage="simple"
+      nzNotFoundContent="Chưa có bài tập nào">
+      <p class="empty-description">
+        Giáo viên chưa giao bài tập cho lớp học.<br>
+        Vui lòng quay lại sau.
+      </p>
+    </nz-empty>
+  </div>
+
+  <!-- Submit Modal -->
+  <nz-modal
+    [(nzVisible)]="submitModalVisible"
+    nzTitle="Nộp bài tập"
+    (nzOnCancel)="closeSubmitModal()"
+    (nzOnOk)="submitAssignment()"
+    [nzOkLoading]="submitting"
+    nzOkText="Nộp bài"
+    nzCancelText="Hủy"
+    [nzWidth]="500">
+    <div class="submit-form" *ngIf="selectedAssignment">
+      <div class="assignment-title-modal">
+        <strong>{{ selectedAssignment.title }}</strong>
+      </div>
+      
+      <nz-alert 
+        nzType="info" 
+        nzMessage="Lưu ý"
+        [nzDescription]="'Hạn nộp: ' + (selectedAssignment.dueDate | date: 'dd/MM/yyyy HH:mm')"
+        nzShowIcon
+        style="margin-bottom: 16px;">
+      </nz-alert>
+
+      <div class="form-group">
+        <label class="form-label required">Chọn file bài làm</label>
+        <input
+          type="file"
+          #fileInput
+          (change)="handleFileSelect($event)"
+          style="display: none;">
+
+        <button
+          nz-button
+          nzType="default"
+          class="select-file-btn"
+          (click)="fileInput.click()"
+          *ngIf="!selectedFile"
+          style="width: 100%;">
+          <span nz-icon nzType="upload"></span>
+          Chọn file từ máy tính
+        </button>
+
+        <div class="selected-file" *ngIf="selectedFile">
+          <div class="file-info">
+            <span nz-icon nzType="file" class="file-icon"></span>
+            <div class="file-details">
+              <span class="file-name">{{ selectedFile.name }}</span>
+              <span class="file-size">{{ (selectedFile.size / 1024).toFixed(1) }} KB</span>
+            </div>
+          </div>
+          <button
+            nz-button
+            nzType="text"
+            nzDanger
+            (click)="removeFile()">
+            <span nz-icon nzType="delete"></span>
+          </button>
+        </div>
+      </div>
+
+      <nz-alert 
+        nzType="warning" 
+        nzMessage="Lưu ý: Bạn chỉ có thể nộp bài một lần. Vui lòng kiểm tra kỹ trước khi nộp."
+        nzShowIcon>
+      </nz-alert>
+    </div>
+  </nz-modal>
+
+  <!-- Detail Modal -->
+  <nz-modal
+    [(nzVisible)]="detailModalVisible"
+    [nzTitle]="'Chi tiết bài tập'"
+    (nzOnCancel)="closeDetailModal()"
+    [nzFooter]="null"
+    [nzWidth]="600">
+    <div class="detail-content" *ngIf="viewingAssignment">
+      <h3>{{ viewingAssignment.title }}</h3>
+      
+      <nz-descriptions nzBordered [nzColumn]="1">
+        <nz-descriptions-item nzTitle="Mô tả">
+          {{ viewingAssignment.description }}
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="Hạn nộp">
+          {{ viewingAssignment.dueDate | date: 'dd/MM/yyyy HH:mm' }}
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="Ngày giao">
+          {{ viewingAssignment.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="Trạng thái">
+          <nz-tag [nzColor]="getStatusColor(viewingAssignment)">
+            {{ getStatusText(viewingAssignment) }}
+          </nz-tag>
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="File đính kèm" *ngIf="viewingAssignment.fileName">
+          <a (click)="downloadAssignment(viewingAssignment)">
+            <i nz-icon nzType="paper-clip"></i> {{ viewingAssignment.fileName }}
+          </a>
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="Bài đã nộp" *ngIf="viewingAssignment.submitted">
+          <div>
+            <a (click)="downloadSubmittedFile(viewingAssignment)">
+              <i nz-icon nzType="file-text"></i> {{ viewingAssignment.submittedFileName }}
+            </a>
+            <div style="margin-top: 8px; color: #8c8c8c;">
+              Nộp lúc: {{ viewingAssignment.submittedAt | date: 'dd/MM/yyyy HH:mm' }}
+            </div>
+          </div>
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="Điểm" *ngIf="viewingAssignment.grade !== undefined">
+          <strong style="color: #3bb273; font-size: 18px;">{{ viewingAssignment.grade }}/10</strong>
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="Nhận xét" *ngIf="viewingAssignment.feedback">
+          {{ viewingAssignment.feedback }}
+        </nz-descriptions-item>
+      </nz-descriptions>
+    </div>
+  </nz-modal>
+</div>

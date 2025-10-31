@@ -1,0 +1,271 @@
+/* Variables */
+:host {
+  --primary-color: #3bb273;
+}
+
+.assignment-detail {
+  padding: 0;
+}
+
+/* Page Header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.back-btn {
+  color: #595959;
+  font-size: 16px;
+}
+
+.back-btn:hover {
+  color: var(--primary-color);
+}
+
+.page-header h2 {
+  margin: 0;
+  color: #262626;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Statistics Row */
+.stats-row {
+  margin-bottom: 24px;
+}
+
+.stats-row ::ng-deep .ant-card {
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.stats-row ::ng-deep .ant-statistic-title {
+  font-size: 14px;
+  color: #8c8c8c;
+}
+
+.stats-row ::ng-deep .ant-statistic-content {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+/* Info Card */
+.info-card {
+  margin-bottom: 24px;
+  border-radius: 8px;
+}
+
+.info-card ::ng-deep .ant-card-head {
+  background-color: #fafafa;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-item label {
+  font-weight: 600;
+  color: #595959;
+  font-size: 14px;
+}
+
+.info-item span,
+.info-item p {
+  color: #262626;
+  font-size: 14px;
+  margin: 0;
+}
+
+.due-date {
+  color: #f5222d;
+  font-weight: 500;
+}
+
+.description {
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* Submissions Card */
+.submissions-card {
+  border-radius: 8px;
+
+}
+
+.submissions-card ::ng-deep .ant-card-head {
+  background-color: #fafafa;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.submissions-card ::ng-deep .ant-table-thead > tr > th {
+  background-color: #fafafa;
+  font-weight: 600;
+  padding: 12px 8px;
+  text-align: center;
+}
+
+.submissions-card ::ng-deep .ant-table-tbody > tr > td {
+  padding: 12px 8px;
+  vertical-align: middle;
+}
+
+.submissions-card ::ng-deep .ant-table-tbody > tr:hover {
+  background-color: rgba(59, 178, 115, 0.03);
+}
+
+/* Student Info */
+.student-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.student-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.student-name {
+  font-weight: 500;
+  color: #262626;
+}
+
+.student-email {
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+/* Submitted Time */
+.submitted-time {
+  color: #595959;
+  line-height: 1.4;
+}
+
+.submitted-time small {
+  color: #8c8c8c;
+}
+
+/* Feedback */
+.feedback {
+  color: #595959;
+  font-size: 13px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Grade Tags */
+.submissions-card ::ng-deep nz-tag {
+  font-weight: 500;
+  font-size: 13px;
+  color: black;
+}
+
+.submissions-card ::ng-deep .ant-tag-success {
+  color: #fff;
+  background-color: #52c41a;
+  border-color: #52c41a;
+}
+
+.submissions-card ::ng-deep .ant-tag-error {
+  color: #fff;
+  background-color: #ff4d4f;
+  border-color: #ff4d4f;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.action-buttons button {
+  justify-content: flex-start;
+}
+
+/* Grading Modal */
+.grading-form {
+  background: #fff;
+  padding: 24px;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #262626;
+  font-size: 14px;
+}
+
+.required {
+  color: #ff4d4f;
+  margin-right: 4px;
+}
+
+/* Primary Color Overrides */
+.submissions-card ::ng-deep .ant-btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.submissions-card ::ng-deep .ant-btn-primary:hover {
+  background-color: #2d9960;
+  border-color: #2d9960;
+}
+
+/* Empty State */
+.submissions-card ::ng-deep nz-empty {
+  padding: 48px 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .header-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .header-actions button {
+    width: 100%;
+  }
+
+  .stats-row [nz-col] {
+    margin-bottom: 16px;
+  }
+}

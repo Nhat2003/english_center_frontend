@@ -1,0 +1,21 @@
+.class-overview {
+  padding: 0;
+}
+
+.class-overview h2 {
+  margin-bottom: 24px;
+  color: #262626;
+}
+
+.overview-content {
+  margin-top: 16px;
+}
+
+.mt-16 {
+  margin-top: 16px;
+}
+
+.empty-state {
+  padding: 48px 0;
+  text-align: center;
+}
