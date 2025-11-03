@@ -8,9 +8,9 @@
 
   <nz-spin *ngIf="loading" nzTip="Đang tải tài liệu..."></nz-spin>
 
-  <nz-table 
-    *ngIf="!loading && documents.length > 0" 
-    [nzData]="documents" 
+  <nz-table
+    *ngIf="!loading && documents.length > 0"
+    [nzData]="documents"
     [nzSize]="'small'"
     [nzBordered]="true"
     class="documents-table">
@@ -37,10 +37,10 @@
         <td nzAlign="center">{{ formatFileSize(document.fileSize) }}</td>
         <td nzAlign="center">{{ document.uploadedAt | date: 'dd/MM/yyyy HH:mm' }}</td>
         <td nzAlign="center">
-          <button 
-            nz-button 
-            nzType="text" 
-            nzSize="small" 
+          <button
+            nz-button
+            nzType="text"
+            nzSize="small"
             class="download-btn"
             (click)="downloadDocument(document)"
             nz-tooltip="Tải xuống">
@@ -52,7 +52,7 @@
   </nz-table>
 
   <div *ngIf="!loading && documents.length === 0" class="empty-state">
-    <nz-empty 
+    <nz-empty
       nzNotFoundImage="simple"
       nzNotFoundContent="Chưa có tài liệu nào">
       <p class="empty-description">

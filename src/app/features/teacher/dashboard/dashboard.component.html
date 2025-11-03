@@ -1,73 +1,88 @@
 <div class="teacher-dashboard">
-  <!-- Welcome Section -->
-  <div class="welcome-section">
-    <nz-card nzTitle="🏠 Trang chủ - Dashboard Giáo viên" [nzBordered]="false" class="welcome-card">
-      <div class="welcome-content">
-        <h2>Xin chào <strong>{{ currentUser?.fullName || currentUser?.username }}</strong>!</h2>
-        <p>Chúc bạn có một ngày giảng dạy hiệu quả và ý nghĩa.</p>
-        <div class="current-time">
-          <span nz-icon nzType="clock-circle"></span>
-          {{ currentTime | date:'fullDate':'vi' }} - {{ currentTime | date:'HH:mm' }}
+  <nz-spin [nzSpinning]="loading" nzTip="Đang tải dữ liệu...">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+      <nz-card nzTitle="🏠 Trang chủ - Dashboard Giáo viên" [nzBordered]="false" class="welcome-card">
+        <div class="welcome-content">
+          <h2>Xin chào <strong>{{ currentUser?.fullName || currentUser?.username }}</strong>!</h2>
+          <p>Chúc bạn có một ngày giảng dạy hiệu quả và ý nghĩa.</p>
+          <div class="current-time">
+            <span nz-icon nzType="clock-circle"></span>
+            {{ currentTime | date:'fullDate':'':'vi' }} - {{ currentTime | date:'HH:mm' }}
+          </div>
         </div>
+      </nz-card>
+    </div>
+
+    <!-- Quick Statistics -->
+    <div nz-row [nzGutter]="[16, 16]" class="stats-section">
+      <div nz-col nzXs="24" nzSm="12" nzMd="6">
+        <nz-card [nzBordered]="false" class="stat-card classes-card">
+          <nz-statistic
+            nzTitle="Tổng số lớp đang dạy"
+            [nzValue]="teacherStats.totalClasses"
+            [nzValueStyle]="{ color: '#1890ff', fontSize: '28px', fontWeight: '600' }">
+            <ng-template #nzPrefix>
+              <span nz-icon nzType="team" class="stat-icon"></span>
+            </ng-template>
+            <ng-template #nzSuffix>
+              <span style="font-size: 16px; margin-left: 4px;">lớp</span>
+            </ng-template>
+          </nz-statistic>
+        </nz-card>
       </div>
-    </nz-card>
-  </div>
 
-  <!-- Quick Statistics -->
-  <div nz-row [nzGutter]="[16, 16]" class="stats-section">
-    <div nz-col nzXs="24" nzSm="12" nzMd="6">
-      <nz-card [nzBordered]="false" class="stat-card classes-card">
-        <nz-statistic
-          nzTitle="Tổng số lớp đang dạy"
-          [nzValue]="teacherStats.totalClasses"
-          [nzValueStyle]="{ color: '#1890ff', fontSize: '24px' }"
-          nzSuffix="lớp">
-          <span nz-icon nzType="team" slot="prefix" class="stat-icon"></span>
-        </nz-statistic>
-      </nz-card>
+      <div nz-col nzXs="24" nzSm="12" nzMd="6">
+        <nz-card [nzBordered]="false" class="stat-card students-card">
+          <nz-statistic
+            nzTitle="Tổng số học sinh"
+            [nzValue]="teacherStats.totalStudents"
+            [nzValueStyle]="{ color: '#52c41a', fontSize: '28px', fontWeight: '600' }">
+            <ng-template #nzPrefix>
+              <span nz-icon nzType="user" class="stat-icon"></span>
+            </ng-template>
+            <ng-template #nzSuffix>
+              <span style="font-size: 16px; margin-left: 4px;">HS</span>
+            </ng-template>
+          </nz-statistic>
+        </nz-card>
+      </div>
+
+      <div nz-col nzXs="24" nzSm="12" nzMd="6">
+        <nz-card [nzBordered]="false" class="stat-card today-card">
+          <nz-statistic
+            nzTitle="Lớp học hôm nay"
+            [nzValue]="teacherStats.todayClasses"
+            [nzValueStyle]="{ color: '#faad14', fontSize: '28px', fontWeight: '600' }">
+            <ng-template #nzPrefix>
+              <span nz-icon nzType="calendar" class="stat-icon"></span>
+            </ng-template>
+            <ng-template #nzSuffix>
+              <span style="font-size: 16px; margin-left: 4px;">buổi</span>
+            </ng-template>
+          </nz-statistic>
+        </nz-card>
+      </div>
+
+      <div nz-col nzXs="24" nzSm="12" nzMd="6">
+        <nz-card [nzBordered]="false" class="stat-card pending-card">
+          <nz-statistic
+            nzTitle="Bài tập chưa chấm"
+            [nzValue]="teacherStats.pendingAssignments"
+            [nzValueStyle]="{ color: '#f5222d', fontSize: '28px', fontWeight: '600' }">
+            <ng-template #nzPrefix>
+              <span nz-icon nzType="file-text" class="stat-icon"></span>
+            </ng-template>
+            <ng-template #nzSuffix>
+              <span style="font-size: 16px; margin-left: 4px;">bài</span>
+            </ng-template>
+          </nz-statistic>
+        </nz-card>
+      </div>
     </div>
 
-    <div nz-col nzXs="24" nzSm="12" nzMd="6">
-      <nz-card [nzBordered]="false" class="stat-card students-card">
-        <nz-statistic
-          nzTitle="Tổng số học sinh"
-          [nzValue]="teacherStats.totalStudents"
-          [nzValueStyle]="{ color: '#52c41a', fontSize: '24px' }"
-          nzSuffix="học sinh">
-          <span nz-icon nzType="user" slot="prefix" class="stat-icon"></span>
-        </nz-statistic>
-      </nz-card>
-    </div>
-
-    <div nz-col nzXs="24" nzSm="12" nzMd="6">
-      <nz-card [nzBordered]="false" class="stat-card today-card">
-        <nz-statistic
-          nzTitle="Lớp học hôm nay"
-          [nzValue]="teacherStats.todayClasses"
-          [nzValueStyle]="{ color: '#faad14', fontSize: '24px' }"
-          nzSuffix="buổi">
-          <span nz-icon nzType="calendar" slot="prefix" class="stat-icon"></span>
-        </nz-statistic>
-      </nz-card>
-    </div>
-
-    <div nz-col nzXs="24" nzSm="12" nzMd="6">
-      <nz-card [nzBordered]="false" class="stat-card pending-card">
-        <nz-statistic
-          nzTitle="Cần xử lý"
-          [nzValue]="teacherStats.pendingTasks"
-          [nzValueStyle]="{ color: '#f5222d', fontSize: '24px' }"
-          nzSuffix="công việc">
-          <span nz-icon nzType="bell" slot="prefix" class="stat-icon"></span>
-        </nz-statistic>
-      </nz-card>
-    </div>
-  </div>
-
-  <!-- Main Content Row -->
-  <div nz-row [nzGutter]="[16, 16]" class="main-content">
     <!-- Today's Schedule -->
-    <div nz-col nzXs="24" nzLg="16">
+    <div class="schedule-section">
       <nz-card nzTitle="📅 Lịch dạy hôm nay" [nzExtra]="scheduleExtra" [nzBordered]="false" class="schedule-card">
         <ng-template #scheduleExtra>
           <button nz-button nzType="link" routerLink="/teacher/schedule">
@@ -76,27 +91,30 @@
           </button>
         </ng-template>
 
-        <div *ngIf="todaySchedule.length === 0" class="no-schedule">
-          <nz-empty nzNotFoundContent="Hôm nay bạn không có lịch dạy nào"></nz-empty>
+        <div *ngIf="todaySchedule.length === 0 && !loading" class="no-schedule">
+          <nz-empty
+            nzNotFoundContent="Hôm nay bạn không có lịch dạy nào"
+            [nzNotFoundImage]="'simple'">
+          </nz-empty>
         </div>
 
         <div *ngIf="todaySchedule.length > 0" class="schedule-list">
-          <div *ngFor="let schedule of todaySchedule" class="schedule-item">
+          <div *ngFor="let schedule of todaySchedule" class="schedule-item" (click)="navigateToClass(schedule.classId)">
             <div class="schedule-time">
-              <div class="time-display">{{ schedule.time }}</div>
-              <div class="duration">{{ schedule.duration }}</div>
+              <div class="time-display">{{ getTimeRange(schedule) }}</div>
+              <nz-tag nzColor="blue">{{ schedule.date | date:'dd/MM' }}</nz-tag>
             </div>
             <div class="schedule-info">
               <h4>{{ schedule.className }}</h4>
-              <p><span nz-icon nzType="environment"></span> {{ schedule.room }}</p>
+              <p><span nz-icon nzType="environment"></span> {{ schedule.roomName }}</p>
               <p><span nz-icon nzType="team"></span> {{ schedule.studentCount }} học sinh</p>
             </div>
-            <div class="schedule-actions">
-              <button nz-button nzType="primary" nzSize="small" *ngIf="schedule.hasOnlineLink">
-                <span nz-icon nzType="video-camera"></span>
-                Vào lớp
-              </button>
-              <button nz-button nzType="default" nzSize="small">
+            <div class="schedule-actions" (click)="$event.stopPropagation()">
+              <button
+                nz-button
+                nzType="primary"
+                nzSize="small"
+                (click)="navigateToAttendance(schedule.classId)">
                 <span nz-icon nzType="check-circle"></span>
                 Điểm danh
               </button>
@@ -106,53 +124,23 @@
       </nz-card>
     </div>
 
-    <!-- Right Column -->
-    <div nz-col nzXs="24" nzLg="8">
-      <!-- Admin Notifications -->
-      <nz-card nzTitle="📢 Thông báo từ Ban quản lý" [nzBordered]="false" class="notifications-card">
-        <div class="notification-list">
-          <div *ngFor="let notification of adminNotifications" class="notification-item">
-            <div class="notification-content">
-              <h5>{{ notification.title }}</h5>
-              <p>{{ notification.content }}</p>
-              <span class="notification-time">{{ notification.time | date:'dd/MM/yyyy HH:mm' }}</span>
+    <!-- Quick Actions Section -->
+    <div class="quick-actions-section">
+      <nz-card nzTitle="⚡ Thao tác nhanh" [nzBordered]="false" class="actions-card">
+        <div nz-row [nzGutter]="[16, 16]">
+          <div nz-col nzXs="24" nzSm="12" nzMd="6" *ngFor="let action of quickActions">
+            <div class="action-item" (click)="executeQuickAction(action.route)">
+              <div class="action-icon" [ngStyle]="{ 'background-color': action.color }">
+                {{ action.emoji }}
+              </div>
+              <div class="action-content">
+                <h4>{{ action.title }}</h4>
+                <p>{{ action.description }}</p>
+              </div>
             </div>
-          </div>
-        </div>
-        <button nz-button nzType="link" nzBlock routerLink="/teacher/notifications">
-          Xem tất cả thông báo
-        </button>
-      </nz-card>
-
-      <!-- Pending Tasks -->
-      <nz-card nzTitle="⚠️ Công việc cần xử lý" [nzBordered]="false" class="tasks-card">
-        <div class="task-list">
-          <div *ngFor="let task of pendingTasks" class="task-item">
-            <nz-tag [nzColor]="getTaskColor(task.priority)">{{ task.priority }}</nz-tag>
-            <span class="task-title">{{ task.title }}</span>
-            <span class="task-count">({{ task.count }})</span>
           </div>
         </div>
       </nz-card>
     </div>
-  </div>
-
-  <!-- Quick Actions Section -->
-  <div class="quick-actions-section">
-    <nz-card nzTitle="⚡ Thao tác nhanh" [nzBordered]="false" class="actions-card">
-      <div nz-row [nzGutter]="[16, 16]">
-        <div nz-col nzXs="24" nzSm="12" nzMd="8" nzLg="6" *ngFor="let action of quickActions">
-          <div class="action-item" (click)="executeQuickAction(action.action)">
-            <div class="action-icon" [ngStyle]="{ 'background-color': action.color }">
-              {{ action.emoji }}
-            </div>
-            <div class="action-content">
-              <h4>{{ action.title }}</h4>
-              <p>{{ action.description }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </nz-card>
-  </div>
+  </nz-spin>
 </div>

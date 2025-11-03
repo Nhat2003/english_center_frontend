@@ -89,6 +89,29 @@ export class ScheduleService {
     return this.http.get<ScheduleItemForTeacherDTO[]>(`${this.baseUrl}/teacher/${teacherId}`, { params });
   }
 
+  // Get teacher schedule for a specific day
+  getTeacherScheduleByDate(teacherId: number, date: string): Observable<ScheduleItemForTeacherDTO[]> {
+    const params = new HttpParams().set('date', date);
+    return this.http.get<ScheduleItemForTeacherDTO[]>(`${this.baseUrl}/teacher/${teacherId}/day`, { params });
+  }
+
+  // Get current teacher's schedule by date (uses /me endpoint)
+  getMyScheduleByDate(date: string): Observable<ScheduleItemForTeacherDTO[]> {
+    const params = new HttpParams().set('date', date);
+    return this.http.get<ScheduleItemForTeacherDTO[]>(`${this.baseUrl}/teacher/me`, { params });
+  }
+
+  // Get class schedule for today
+  getClassScheduleToday(classId: number): Observable<ScheduleItemDTO[]> {
+    return this.http.get<ScheduleItemDTO[]>(`${this.baseUrl}/class/${classId}/today`);
+  }
+
+  // Get class schedule for a specific day
+  getClassScheduleByDate(classId: number, date: string): Observable<ScheduleItemDTO[]> {
+    const params = new HttpParams().set('date', date);
+    return this.http.get<ScheduleItemDTO[]>(`${this.baseUrl}/class/${classId}/day`, { params });
+  }
+
   // Get class schedule by ID
   getClassSchedule(classId: number): Observable<ScheduleItemDTO[]> {
     return this.http.get<ScheduleItemDTO[]>(`${this.baseUrl}/class/${classId}`);

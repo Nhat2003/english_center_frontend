@@ -1,0 +1,181 @@
+<div class="attendance-container">
+  <!-- Header -->
+  <nz-page-header [nzTitle]="'Điểm danh lớp: ' + (classInfo?.name || '')" nzBackIcon>
+    <nz-page-header-subtitle>
+      {{ classInfo?.courseName || 'Đang tải...' }}
+    </nz-page-header-subtitle>
+
+    <nz-page-header-extra>
+      <div class="header-actions">
+        <button nz-button nzType="default" (click)="markAllPresent()">
+          <span nz-icon nzType="check-circle"></span>
+          Tất cả có mặt
+        </button>
+        <button nz-button nzType="default" nzDanger (click)="markAllAbsent()">
+          <span nz-icon nzType="close-circle"></span>
+          Tất cả vắng
+        </button>
+        <button nz-button nzType="primary" (click)="saveAttendance()" [nzLoading]="saving">
+          <span nz-icon nzType="save"></span>
+          {{ isEditMode ? 'Cập nhật' : 'Lưu điểm danh' }}
+        </button>
+      </div>
+    </nz-page-header-extra>
+  </nz-page-header>
+
+  <!-- Date Picker and Summary -->
+  <nz-card nzTitle="Chọn ngày điểm danh">
+    <div class="date-summary-row">
+      <div class="date-picker-section">
+        <label>Ngày học:</label>
+        <nz-date-picker
+          [(ngModel)]="selectedDate"
+          (ngModelChange)="onDateChange($event)"
+          nzFormat="dd/MM/yyyy"
+          nzPlaceHolder="Chọn ngày">
+        </nz-date-picker>
+        <nz-spin *ngIf="scheduleCheckLoading" nzSimple [nzSize]="'small'"></nz-spin>
+        <nz-tag *ngIf="!scheduleCheckLoading && !hasScheduleToday" nzColor="red">
+          <i nz-icon nzType="calendar" nzTheme="outline"></i>
+          Không có lịch học
+        </nz-tag>
+        <nz-tag *ngIf="!scheduleCheckLoading && hasScheduleToday && isEditMode" nzColor="blue">Đã điểm danh</nz-tag>
+        <nz-tag *ngIf="!scheduleCheckLoading && hasScheduleToday && !isEditMode" nzColor="orange">Chưa điểm danh</nz-tag>
+      </div>
+
+      <div class="summary-section">
+        <nz-statistic
+          [nzValue]="summary.total"
+          nzTitle="Tổng số"
+          [nzValueStyle]="{ color: '#3f8600' }">
+        </nz-statistic>
+        <nz-statistic
+          [nzValue]="summary.present"
+          nzTitle="Có mặt"
+          [nzValueStyle]="{ color: '#52c41a' }">
+          <ng-template #nzPrefix>
+            <span nz-icon nzType="check-circle"></span>
+          </ng-template>
+        </nz-statistic>
+        <nz-statistic
+          [nzValue]="summary.late"
+          nzTitle="Muộn"
+          [nzValueStyle]="{ color: '#faad14' }">
+          <ng-template #nzPrefix>
+            <span nz-icon nzType="clock-circle"></span>
+          </ng-template>
+        </nz-statistic>
+        <nz-statistic
+          [nzValue]="summary.absent"
+          nzTitle="Vắng"
+          [nzValueStyle]="{ color: '#cf1322' }">
+          <ng-template #nzPrefix>
+            <span nz-icon nzType="close-circle"></span>
+          </ng-template>
+        </nz-statistic>
+      </div>
+    </div>
+  </nz-card>
+
+  <!-- Attendance Table -->
+  <nz-card nzTitle="Danh sách điểm danh" [nzLoading]="loading" class="attendance-table-card">
+    <!-- Hiển thị thông báo khi không có lịch học -->
+    <nz-empty 
+      *ngIf="!loading && !scheduleCheckLoading && !hasScheduleToday"
+      nzNotFoundImage="simple"
+      [nzNotFoundContent]="noScheduleTemplate">
+      <ng-template #noScheduleTemplate>
+        <div style="text-align: center; padding: 40px 0;">
+          <i nz-icon nzType="calendar" nzTheme="outline" style="font-size: 48px; color: #faad14;"></i>
+          <h3 style="margin-top: 16px; color: #595959;">Không có lịch học</h3>
+          <p style="color: #8c8c8c;">
+            Ngày {{ selectedDate | date:'dd/MM/yyyy' }} lớp này không có lịch học.<br>
+            Vui lòng chọn ngày khác để điểm danh.
+          </p>
+        </div>
+      </ng-template>
+    </nz-empty>
+
+    <!-- Bảng điểm danh -->
+    <nz-table
+      *ngIf="hasScheduleToday"
+      #attendanceTable
+      [nzData]="students"
+      [nzPageSize]="50"
+      [nzShowPagination]="students.length > 50">
+      <thead>
+        <tr>
+          <th nzWidth="60px">STT</th>
+          <th>Họ và tên</th>
+          <th>Email</th>
+          <th nzWidth="350px">Trạng thái</th>
+          <th>Ghi chú</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let student of attendanceTable.data; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>
+            <div class="student-info">
+              <strong>{{ student.studentName }}</strong>
+              <nz-tag
+                *ngIf="student.status"
+                [nzColor]="getStatusColor(student.status)"
+                class="status-tag">
+                {{ getStatusText(student.status) }}
+              </nz-tag>
+            </div>
+          </td>
+          <td>{{ student.studentEmail }}</td>
+          <td>
+            <div class="status-buttons">
+              <button
+                nz-button
+                [nzType]="student.status === AttendanceStatus.PRESENT ? 'primary' : 'default'"
+                (click)="setStatus(student, AttendanceStatus.PRESENT)"
+                class="status-btn present-btn">
+                <span nz-icon nzType="check-circle"></span>
+                Có mặt
+              </button>
+              <button
+                nz-button
+                [nzType]="student.status === AttendanceStatus.LATE ? 'primary' : 'default'"
+                (click)="setStatus(student, AttendanceStatus.LATE)"
+                class="status-btn late-btn">
+                <span nz-icon nzType="clock-circle"></span>
+                Đi muộn
+              </button>
+              <button
+                nz-button
+                [nzType]="student.status === AttendanceStatus.ABSENT ? 'primary' : 'default'"
+                (click)="setStatus(student, AttendanceStatus.ABSENT)"
+                class="status-btn absent-btn">
+                <span nz-icon nzType="close-circle"></span>
+                Vắng mặt
+              </button>
+            </div>
+          </td>
+          <td>
+            <input
+              nz-input
+              [(ngModel)]="student.note"
+              placeholder="Ghi chú (nếu có)"
+              [disabled]="student.status === AttendanceStatus.PRESENT">
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+
+    <div *ngIf="students.length === 0 && !loading" class="empty-state">
+      <nz-empty nzNotFoundContent="Không có học sinh trong lớp"></nz-empty>
+    </div>
+  </nz-card>
+
+  <!-- Bottom Action Bar -->
+  <div class="bottom-actions">
+    <button nz-button nzType="primary" nzSize="large" (click)="saveAttendance()" [nzLoading]="saving">
+      <span nz-icon nzType="save"></span>
+      {{ isEditMode ? 'Cập nhật điểm danh' : 'Lưu điểm danh' }}
+    </button>
+  </div>
+</div>

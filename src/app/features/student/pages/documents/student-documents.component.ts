@@ -26,7 +26,7 @@ export class StudentDocumentsComponent implements OnInit {
         const user = JSON.parse(userStr);
         // Assuming user object has classRoomId or classId
         this.studentClassId = user.classRoomId || user.classId || null;
-        
+
         if (this.studentClassId) {
           this.loadDocuments();
         } else {
@@ -54,7 +54,7 @@ export class StudentDocumentsComponent implements OnInit {
         console.error('Failed to load documents:', err);
         this.documents = [];
         this.loading = false;
-        
+
         if (err.status === 403) {
           this.message.error('Bạn không có quyền truy cập tài liệu này');
         } else if (err.status === 404) {
@@ -68,31 +68,31 @@ export class StudentDocumentsComponent implements OnInit {
 
   downloadDocument(doc: ClassDocument): void {
     this.message.loading('Đang tải xuống file...', { nzDuration: 0 });
-    
+
     this.classDocumentService.downloadDocument(doc.id).subscribe({
       next: (blob) => {
         this.message.remove();
-        
+
         // Tạo URL từ blob
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
         link.download = doc.fileName;
-        
+
         // Trigger download
         document.body.appendChild(link);
         link.click();
-        
+
         // Cleanup
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
-        
+
         this.message.success('Tải xuống thành công');
       },
       error: (err) => {
         this.message.remove();
         console.error('Download failed:', err);
-        
+
         if (err.status === 403) {
           this.message.error('Bạn không có quyền tải xuống tài liệu này');
         } else if (err.status === 404) {

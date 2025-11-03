@@ -5,6 +5,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Student } from '../models/student.model';
 import { User } from '../models/user.model';
+import { StudentDetail } from '../models/student-detail.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -19,10 +20,10 @@ export class StudentService {
 		const params = new HttpParams()
 			.set('page', page.toString())
 			.set('size', size.toString());
-		
+
 		console.log('Calling students API with params:', { page, size });
 		console.log('Full URL:', `${this.apiUrl}?page=${page}&size=${size}`);
-		
+
 		return this.http.get<any>(this.apiUrl, { params })
 			.pipe(
 				catchError(this.handleError)
@@ -34,7 +35,7 @@ export class StudentService {
 		console.error('Error status:', error.status);
 		console.error('Error message:', error.message);
 		console.error('Error body:', error.error);
-		
+
 		if (error.status === 401) {
 			console.error('Unauthorized - Token may be expired');
 		} else if (error.status === 400) {
@@ -44,7 +45,7 @@ export class StudentService {
 		} else if (error.status === 404) {
 			console.error('Not Found - API endpoint may not exist');
 		}
-		
+
 		return throwError(() => error);
 	}
 
@@ -75,6 +76,14 @@ export class StudentService {
 
 	deleteStudent(id: number): Observable<void> {
 		return this.http.delete<void>(`${this.apiUrl}/${id}`);
+	}
+
+	// Get student detail with attendance and submissions
+	getStudentDetail(id: number): Observable<StudentDetail> {
+		return this.http.get<StudentDetail>(`${this.apiUrl}/${id}/detail`)
+			.pipe(
+				catchError(this.handleError)
+			);
 	}
 
 	// Lấy tất cả students cho dropdown (không phân trang)

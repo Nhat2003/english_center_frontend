@@ -9,14 +9,14 @@
   <nz-spin *ngIf="loading" nzTip="Đang tải bài tập..."></nz-spin>
 
   <div class="assignments-grid" *ngIf="!loading && assignments.length > 0">
-    <nz-card 
+    <nz-card
       *ngFor="let assignment of assignments"
       [nzTitle]="assignment.title"
       class="assignment-card"
       [class.submitted]="assignment.submitted"
       [class.graded]="assignment.submitted && assignment.grade !== undefined"
       [class.overdue]="!assignment.submitted && isOverdue(assignment.dueDate)">
-      
+
       <div class="card-header-extra" nz-card-extra>
         <nz-tag [nzColor]="getStatusColor(assignment)">
           {{ getStatusText(assignment) }}
@@ -25,13 +25,13 @@
 
       <div class="assignment-info">
         <p class="description">{{ assignment.description }}</p>
-        
+
         <div class="meta-info">
           <div class="meta-item">
             <i nz-icon nzType="calendar"></i>
             <span>Hạn nộp: {{ assignment.dueDate | date: 'dd/MM/yyyy HH:mm' }}</span>
           </div>
-          
+
           <div class="meta-item" *ngIf="!assignment.submitted && !isOverdue(assignment.dueDate)">
             <i nz-icon nzType="clock-circle"></i>
             <span class="days-left">Còn {{ getDaysLeft(assignment.dueDate) }} ngày</span>
@@ -60,26 +60,26 @@
       </div>
 
       <div class="card-actions">
-        <button 
-          nz-button 
+        <button
+          nz-button
           nzSize="small"
           (click)="viewDetail(assignment)">
           <i nz-icon nzType="eye"></i>
           Chi tiết
         </button>
-        
-        <button 
+
+        <button
           *ngIf="assignment.fileName"
-          nz-button 
+          nz-button
           nzSize="small"
           (click)="downloadAssignment(assignment)">
           <i nz-icon nzType="download"></i>
           Tài liệu
         </button>
 
-        <button 
+        <button
           *ngIf="!assignment.submitted && !isOverdue(assignment.dueDate)"
-          nz-button 
+          nz-button
           nzType="primary"
           nzSize="small"
           (click)="openSubmitModal(assignment)">
@@ -87,9 +87,9 @@
           Nộp bài
         </button>
 
-        <button 
+        <button
           *ngIf="assignment.submitted"
-          nz-button 
+          nz-button
           nzSize="small"
           (click)="downloadSubmittedFile(assignment)">
           <i nz-icon nzType="file-text"></i>
@@ -100,7 +100,7 @@
   </div>
 
   <div *ngIf="!loading && assignments.length === 0" class="empty-state">
-    <nz-empty 
+    <nz-empty
       nzNotFoundImage="simple"
       nzNotFoundContent="Chưa có bài tập nào">
       <p class="empty-description">
@@ -124,9 +124,9 @@
       <div class="assignment-title-modal">
         <strong>{{ selectedAssignment.title }}</strong>
       </div>
-      
-      <nz-alert 
-        nzType="info" 
+
+      <nz-alert
+        nzType="info"
         nzMessage="Lưu ý"
         [nzDescription]="'Hạn nộp: ' + (selectedAssignment.dueDate | date: 'dd/MM/yyyy HH:mm')"
         nzShowIcon
@@ -170,8 +170,8 @@
         </div>
       </div>
 
-      <nz-alert 
-        nzType="warning" 
+      <nz-alert
+        nzType="warning"
         nzMessage="Lưu ý: Bạn chỉ có thể nộp bài một lần. Vui lòng kiểm tra kỹ trước khi nộp."
         nzShowIcon>
       </nz-alert>
@@ -187,7 +187,7 @@
     [nzWidth]="600">
     <div class="detail-content" *ngIf="viewingAssignment">
       <h3>{{ viewingAssignment.title }}</h3>
-      
+
       <nz-descriptions nzBordered [nzColumn]="1">
         <nz-descriptions-item nzTitle="Mô tả">
           {{ viewingAssignment.description }}

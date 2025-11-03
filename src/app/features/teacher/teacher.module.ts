@@ -27,6 +27,11 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
+import { NzPageHeaderModule } from 'ng-zorro-antd/page-header';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
+import { NzTabsModule } from 'ng-zorro-antd/tabs';
+import { NzFormModule } from 'ng-zorro-antd/form';
 
 // Components
 import { TeacherLayoutComponent } from './teacher-layout/teacher-layout.component';
@@ -38,6 +43,9 @@ import { ClassStudentsComponent } from './pages/classes/class-students/class-stu
 import { ClassAssignmentsComponent } from './pages/classes/class-assignments/class-assignments.component';
 import { ClassMaterialsComponent } from './pages/classes/class-materials/class-materials.component';
 import { AssignmentDetailComponent } from './pages/classes/assignment-detail/assignment-detail.component';
+import { ClassAttendanceComponent } from './pages/attendance/class-attendance.component';
+import { StudentDetailComponent } from './pages/students/student-detail/student-detail.component';
+import { ClassAnnouncementsComponent } from './pages/announcements/class-announcements.component';
 
 // Routes
 import { TEACHER_ROUTES } from './teacher.routes';
@@ -52,7 +60,10 @@ import { TEACHER_ROUTES } from './teacher.routes';
     ClassStudentsComponent,
     ClassAssignmentsComponent,
     ClassMaterialsComponent,
-    AssignmentDetailComponent
+    AssignmentDetailComponent,
+    ClassAttendanceComponent,
+    StudentDetailComponent,
+    ClassAnnouncementsComponent
   ],
   imports: [
     CommonModule,
@@ -81,7 +92,12 @@ import { TEACHER_ROUTES } from './teacher.routes';
     NzToolTipModule,
     NzInputNumberModule,
     NzInputModule,
-    NzDatePickerModule
+    NzDatePickerModule,
+    NzPageHeaderModule,
+    NzDividerModule,
+    NzDescriptionsModule,
+    NzTabsModule,
+    NzFormModule
   ]
 })
 export class TeacherModule { }

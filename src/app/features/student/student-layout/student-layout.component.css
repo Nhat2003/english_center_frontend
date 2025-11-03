@@ -16,53 +16,69 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 18px;
-  font-weight: 600;
-  color: #3bb273;
+  gap: 16px;
 }
 
-.logo-icon-wrapper {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #3bb273 0%, #4cc084 100%);
-  border-radius: 8px;
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(59, 178, 115, 0.08) 0%, rgba(59, 178, 115, 0.02) 100%);
+  transition: all 0.3s ease;
+}
+
+.logo-wrapper:hover {
+  background: linear-gradient(135deg, rgba(59, 178, 115, 0.12) 0%, rgba(59, 178, 115, 0.04) 100%);
+  transform: translateY(-1px);
+}
+
+.logo-icon {
+  width: 45px;
+  height: 45px;
+  background: linear-gradient(135deg, #3bb273 0%, #2d9960 100%);
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(59, 178, 115, 0.3);
+  box-shadow: 0 4px 12px rgba(59, 178, 115, 0.25);
+  transition: all 0.3s ease;
+  padding: 8px;
 }
 
-.logo-icon-wrapper .anticon {
-  font-size: 24px;
-  color: white;
+.logo-icon svg {
+  width: 100%;
+  height: 100%;
 }
 
-.logo .title {
+.logo-wrapper:hover .logo-icon {
+  box-shadow: 0 6px 16px rgba(59, 178, 115, 0.35);
+  transform: scale(1.05);
+}
+
+.logo-text {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
 .brand-name {
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 700;
   color: #262626;
   letter-spacing: 0.5px;
-  line-height: 1;
+  line-height: 1.2;
+  text-transform: uppercase;
 }
 
-.user-role {
+.brand-subtitle {
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   color: #3bb273;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
   line-height: 1;
-}
-
-.logo .anticon {
-  font-size: 24px;
-  color: #3bb273;
+  text-transform: uppercase;
 }
 
 .header-right {
@@ -165,7 +181,16 @@
     padding: 0 16px;
   }
 
-  .logo .title {
+  .logo-wrapper {
+    padding: 6px 10px;
+  }
+
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .logo-text {
     display: none;
   }
 

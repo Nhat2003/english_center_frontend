@@ -20,7 +20,14 @@
         <td>{{ student.email }}</td>
         <td>{{ student.dob | date: 'dd/MM/yyyy' }}</td>
         <td>
-          <button nz-button nzType="link" nzSize="small">Xem chi tiết</button>
+          <button
+            nz-button
+            nzType="primary"
+            nzSize="small"
+            [routerLink]="['/teacher/students', student.id, 'detail']">
+            <span nz-icon nzType="eye"></span>
+            Xem chi tiết
+          </button>
         </td>
       </tr>
     </tbody>

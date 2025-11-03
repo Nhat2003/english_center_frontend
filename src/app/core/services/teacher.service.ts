@@ -40,13 +40,14 @@ export class TeacherService {
 	getAllTeachers(): Observable<Teacher[]> {
 		return this.http.get<Teacher[]>(`${this.apiUrl}/all`);
 	}
+
 	// Lấy danh sách lớp của giáo viên
 	getClassesByTeacher(teacherId: number): Observable<any[]> {
-		return this.http.get<any[]>(`http://localhost:8080/class-rooms/by-teacher/${teacherId}`);
+		return this.http.get<any[]>(`${environment.apiUrl}/class-rooms/by-teacher/${teacherId}`);
 	}
 
 	// Lấy danh sách học sinh của lớp
 	getStudentsByClass(classRoomId: number): Observable<any[]> {
-		return this.http.get<any[]>(`http://localhost:8080/class-students/${classRoomId}`);
+		return this.http.get<any[]>(`${environment.apiUrl}/class-students/${classRoomId}`);
 	}
 }

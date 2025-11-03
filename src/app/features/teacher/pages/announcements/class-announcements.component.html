@@ -1,0 +1,81 @@
+<div class="announcements-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <button nz-button nzType="text" (click)="goBack()" class="back-btn">
+        <i nz-icon nzType="arrow-left"></i>
+      </button>
+      <div class="header-info">
+        <h2>Thông báo lớp học</h2>
+        <p *ngIf="classInfo" class="class-name">{{ classInfo.name }}</p>
+      </div>
+    </div>
+    <button nz-button nzType="primary" (click)="showCreateModal()">
+      <i nz-icon nzType="plus"></i>
+      Tạo thông báo
+    </button>
+  </div>
+
+  <!-- Announcements List -->
+  <div class="announcements-content">
+    <nz-spin [nzSpinning]="loading">
+      <nz-empty
+        *ngIf="!loading && announcements.length === 0"
+        nzNotFoundContent="Chưa có thông báo nào"
+        [nzNotFoundImage]="'simple'"
+      ></nz-empty>
+
+      <div class="announcements-list" *ngIf="announcements.length > 0">
+        <div class="announcement-card" *ngFor="let announcement of announcements">
+          <div class="announcement-header">
+            <div class="announcement-icon">
+              <i nz-icon nzType="sound" nzTheme="outline"></i>
+            </div>
+            <div class="announcement-meta">
+              <span class="announcement-time">{{ formatDate(announcement.createdAt) }}</span>
+            </div>
+            <button
+              nz-button
+              nzType="text"
+              nzDanger
+              nz-tooltip="Xóa thông báo"
+              (click)="deleteAnnouncement(announcement)"
+            >
+              <i nz-icon nzType="delete"></i>
+            </button>
+          </div>
+          <div class="announcement-body">
+            <p class="announcement-message">{{ announcement.message }}</p>
+          </div>
+        </div>
+      </div>
+    </nz-spin>
+  </div>
+</div>
+
+<!-- Modal tạo thông báo -->
+<nz-modal
+  [(nzVisible)]="isCreateModalVisible"
+  nzTitle="Tạo thông báo mới"
+  (nzOnCancel)="handleCreateCancel()"
+  (nzOnOk)="handleCreateOk()"
+  [nzOkLoading]="isCreating"
+  nzOkText="Tạo thông báo"
+  nzCancelText="Hủy"
+  [nzWidth]="600"
+>
+  <ng-container *nzModalContent>
+    <nz-form-item>
+      <nz-form-label [nzSpan]="24">Nội dung thông báo</nz-form-label>
+      <nz-form-control [nzSpan]="24">
+        <textarea
+          nz-input
+          [(ngModel)]="newAnnouncementMessage"
+          placeholder="Nhập nội dung thông báo cho học sinh..."
+          [nzAutosize]="{ minRows: 4, maxRows: 8 }"
+        ></textarea>
+        <small class="char-count">{{ newAnnouncementMessage.length }} ký tự</small>
+      </nz-form-control>
+    </nz-form-item>
+  </ng-container>
+</nz-modal>

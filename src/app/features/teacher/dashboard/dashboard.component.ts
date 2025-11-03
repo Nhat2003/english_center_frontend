@@ -1,6 +1,29 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService, User } from '../../../core/services/auth.service';
 import { Router } from '@angular/router';
+import { TeacherService } from '../../../core/services/teacher.service';
+import { ScheduleService } from '../../../core/services/schedule.service';
+import { AssignmentService } from '../../../core/services/assignment.service';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { forkJoin } from 'rxjs';
+
+interface DashboardStats {
+  totalClasses: number;
+  totalStudents: number;
+  todayClasses: number;
+  pendingAssignments: number;
+}
+
+interface TodayScheduleItem {
+  id: string;
+  date: string;
+  start: string;
+  end: string;
+  classId: number;
+  className: string;
+  roomName: string;
+  studentCount: number;
+}
 
 @Component({
   selector: 'app-teacher-dashboard',
@@ -10,139 +33,70 @@ import { Router } from '@angular/router';
 export class TeacherDashboardComponent implements OnInit {
   currentUser: User | null = null;
   currentTime = new Date();
+  loading = false;
+  teacherId: number | null = null;
 
   // Teacher Statistics
-  teacherStats = {
-    totalClasses: 5,
-    totalStudents: 78,
-    todayClasses: 3,
-    pendingTasks: 12
+  teacherStats: DashboardStats = {
+    totalClasses: 0,
+    totalStudents: 0,
+    todayClasses: 0,
+    pendingAssignments: 0
   };
 
   // Today's Schedule
-  todaySchedule = [
-    {
-      time: '08:00 - 09:30',
-      duration: '90 phút',
-      className: 'Lớp A1 - Basic English',
-      room: 'Phòng 101 (Online)',
-      studentCount: 15,
-      hasOnlineLink: true
-    },
-    {
-      time: '10:00 - 11:30',
-      duration: '90 phút',
-      className: 'Lớp B2 - Intermediate',
-      room: 'Phòng 203',
-      studentCount: 18,
-      hasOnlineLink: false
-    },
-    {
-      time: '14:00 - 15:30',
-      duration: '90 phút',
-      className: 'Lớp C1 - Advanced Conversation',
-      room: 'Phòng 105 (Online)',
-      studentCount: 12,
-      hasOnlineLink: true
-    }
-  ];
-
-  // Admin Notifications
-  adminNotifications = [
-    {
-      title: '📋 Cập nhật quy định mới về đánh giá học sinh',
-      content: 'Ban quản lý yêu cầu tất cả giáo viên áp dụng thang điểm mới từ tuần sau.',
-      time: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
-    },
-    {
-      title: '🎉 Thông báo nghỉ lễ Quốc khánh',
-      content: 'Trung tâm sẽ nghỉ lễ Quốc khánh từ ngày 2/9 đến 4/9.',
-      time: new Date(Date.now() - 24 * 60 * 60 * 1000) // 1 day ago
-    },
-    {
-      title: '📚 Tập huấn sử dụng nền tảng giảng dạy mới',
-      content: 'Cuộc họp tập huấn sẽ diễn ra vào thứ 6 tuần này.',
-      time: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) // 3 days ago
-    }
-  ];
-
-  // Pending Tasks
-  pendingTasks = [
-    { title: 'Bài tập chưa chấm', count: 8, priority: 'Cao' },
-    { title: 'Điểm danh cần cập nhật', count: 3, priority: 'Trung bình' },
-    { title: 'Báo cáo tiến độ học tập', count: 2, priority: 'Thấp' },
-    { title: 'Phản hồi từ phụ huynh', count: 1, priority: 'Cao' }
-  ];
+  todaySchedule: TodayScheduleItem[] = [];
 
   // Quick Actions
   quickActions = [
     {
-      emoji: '📝',
-      title: 'Tạo bài tập mới',
-      description: 'Giao bài tập cho lớp học',
+      emoji: '📋',
+      title: 'Lớp học',
+      description: 'Quản lý lớp học của tôi',
       color: '#1890ff',
-      action: 'create-assignment'
+      route: '/teacher/classes'
     },
     {
       emoji: '✅',
-      title: 'Điểm danh nhanh',
-      description: 'Điểm danh cho buổi học hiện tại',
+      title: 'Điểm danh',
+      description: 'Điểm danh học sinh',
       color: '#52c41a',
-      action: 'quick-attendance'
+      route: '/teacher/classes'
     },
     {
-      emoji: '📊',
-      title: 'Nhập điểm số',
-      description: 'Cập nhật điểm kiểm tra',
+      emoji: '📅',
+      title: 'Lịch dạy',
+      description: 'Xem lịch giảng dạy',
       color: '#faad14',
-      action: 'enter-scores'
+      route: '/teacher/schedule'
     },
     {
-      emoji: '📢',
-      title: 'Gửi thông báo',
-      description: 'Thông báo cho học sinh/phụ huynh',
+      emoji: '📝',
+      title: 'Bài tập',
+      description: 'Quản lý bài tập',
       color: '#722ed1',
-      action: 'send-notification'
-    },
-    {
-      emoji: '📚',
-      title: 'Quản lý tài liệu',
-      description: 'Upload tài liệu giảng dạy',
-      color: '#13c2c2',
-      action: 'manage-materials'
-    },
-    {
-      emoji: '🎥',
-      title: 'Tạo phòng học online',
-      description: 'Tạo link học trực tuyến',
-      color: '#eb2f96',
-      action: 'create-online-room'
-    },
-    {
-      emoji: '📈',
-      title: 'Xem báo cáo',
-      description: 'Theo dõi tiến độ học tập',
-      color: '#fa8c16',
-      action: 'view-reports'
-    },
-    {
-      emoji: '💬',
-      title: 'Trao đổi với admin',
-      description: 'Liên hệ ban quản lý',
-      color: '#2f54eb',
-      action: 'contact-admin'
+      route: '/teacher/assignments'
     }
   ];
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private teacherService: TeacherService,
+    private scheduleService: ScheduleService,
+    private assignmentService: AssignmentService,
+    private message: NzMessageService
   ) {}
 
   ngOnInit() {
-    this.authService.currentUser$.subscribe(user => {
+    const user = this.authService.getCurrentUser();
+    if (user?.teacher?.id) {
+      this.teacherId = user.teacher.id;
       this.currentUser = user;
-    });
+      this.loadDashboardData();
+    } else {
+      this.message.error('Không tìm thấy thông tin giáo viên');
+    }
 
     // Update current time every minute
     setInterval(() => {
@@ -150,47 +104,110 @@ export class TeacherDashboardComponent implements OnInit {
     }, 60000);
   }
 
-  getTaskColor(priority: string): string {
-    switch (priority) {
-      case 'Cao': return 'red';
-      case 'Trung bình': return 'orange';
-      case 'Thấp': return 'green';
-      default: return 'default';
+  loadDashboardData(): void {
+    if (!this.teacherId) {
+      console.error('No teacherId found');
+      this.message.error('Không tìm thấy ID giáo viên');
+      return;
+    }
+
+    console.log('Loading dashboard data for teacher:', this.teacherId);
+    this.loading = true;
+
+    // Load classes
+    this.teacherService.getClassesByTeacher(this.teacherId).subscribe({
+      next: (classes) => {
+        console.log('Classes loaded:', classes);
+        this.teacherStats.totalClasses = classes.length;
+
+        // Count total students
+        const studentRequests = classes.map(cls =>
+          this.teacherService.getStudentsByClass(cls.id)
+        );
+
+        if (studentRequests.length > 0) {
+          forkJoin(studentRequests).subscribe({
+            next: (studentsArrays) => {
+              console.log('Students loaded:', studentsArrays);
+              this.teacherStats.totalStudents = studentsArrays.reduce(
+                (total, students) => total + students.length,
+                0
+              );
+            },
+            error: (err) => {
+              console.error('Failed to count students:', err);
+              this.message.error('Không thể tải danh sách học sinh');
+            }
+          });
+        }
+
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load classes:', err);
+        this.message.error('Không thể tải danh sách lớp học. Vui lòng kiểm tra kết nối backend.');
+        this.loading = false;
+      }
+    });
+
+    // Load today's schedule
+    const today = new Date();
+    const todayStr = this.formatDate(today);
+    console.log('Loading schedule for date:', todayStr);
+
+    this.scheduleService.getMyScheduleByDate(todayStr).subscribe({
+      next: (schedule) => {
+        console.log('Schedule loaded:', schedule);
+        this.todaySchedule = schedule.map(item => ({
+          id: item.id,
+          date: item.date,
+          start: item.start,
+          end: item.end,
+          classId: item.classId,
+          className: item.className,
+          roomName: item.roomName,
+          studentCount: item.students ? item.students.length : 0
+        }));
+        this.teacherStats.todayClasses = schedule.length;
+      },
+      error: (err) => {
+        console.error('Failed to load today schedule:', err);
+        this.message.error('Không thể tải lịch dạy hôm nay. Vui lòng kiểm tra kết nối backend.');
+      }
+    });
+  }
+
+  formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  formatTime(dateTimeString: string): string {
+    try {
+      const date = new Date(dateTimeString);
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${hours}:${minutes}`;
+    } catch {
+      return '';
     }
   }
 
-  executeQuickAction(action: string) {
-    switch (action) {
-      case 'create-assignment':
-        this.router.navigate(['/teacher/assignments']);
-        break;
-      case 'quick-attendance':
-        // Quick attendance logic
-        console.log('Quick attendance');
-        break;
-      case 'enter-scores':
-        // Enter scores logic
-        console.log('Enter scores');
-        break;
-      case 'send-notification':
-        this.router.navigate(['/teacher/notifications']);
-        break;
-      case 'manage-materials':
-        this.router.navigate(['/teacher/materials']);
-        break;
-      case 'create-online-room':
-        this.router.navigate(['/teacher/online-classes']);
-        break;
-      case 'view-reports':
-        // View reports logic
-        console.log('View reports');
-        break;
-      case 'contact-admin':
-        // Contact admin logic
-        console.log('Contact admin');
-        break;
-      default:
-        console.log('Unknown action:', action);
-    }
+  getTimeRange(schedule: TodayScheduleItem): string {
+    return `${this.formatTime(schedule.start)} - ${this.formatTime(schedule.end)}`;
+  }
+
+  navigateToAttendance(classId: number): void {
+    this.router.navigate(['/teacher/classes', classId, 'attendance']);
+  }
+
+  navigateToClass(classId: number): void {
+    this.router.navigate(['/teacher/classes', classId, 'overview']);
+  }
+
+  executeQuickAction(route: string): void {
+    this.router.navigate([route]);
   }
 }

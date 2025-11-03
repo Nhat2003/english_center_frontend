@@ -49,5 +49,15 @@ export class TeacherClassesComponent implements OnInit {
     // Chuyển đến trang quản lý lớp - mặc định là overview
     this.router.navigate(['/teacher/classes', classRoom.id, 'overview']);
   }
+
+  goToAttendance(classRoom: any): void {
+    // Chuyển đến trang điểm danh
+    this.router.navigate(['/teacher/classes', classRoom.id, 'attendance']);
+  }
+
+  goToAnnouncements(classRoom: any): void {
+    // Chuyển đến trang thông báo
+    this.router.navigate(['/teacher/classes', classRoom.id, 'announcements']);
+  }
 }
 

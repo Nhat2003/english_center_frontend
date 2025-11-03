@@ -11,10 +11,10 @@
 }
 
 .welcome-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3bb273 0%, #2d8a5a 100%);
   color: white;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 20px rgba(59, 178, 115, 0.3);
 }
 
 .welcome-card :deep(.ant-card-head-title) {
@@ -32,7 +32,7 @@
 .welcome-content p {
   margin: 0 0 12px 0;
   font-size: 16px;
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 .current-time {
@@ -40,7 +40,7 @@
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 /* Statistics Section */
@@ -54,6 +54,7 @@
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   border: none;
+  background: white;
 }
 
 .stat-card:hover {
@@ -61,38 +62,18 @@
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-.classes-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-.students-card {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  color: white;
-}
-
-.today-card {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  color: white;
-}
-
-.pending-card {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-  color: white;
-}
-
 .stat-card :deep(.ant-statistic-title) {
-  color: white;
+  color: #595959;
   font-size: 14px;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
 
 .stat-card :deep(.ant-statistic-content) {
-  color: white;
+  color: #262626;
 }
 
 .stat-icon {
-  font-size: 18px;
+  font-size: 20px;
   margin-right: 8px;
 }
 
@@ -106,6 +87,7 @@
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   border: none;
+  margin-bottom: 20px;
 }
 
 .schedule-card :deep(.ant-card-head-title) {
@@ -115,47 +97,47 @@
 }
 
 .no-schedule {
-  padding: 40px 20px;
+  padding: 60px 20px;
   text-align: center;
 }
 
 .schedule-list {
-  max-height: 400px;
+  max-height: 500px;
   overflow-y: auto;
 }
 
 .schedule-item {
   display: flex;
   align-items: center;
-  padding: 16px;
-  margin-bottom: 12px;
-  background: #fafafa;
-  border-radius: 8px;
-  border-left: 4px solid #1890ff;
+  padding: 20px;
+  margin-bottom: 16px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #f0f0f0;
+  border-left: 4px solid #3bb273;
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .schedule-item:hover {
-  background: #f0f0f0;
+  background: #fafafa;
   transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .schedule-time {
-  min-width: 120px;
-  text-align: center;
-  margin-right: 16px;
+  min-width: 140px;
+  text-align: left;
+  margin-right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .time-display {
   font-weight: 600;
-  font-size: 16px;
-  color: #1890ff;
-}
-
-.duration {
-  font-size: 12px;
-  color: #8c8c8c;
-  margin-top: 2px;
+  font-size: 18px;
+  color: #3bb273;
 }
 
 .schedule-info {
@@ -164,28 +146,32 @@
 }
 
 .schedule-info h4 {
-  margin: 0 0 4px 0;
+  margin: 0 0 8px 0;
   font-size: 16px;
   color: #262626;
+  font-weight: 600;
 }
 
 .schedule-info p {
-  margin: 0;
+  margin: 0 0 4px 0;
   font-size: 14px;
   color: #8c8c8c;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+}
+
+.schedule-info p:last-child {
+  margin-bottom: 0;
 }
 
 .schedule-actions {
   display: flex;
   gap: 8px;
-  flex-direction: column;
 }
 
 .schedule-actions button {
-  min-width: 90px;
+  min-width: 100px;
 }
 
 /* Notifications Card */

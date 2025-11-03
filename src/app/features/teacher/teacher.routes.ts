@@ -8,6 +8,9 @@ import { ClassStudentsComponent } from './pages/classes/class-students/class-stu
 import { ClassAssignmentsComponent } from './pages/classes/class-assignments/class-assignments.component';
 import { ClassMaterialsComponent } from './pages/classes/class-materials/class-materials.component';
 import { AssignmentDetailComponent } from './pages/classes/assignment-detail/assignment-detail.component';
+import { ClassAttendanceComponent } from './pages/attendance/class-attendance.component';
+import { StudentDetailComponent } from './pages/students/student-detail/student-detail.component';
+import { ClassAnnouncementsComponent } from './pages/announcements/class-announcements.component';
 
 export const TEACHER_ROUTES: Routes = [
   {
@@ -23,6 +26,9 @@ export const TEACHER_ROUTES: Routes = [
       { path: 'classes/:id/assignments', component: ClassAssignmentsComponent },
       { path: 'classes/:id/assignments/:assignmentId', component: AssignmentDetailComponent },
       { path: 'classes/:id/materials', component: ClassMaterialsComponent },
+      { path: 'classes/:id/attendance', component: ClassAttendanceComponent },
+      { path: 'classes/:classId/announcements', component: ClassAnnouncementsComponent },
+      { path: 'students/:studentId/detail', component: StudentDetailComponent },
       { path: 'assignments', component: TeacherDashboardComponent },
       { path: 'online-classes', component: TeacherDashboardComponent },
       { path: 'materials', component: TeacherDashboardComponent },

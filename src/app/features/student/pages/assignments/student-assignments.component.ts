@@ -29,13 +29,13 @@ export class StudentAssignmentsComponent implements OnInit {
   assignments: StudentAssignment[] = [];
   loading = false;
   studentClassId: number | null = null;
-  
+
   // Submit modal
   submitModalVisible = false;
   selectedAssignment: StudentAssignment | null = null;
   selectedFile: File | null = null;
   submitting = false;
-  
+
   // View detail modal
   detailModalVisible = false;
   viewingAssignment: StudentAssignment | null = null;
@@ -53,7 +53,7 @@ export class StudentAssignmentsComponent implements OnInit {
       try {
         const user = JSON.parse(userStr);
         this.studentClassId = user.classRoomId || user.classId || null;
-        
+
         if (this.studentClassId) {
           this.loadAssignments();
         } else {
@@ -96,7 +96,7 @@ export class StudentAssignmentsComponent implements OnInit {
         console.error('Failed to load assignments:', err);
         this.assignments = [];
         this.loading = false;
-        
+
         if (err.status === 403) {
           this.message.error('Bạn không có quyền truy cập');
         } else if (err.status === 404) {
@@ -142,7 +142,7 @@ export class StudentAssignmentsComponent implements OnInit {
     }
 
     this.submitting = true;
-    
+
     this.assignmentService.submitAssignment(this.selectedAssignment.id, this.selectedFile).subscribe({
       next: () => {
         this.message.success('Nộp bài tập thành công');
@@ -153,7 +153,7 @@ export class StudentAssignmentsComponent implements OnInit {
       error: (err) => {
         console.error('Submit failed:', err);
         this.submitting = false;
-        
+
         if (err.status === 403) {
           this.message.error('Bạn không có quyền nộp bài');
         } else if (err.status === 404) {
