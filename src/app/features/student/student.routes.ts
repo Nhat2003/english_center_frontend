@@ -4,6 +4,11 @@ import { StudentDashboardComponent } from './pages/dashboard/dashboard.component
 import { StudentScheduleComponent } from './pages/schedule/student-schedule.component';
 import { StudentDocumentsComponent } from './pages/documents/student-documents.component';
 import { StudentAssignmentsComponent } from './pages/assignments/student-assignments.component';
+import { AssignmentDetailComponent } from './pages/assignments/assignment-detail/assignment-detail.component';
+import { StudentClassesComponent } from './pages/classes/student-classes.component';
+import { StudentClassOverviewComponent } from './pages/classes/student-class-overview/student-class-overview.component';
+import { GradesComponent } from './pages/grades/grades.component';
+import { AttendanceHistoryComponent } from './pages/attendance-history/attendance-history.component';
 
 export const STUDENT_ROUTES: Routes = [
   {
@@ -13,7 +18,15 @@ export const STUDENT_ROUTES: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: StudentDashboardComponent },
       { path: 'schedule', component: StudentScheduleComponent },
+      { path: 'classes', component: StudentClassesComponent },
+      { path: 'classes/:id/overview', component: StudentClassOverviewComponent },
+      { path: 'classes/:id/assignments', component: StudentAssignmentsComponent },
+      { path: 'classes/:id/grades', component: GradesComponent },
+      { path: 'classes/:id/materials', component: StudentDocumentsComponent },
+      { path: 'classes/:id/announcements', component: StudentDashboardComponent }, // TODO: Create component
       { path: 'assignments', component: StudentAssignmentsComponent },
+      { path: 'assignments/:id', component: AssignmentDetailComponent },
+      { path: 'attendance-history', component: AttendanceHistoryComponent },
       { path: 'payments', component: StudentDashboardComponent },
       { path: 'online-classes', component: StudentDashboardComponent },
       { path: 'documents', component: StudentDocumentsComponent },

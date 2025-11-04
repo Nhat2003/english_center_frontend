@@ -1,0 +1,84 @@
+.class-overview-content {
+  padding: 24px;
+}
+
+.overview-cards {
+  margin-top: 24px;
+}
+
+.info-card,
+.schedule-card,
+.time-card {
+  height: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.info-item i {
+  color: #3bb273;
+  font-size: 18px;
+  margin-top: 2px;
+}
+
+.info-item div {
+  flex: 1;
+}
+
+.info-item label {
+  display: block;
+  color: #8c8c8c;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.info-item span {
+  display: block;
+  color: #262626;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.schedule-info p {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: #595959;
+}
+
+.schedule-info i {
+  color: #3bb273;
+  font-size: 16px;
+}
+
+.time-card p {
+  margin-bottom: 12px;
+  color: #595959;
+}
+
+.time-card strong {
+  color: #262626;
+  margin-right: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .class-overview-content {
+    padding: 16px;
+  }
+}

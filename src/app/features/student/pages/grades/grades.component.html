@@ -1,0 +1,151 @@
+<div class="grades-page">
+  <div class="page-header">
+    <h1 class="page-title">
+      <span nz-icon nzType="trophy" nzTheme="outline"></span>
+      Lịch sử điểm
+    </h1>
+    <p class="page-description">Xem lại kết quả các bài tập đã được chấm điểm</p>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="statistics-section" *ngIf="!loading && submissions.length > 0">
+    <nz-row [nzGutter]="[16, 16]">
+      <nz-col [nzXs]="12" [nzSm]="12" [nzMd]="6">
+        <nz-card class="stat-card">
+          <nz-statistic
+            [nzValue]="statistics.totalGraded"
+            nzTitle="Bài đã chấm"
+            [nzValueStyle]="{ color: '#1890ff' }">
+            <ng-template #nzPrefix>
+              <span nz-icon nzType="file-done"></span>
+            </ng-template>
+          </nz-statistic>
+        </nz-card>
+      </nz-col>
+
+      <nz-col [nzXs]="12" [nzSm]="12" [nzMd]="6">
+        <nz-card class="stat-card">
+          <nz-statistic
+            [nzValue]="statistics.averageGrade | number:'1.1-1'"
+            nzTitle="Điểm trung bình"
+            [nzValueStyle]="{ color: '#52c41a' }">
+            <ng-template #nzPrefix>
+              <span nz-icon nzType="bar-chart"></span>
+            </ng-template>
+            <ng-template #nzSuffix>
+              <span class="suffix">/10</span>
+            </ng-template>
+          </nz-statistic>
+        </nz-card>
+      </nz-col>
+
+      <nz-col [nzXs]="12" [nzSm]="12" [nzMd]="6">
+        <nz-card class="stat-card">
+          <nz-statistic
+            [nzValue]="statistics.highestGrade | number:'1.1-1'"
+            nzTitle="Điểm cao nhất"
+            [nzValueStyle]="{ color: '#faad14' }">
+            <ng-template #nzPrefix>
+              <span nz-icon nzType="rise"></span>
+            </ng-template>
+            <ng-template #nzSuffix>
+              <span class="suffix">/10</span>
+            </ng-template>
+          </nz-statistic>
+        </nz-card>
+      </nz-col>
+
+      <nz-col [nzXs]="12" [nzSm]="12" [nzMd]="6">
+        <nz-card class="stat-card">
+          <nz-statistic
+            [nzValue]="statistics.lowestGrade | number:'1.1-1'"
+            nzTitle="Điểm thấp nhất"
+            [nzValueStyle]="{ color: '#f5222d' }">
+            <ng-template #nzPrefix>
+              <span nz-icon nzType="fall"></span>
+            </ng-template>
+            <ng-template #nzSuffix>
+              <span class="suffix">/10</span>
+            </ng-template>
+          </nz-statistic>
+        </nz-card>
+      </nz-col>
+    </nz-row>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <nz-spin nzSize="large" nzTip="Đang tải lịch sử điểm..."></nz-spin>
+  </div>
+
+  <!-- Empty State -->
+  <nz-empty
+    *ngIf="!loading && submissions.length === 0"
+    nzNotFoundImage="simple"
+    [nzNotFoundContent]="emptyTemplate">
+    <ng-template #emptyTemplate>
+      <span>Chưa có bài tập nào được chấm điểm</span>
+    </ng-template>
+  </nz-empty>
+
+  <!-- Grades Table -->
+  <nz-card *ngIf="!loading && submissions.length > 0" class="grades-table-card">
+    <nz-table
+      #gradesTable
+      [nzData]="submissions"
+      [nzPageSize]="10"
+      [nzShowPagination]="submissions.length > 10">
+      <thead>
+        <tr>
+          <th nzWidth="50px">#</th>
+          <th>Bài tập</th>
+          <th nzWidth="150px">Ngày nộp</th>
+          <th nzWidth="120px">Điểm</th>
+          <th nzWidth="120px">Xếp loại</th>
+          <th>Nhận xét</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let submission of gradesTable.data; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>
+            <div class="assignment-cell">
+              <span nz-icon nzType="file-text" class="assignment-icon"></span>
+              <span class="assignment-title">{{ submission.assignmentTitle || 'Bài tập #' + submission.assignmentId }}</span>
+            </div>
+          </td>
+          <td>
+            <span class="date-text">
+              <span nz-icon nzType="clock-circle"></span>
+              {{ submission.submittedAt | date: 'dd/MM/yyyy HH:mm' }}
+            </span>
+          </td>
+          <td>
+            <div class="grade-cell">
+              <span class="grade-badge" [ngClass]="'grade-' + getGradeColor(submission.grade!)">
+                {{ submission.grade }}/10
+              </span>
+            </div>
+          </td>
+          <td>
+            <nz-badge
+              [nzStatus]="getGradeColor(submission.grade!) === 'success' ? 'success' : getGradeColor(submission.grade!) === 'processing' ? 'processing' : getGradeColor(submission.grade!) === 'warning' ? 'warning' : 'error'"
+              [nzText]="getGradeLabel(submission.grade!)">
+            </nz-badge>
+          </td>
+          <td>
+            <div class="feedback-cell">
+              <span *ngIf="submission.feedback" class="feedback-text">
+                <span nz-icon nzType="message"></span>
+                {{ submission.feedback }}
+              </span>
+              <span *ngIf="!submission.feedback" class="no-feedback">
+                Không có nhận xét
+              </span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </nz-card>
+</div>

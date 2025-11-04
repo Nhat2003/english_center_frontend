@@ -32,6 +32,7 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
 
 // Components
 import { TeacherLayoutComponent } from './teacher-layout/teacher-layout.component';
@@ -97,7 +98,8 @@ import { TEACHER_ROUTES } from './teacher.routes';
     NzDividerModule,
     NzDescriptionsModule,
     NzTabsModule,
-    NzFormModule
+    NzFormModule,
+    NzAlertModule
   ]
 })
 export class TeacherModule { }

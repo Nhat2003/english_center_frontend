@@ -2,9 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { AssignmentService, Assignment } from '../../../../../core/services/assignment.service';
+import { AssignmentService } from '../../../../../core/services/assignment.service';
+import { Assignment } from '../../../../../core/models/assignment.model';
 import { AuthService } from '../../../../../core/services/auth.service';
 import { forkJoin } from 'rxjs';
+
+// Teacher Assignment View Model
+interface TeacherAssignment extends Assignment {
+  checked?: boolean;
+  completedCount?: number;
+  totalStudents?: number;
+}
 
 @Component({
   selector: 'app-class-assignments',
@@ -13,7 +21,7 @@ import { forkJoin } from 'rxjs';
 })
 export class ClassAssignmentsComponent implements OnInit {
   classId: number | null = null;
-  assignments: Assignment[] = [];
+  assignments: TeacherAssignment[] = [];
   loading = false;
   allChecked = false;
 
@@ -29,7 +37,7 @@ export class ClassAssignmentsComponent implements OnInit {
 
   // Edit Assignment Modal
   editModalVisible = false;
-  editingAssignment: Assignment | null = null;
+  editingAssignment: TeacherAssignment | null = null;
   editForm = {
     title: '',
     description: '',
@@ -68,44 +76,15 @@ export class ClassAssignmentsComponent implements OnInit {
       next: (data) => {
         console.log('Assignments loaded:', data);
 
-        // Nếu backend đã trả về completedCount và totalStudents thì dùng luôn
-        if (data.length > 0 && data[0].completedCount !== undefined && data[0].totalStudents !== undefined) {
-          this.assignments = data.map(a => ({ ...a, checked: false }));
-          this.loading = false;
-        } else if (data.length > 0) {
-          // Nếu chưa có, load chi tiết để tính
-          const detailRequests = data.map(assignment =>
-            this.assignmentService.getAssignmentDetail(assignment.id)
-          );
+        // Map to TeacherAssignment với completedCount và totalStudents từ submissions
+        this.assignments = data.map(a => ({
+          ...a,
+          checked: false,
+          completedCount: a.submissions?.length || 0,
+          totalStudents: a.classRoom?.students?.length || 0
+        } as TeacherAssignment));
 
-          forkJoin(detailRequests).subscribe({
-            next: (details) => {
-              console.log('Assignment details loaded:', details);
-              this.assignments = data.map((a, index) => ({
-                ...a,
-                checked: false,
-                completedCount: details[index].submissions.length,
-                totalStudents: details[index].classRoom.students?.length || 0
-              }));
-              this.loading = false;
-            },
-            error: (err) => {
-              console.error('Failed to load assignment details:', err);
-              // Fallback: hiển thị assignments với 0/0
-              this.assignments = data.map(a => ({
-                ...a,
-                checked: false,
-                completedCount: 0,
-                totalStudents: 0
-              }));
-              this.loading = false;
-              this.message.warning('Không thể tải thông tin chi tiết bài tập');
-            }
-          });
-        } else {
-          this.assignments = [];
-          this.loading = false;
-        }
+        this.loading = false;
       },
       error: (err) => {
         console.error('Failed to load assignments:', err);

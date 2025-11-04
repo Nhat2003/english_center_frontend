@@ -99,9 +99,9 @@
         <div nz-col [nzSpan]="24" *ngIf="assignment.fileUrl">
           <div class="info-item">
             <label>File đính kèm:</label>
-            <button nz-button nzType="link" (click)="downloadFile(assignment.fileUrl!)">
-              <span nz-icon nzType="paper-clip"></span>
-              Tải xuống file đính kèm
+            <button nz-button nzType="primary" (click)="downloadAssignmentFile()">
+              <span nz-icon nzType="download"></span>
+              Tải xuống file bài tập
             </button>
           </div>
         </div>
@@ -119,6 +119,7 @@
           <tr>
             <th nzWidth="50px" nzAlign="center">#</th>
             <th>Sinh viên</th>
+            <th nzWidth="100px" nzAlign="center">Loại nộp</th>
             <th nzWidth="150px" nzAlign="center">Thời gian nộp</th>
             <th nzWidth="120px" nzAlign="center">Điểm</th>
             <th nzWidth="200px">Nhận xét</th>
@@ -135,6 +136,19 @@
                   <div class="student-name">{{ submission.student.fullName }}</div>
                   <div class="student-email">{{ submission.student.email }}</div>
                 </div>
+              </div>
+            </td>
+            <td nzAlign="center">
+              <div class="submission-type">
+                <nz-tag *ngIf="submission.fileUrl && submission.content" nzColor="blue" nz-tooltip="File + Text">
+                  <span nz-icon nzType="file-text"></span>
+                </nz-tag>
+                <nz-tag *ngIf="submission.fileUrl && !submission.content" nzColor="cyan" nz-tooltip="Chỉ file">
+                  <span nz-icon nzType="file"></span>
+                </nz-tag>
+                <nz-tag *ngIf="!submission.fileUrl && submission.content" nzColor="purple" nz-tooltip="Chỉ text">
+                  <span nz-icon nzType="edit"></span>
+                </nz-tag>
               </div>
             </td>
             <td nzAlign="center">
@@ -156,9 +170,14 @@
             </td>
             <td nzAlign="center">
               <div class="action-buttons">
-                <button nz-button nzType="link" nzSize="small" (click)="downloadFile(submission.fileUrl)">
-                  <span nz-icon nzType="download"></span>
-                  Tải xuống
+                <button
+                  nz-button
+                  nzType="default"
+                  nzSize="small"
+                  (click)="viewSubmissionDetail(submission)"
+                  nz-tooltip="Xem nội dung bài nộp">
+                  <span nz-icon nzType="eye"></span>
+                  Xem chi tiết
                 </button>
                 <button nz-button nzType="primary" nzSize="small" (click)="openGradingModal(submission)">
                   <span nz-icon nzType="edit"></span>
@@ -182,8 +201,29 @@
     (nzOnOk)="submitGrade()"
     nzOkText="Lưu điểm"
     nzCancelText="Hủy"
-    [nzWidth]="500">
-    <div class="grading-form">
+    [nzWidth]="600">
+    <div class="grading-form" *ngIf="selectedSubmission">
+      <!-- Student Info -->
+      <div class="form-group">
+        <label class="form-label">Sinh viên</label>
+        <div class="student-info-card">
+          <nz-avatar nzIcon="user" [nzSize]="40"></nz-avatar>
+          <div class="student-details">
+            <div class="student-name">{{ selectedSubmission.student.fullName }}</div>
+            <div class="student-email">{{ selectedSubmission.student.email }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submission Info -->
+      <div class="form-group">
+        <label class="form-label">Thời gian nộp</label>
+        <div class="submission-time">
+          {{ selectedSubmission.submittedAt | date: 'dd/MM/yyyy HH:mm' }}
+        </div>
+      </div>
+
+      <!-- Grade Input -->
       <div class="form-group">
         <label class="form-label"><span class="required">*</span> Điểm</label>
         <nz-input-number
@@ -197,6 +237,7 @@
         </nz-input-number>
       </div>
 
+      <!-- Feedback -->
       <div class="form-group">
         <label class="form-label">Nhận xét</label>
         <textarea
@@ -207,5 +248,98 @@
         </textarea>
       </div>
     </div>
+  </nz-modal>
+
+  <!-- View Submission Modal -->
+  <nz-modal
+    [(nzVisible)]="viewSubmissionVisible"
+    nzTitle="Chi tiết bài nộp"
+    (nzOnCancel)="closeViewSubmissionModal()"
+    [nzFooter]="viewSubmissionFooter"
+    [nzWidth]="700">
+    <div class="view-submission-content" *ngIf="viewingSubmission">
+      <!-- Student Info -->
+      <div class="submission-section">
+        <h4>Thông tin sinh viên</h4>
+        <div class="student-info-card">
+          <nz-avatar nzIcon="user" [nzSize]="48"></nz-avatar>
+          <div class="student-details">
+            <div class="student-name">{{ viewingSubmission.student.fullName }}</div>
+            <div class="student-email">{{ viewingSubmission.student.email }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submission Time -->
+      <div class="submission-section">
+        <h4>Thời gian nộp</h4>
+        <div class="submission-time-display">
+          <span nz-icon nzType="clock-circle" style="margin-right: 8px;"></span>
+          {{ viewingSubmission.submittedAt | date: 'dd/MM/yyyy HH:mm:ss' }}
+        </div>
+      </div>
+
+      <!-- Content (Text) -->
+      <div class="submission-section" *ngIf="viewingSubmission.content">
+        <h4>Nội dung bài làm (Text)</h4>
+        <div class="content-display">
+          <pre class="content-text">{{ viewingSubmission.content }}</pre>
+        </div>
+      </div>
+
+      <!-- File Download -->
+      <div class="submission-section" *ngIf="viewingSubmission.fileUrl">
+        <h4>File đính kèm</h4>
+        <div class="file-info">
+          <div class="file-name" *ngIf="viewingSubmission.originalFilename">
+            <span nz-icon nzType="file" style="margin-right: 8px; color: #1890ff;"></span>
+            <strong>{{ viewingSubmission.originalFilename }}</strong>
+          </div>
+          <button nz-button nzType="default" nzBlock (click)="downloadSubmission(viewingSubmission)" style="margin-top: 8px;">
+            <span nz-icon nzType="download"></span>
+            Tải xuống file bài nộp
+          </button>
+        </div>
+      </div>
+
+      <!-- Warning: No Content -->
+      <div class="submission-section" *ngIf="!viewingSubmission.fileUrl && !viewingSubmission.content">
+        <nz-alert
+          nzType="warning"
+          nzMessage="Học sinh chưa nộp nội dung hoặc file"
+          nzShowIcon>
+        </nz-alert>
+      </div>
+
+      <!-- Grade & Feedback -->
+      <div class="submission-section">
+        <h4>Đánh giá</h4>
+        <div class="grade-display">
+          <div class="grade-item">
+            <label>Điểm:</label>
+            <nz-tag *ngIf="viewingSubmission.grade !== null"
+                    [nzColor]="viewingSubmission.grade >= 5 ? 'success' : 'error'"
+                    style="font-size: 16px; padding: 4px 12px;">
+              {{ viewingSubmission.grade }}/10
+            </nz-tag>
+            <span *ngIf="viewingSubmission.grade === null" style="color: #8c8c8c;">
+              Chưa chấm điểm
+            </span>
+          </div>
+          <div class="grade-item" *ngIf="viewingSubmission.feedback">
+            <label>Nhận xét:</label>
+            <p class="feedback-text">{{ viewingSubmission.feedback }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #viewSubmissionFooter>
+      <button nz-button nzType="default" (click)="closeViewSubmissionModal()">Đóng</button>
+      <button nz-button nzType="primary" (click)="closeViewSubmissionModal(); openGradingModal(viewingSubmission!)">
+        <span nz-icon nzType="edit"></span>
+        Chấm điểm
+      </button>
+    </ng-template>
   </nz-modal>
 </div>

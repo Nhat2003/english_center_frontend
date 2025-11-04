@@ -30,6 +30,10 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzTabsModule } from 'ng-zorro-antd/tabs';
+import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzUploadModule } from 'ng-zorro-antd/upload';
+import { NzRateModule } from 'ng-zorro-antd/rate';
 
 // Components
 import { StudentLayoutComponent } from './student-layout/student-layout.component';
@@ -37,6 +41,14 @@ import { StudentDashboardComponent } from './pages/dashboard/dashboard.component
 import { StudentScheduleComponent } from './pages/schedule/student-schedule.component';
 import { StudentDocumentsComponent } from './pages/documents/student-documents.component';
 import { StudentAssignmentsComponent } from './pages/assignments/student-assignments.component';
+import { AssignmentDetailComponent } from './pages/assignments/assignment-detail/assignment-detail.component';
+import { StudentClassesComponent } from './pages/classes/student-classes.component';
+import { StudentClassOverviewComponent } from './pages/classes/student-class-overview/student-class-overview.component';
+import { GradesComponent } from './pages/grades/grades.component';
+import { AttendanceHistoryComponent } from './pages/attendance-history/attendance-history.component';
+
+// Shared Components
+import { ClassTabsComponent } from '../../shared/class-tabs/class-tabs.component';
 
 // Services
 import { StudentScheduleService } from '../../core/services/student-schedule.service';
@@ -50,7 +62,13 @@ import { STUDENT_ROUTES } from './student.routes';
     StudentDashboardComponent,
     StudentScheduleComponent,
     StudentDocumentsComponent,
-    StudentAssignmentsComponent
+    StudentAssignmentsComponent,
+    AssignmentDetailComponent,
+    StudentClassesComponent,
+    StudentClassOverviewComponent,
+    GradesComponent,
+    AttendanceHistoryComponent,
+    ClassTabsComponent
   ],
   imports: [
     CommonModule,
@@ -83,7 +101,11 @@ import { STUDENT_ROUTES } from './student.routes';
     NzToolTipModule,
     NzAlertModule,
     NzDescriptionsModule,
-    NzModalModule
+    NzModalModule,
+    NzTabsModule,
+    NzSelectModule,
+    NzUploadModule,
+    NzRateModule
   ],
   providers: [
     StudentScheduleService

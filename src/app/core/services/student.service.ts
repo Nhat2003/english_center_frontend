@@ -95,6 +95,14 @@ export class StudentService {
 			);
 	}
 
+	// Lấy danh sách lớp học của học sinh
+	getClassesByStudent(studentId: number): Observable<any[]> {
+		return this.http.get<any[]>(`${environment.apiUrl}/class-rooms/by-student/${studentId}`)
+			.pipe(
+				catchError(this.handleError)
+			);
+	}
+
 	// Test method để kiểm tra API cơ bản
 	getStudentsWithoutPagination(): Observable<Student[]> {
 		console.log('Calling students API without pagination');

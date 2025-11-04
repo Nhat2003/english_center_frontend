@@ -1,0 +1,97 @@
+.class-tabs-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 24px;
+}
+
+.class-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.back-btn {
+  color: #595959;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.back-btn:hover {
+  color: #3bb273;
+}
+
+.class-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #262626;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.class-name i {
+  color: #3bb273;
+  font-size: 20px;
+}
+
+.class-tabs {
+  padding: 0 24px;
+}
+
+:host ::ng-deep .class-tabs .ant-tabs-nav {
+  margin-bottom: 0;
+}
+
+:host ::ng-deep .class-tabs .ant-tabs-tab {
+  background: transparent;
+  border: none;
+  color: #595959;
+  font-weight: 500;
+  padding: 12px 20px;
+  transition: all 0.3s;
+}
+
+:host ::ng-deep .class-tabs .ant-tabs-tab:hover {
+  color: #3bb273;
+}
+
+:host ::ng-deep .class-tabs .ant-tabs-tab-active {
+  background: linear-gradient(135deg, #3bb273 0%, #52c41a 100%);
+  color: white !important;
+  border-radius: 6px;
+}
+
+:host ::ng-deep .class-tabs .ant-tabs-tab-active i {
+  color: white !important;
+}
+
+:host ::ng-deep .class-tabs .ant-tabs-ink-bar {
+  display: none;
+}
+
+:host ::ng-deep .class-tabs .ant-tabs-content-holder {
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .class-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .class-name {
+    font-size: 16px;
+  }
+
+  :host ::ng-deep .class-tabs .ant-tabs-tab {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+}

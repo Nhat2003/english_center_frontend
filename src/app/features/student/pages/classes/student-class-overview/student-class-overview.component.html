@@ -1,0 +1,81 @@
+<app-class-tabs
+  [classId]="classId"
+  [role]="'student'"
+  [className]="classInfo?.name || 'Đang tải...'">
+</app-class-tabs>
+
+<div class="class-overview-content">
+  <nz-spin *ngIf="loading" nzTip="Đang tải..."></nz-spin>
+
+  <div *ngIf="!loading && classInfo" class="overview-cards">
+    <nz-row [nzGutter]="[16, 16]">
+      <nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8">
+        <nz-card nzTitle="Thông tin lớp" class="info-card">
+          <div class="info-item">
+            <i nz-icon nzType="read"></i>
+            <div>
+              <label>Tên lớp:</label>
+              <span>{{ classInfo.name }}</span>
+            </div>
+          </div>
+          <div class="info-item">
+            <i nz-icon nzType="book"></i>
+            <div>
+              <label>Khóa học:</label>
+              <span>{{ classInfo.courseName }}</span>
+            </div>
+          </div>
+          <div class="info-item">
+            <i nz-icon nzType="home"></i>
+            <div>
+              <label>Phòng học:</label>
+              <span>{{ classInfo.roomName }}</span>
+            </div>
+          </div>
+          <div class="info-item">
+            <i nz-icon nzType="user"></i>
+            <div>
+              <label>Giáo viên:</label>
+              <span>{{ classInfo.teacherName }}</span>
+            </div>
+          </div>
+        </nz-card>
+      </nz-col>
+
+      <nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8">
+        <nz-card nzTitle="Lịch học" class="schedule-card">
+          <div class="schedule-info" *ngIf="classInfo.fixedSchedule">
+            <p>
+              <i nz-icon nzType="calendar"></i>
+              <strong>{{ classInfo.fixedSchedule.name }}</strong>
+            </p>
+            <p>
+              <i nz-icon nzType="clock-circle"></i>
+              {{ classInfo.fixedSchedule.startTime }} - {{ classInfo.fixedSchedule.endTime }}
+            </p>
+            <p>
+              <i nz-icon nzType="calendar-check"></i>
+              {{ classInfo.fixedSchedule.daysOfWeek }}
+            </p>
+          </div>
+        </nz-card>
+      </nz-col>
+
+      <nz-col [nzXs]="24" [nzSm]="24" [nzMd]="8">
+        <nz-card nzTitle="Thời gian" class="time-card">
+          <p>
+            <strong>Bắt đầu:</strong> {{ classInfo.startDate | date: 'dd/MM/yyyy' }}
+          </p>
+          <p>
+            <strong>Kết thúc:</strong> {{ classInfo.endDate | date: 'dd/MM/yyyy' }}
+          </p>
+        </nz-card>
+      </nz-col>
+    </nz-row>
+  </div>
+
+  <nz-empty
+    *ngIf="!loading && !classInfo"
+    nzNotFoundContent="Không tìm thấy thông tin lớp học"
+  ></nz-empty>
+</div>

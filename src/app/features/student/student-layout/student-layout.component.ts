@@ -1,8 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { AuthService, User } from '../../../core/services/auth.service';
+import { ClassService } from '../../../core/services/class.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-student-layout',
@@ -15,9 +17,16 @@ export class StudentLayoutComponent implements OnInit, OnDestroy {
   newNotifications = 3;
   private userSubscription?: Subscription;
 
+  // Class management mode
+  isClassManagementMode = false;
+  currentClassId: number | null = null;
+  currentClassInfo: any = null;
+
   constructor(
     private authService: AuthService,
     private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private classService: ClassService,
     private message: NzMessageService
   ) {}
 
@@ -36,6 +45,50 @@ export class StudentLayoutComponent implements OnInit, OnDestroy {
         }
       }
     });
+
+    // Theo dõi navigation để detect class management mode
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.checkClassManagementMode();
+    });
+
+    // Check initial route
+    this.checkClassManagementMode();
+  }
+
+  checkClassManagementMode() {
+    const url = this.router.url;
+    const classManagementMatch = url.match(/\/student\/classes\/(\d+)/);
+
+    if (classManagementMatch) {
+      this.isClassManagementMode = true;
+      const classId = parseInt(classManagementMatch[1]);
+
+      if (this.currentClassId !== classId) {
+        this.currentClassId = classId;
+        this.loadClassInfo(classId);
+      }
+    } else {
+      this.isClassManagementMode = false;
+      this.currentClassId = null;
+      this.currentClassInfo = null;
+    }
+  }
+
+  loadClassInfo(classId: number) {
+    this.classService.getClass(classId).subscribe({
+      next: (data) => {
+        this.currentClassInfo = data;
+      },
+      error: (err) => {
+        console.error('Failed to load class info:', err);
+      }
+    });
+  }
+
+  backToClasses() {
+    this.router.navigate(['/student/classes']);
   }
 
   ngOnDestroy() {

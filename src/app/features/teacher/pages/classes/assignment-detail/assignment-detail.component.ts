@@ -24,6 +24,10 @@ export class AssignmentDetailComponent implements OnInit {
     feedback: ''
   };
 
+  // View submission modal
+  viewSubmissionVisible = false;
+  viewingSubmission: Submission | null = null;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -43,11 +47,8 @@ export class AssignmentDetailComponent implements OnInit {
 
   loadAssignmentDetail(): void {
     this.loading = true;
-    // Add timestamp to prevent caching
-    const timestamp = new Date().getTime();
     this.assignmentService.getAssignmentDetail(this.assignmentId!).subscribe({
       next: (data) => {
-        console.log('Assignment detail loaded:', data);
         this.assignment = data;
         this.loading = false;
       },
@@ -87,6 +88,45 @@ export class AssignmentDetailComponent implements OnInit {
     window.open(this.getFileUrl(url), '_blank');
   }
 
+  /**
+   * Tải xuống file bài tập (teacher)
+   */
+  downloadAssignmentFile(): void {
+    if (!this.assignment?.fileUrl) {
+      this.message.warning('Không có file đính kèm');
+      return;
+    }
+
+    this.assignmentService.downloadAssignmentFile(this.assignmentId!, this.assignment.originalFilename);
+    this.message.info('Đang tải xuống file bài tập...');
+  }
+
+  /**
+   * Tải xuống submission của học sinh (teacher)
+   */
+  downloadSubmission(submission: Submission): void {
+    if (!submission.fileUrl) {
+      this.message.warning('Học sinh không có file đính kèm');
+      return;
+    }
+
+    this.assignmentService.downloadSubmissionFile(submission.id, submission.originalFilename);
+    this.message.info(`Đang tải xuống bài nộp của ${submission.student.fullName}...`);
+  }
+
+  /**
+   * Xem chi tiết submission (nội dung text + file)
+   */
+  viewSubmissionDetail(submission: Submission): void {
+    this.viewingSubmission = submission;
+    this.viewSubmissionVisible = true;
+  }
+
+  closeViewSubmissionModal(): void {
+    this.viewSubmissionVisible = false;
+    this.viewingSubmission = null;
+  }
+
   openGradingModal(submission: Submission): void {
     this.selectedSubmission = submission;
     this.gradeForm = {
@@ -116,11 +156,8 @@ export class AssignmentDetailComponent implements OnInit {
       feedback: this.gradeForm.feedback || null
     };
 
-    console.log('Submitting grade:', gradeData);
-
     this.assignmentService.gradeSubmission(this.selectedSubmission!.id, gradeData).subscribe({
       next: (response) => {
-        console.log('Grade response:', response);
         this.message.success('Chấm điểm thành công');
         this.closeGradingModal();
         this.loadAssignmentDetail();

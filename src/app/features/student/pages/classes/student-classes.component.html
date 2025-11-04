@@ -1,0 +1,66 @@
+<div class="student-classes-container">
+  <h2>Lớp học của tôi</h2>
+
+  <nz-spin *ngIf="loadingClasses" nzTip="Đang tải lớp..."></nz-spin>
+
+  <nz-empty
+    *ngIf="!loadingClasses && classes.length === 0"
+    nzNotFoundContent="Bạn chưa được xếp vào lớp học nào"
+    [nzNotFoundImage]="'simple'"
+  ></nz-empty>
+
+  <div *ngIf="!loadingClasses && classes.length > 0" class="classes-grid">
+    <nz-card
+      *ngFor="let classRoom of classes"
+      [nzTitle]="classRoom.name"
+      [nzExtra]="extraTemplate"
+      class="class-card"
+      [nzHoverable]="true"
+      (click)="selectClass(classRoom)">
+
+      <ng-template #extraTemplate>
+        <nz-tag nzColor="green">Đang học</nz-tag>
+      </ng-template>
+
+      <div class="class-info">
+        <p class="info-row">
+          <i nz-icon nzType="book" nzTheme="outline"></i>
+          <strong>Khóa học:</strong>
+          <span>{{ classRoom.courseName }}</span>
+        </p>
+
+        <p class="info-row">
+          <i nz-icon nzType="home" nzTheme="outline"></i>
+          <strong>Phòng học:</strong>
+          <span>{{ classRoom.roomName }}</span>
+        </p>
+
+        <p class="info-row">
+          <i nz-icon nzType="user" nzTheme="outline"></i>
+          <strong>Giáo viên:</strong>
+          <span>{{ classRoom.teacherName }}</span>
+        </p>
+      </div>
+
+      <div class="class-actions">
+        <button
+          nz-button
+          nzType="default"
+          nzSize="small"
+          (click)="viewAnnouncements(classRoom); $event.stopPropagation()">
+          <i nz-icon nzType="sound"></i>
+          Thông báo
+        </button>
+
+        <button
+          nz-button
+          nzType="primary"
+          nzSize="small"
+          (click)="selectClass(classRoom); $event.stopPropagation()">
+          <i nz-icon nzType="arrow-right"></i>
+          Xem chi tiết
+        </button>
+      </div>
+    </nz-card>
+  </div>
+</div>
