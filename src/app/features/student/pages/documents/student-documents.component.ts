@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { ClassDocumentService } from '../../../../core/services/class-document.service';
 import { ClassDocument } from '../../../../core/models/class-document.model';
@@ -11,41 +12,32 @@ import { ClassDocument } from '../../../../core/models/class-document.model';
 export class StudentDocumentsComponent implements OnInit {
   documents: ClassDocument[] = [];
   loading = false;
-  studentClassId: number | null = null;
+  classId: number | null = null;
 
   constructor(
+    private route: ActivatedRoute,
     private message: NzMessageService,
     private classDocumentService: ClassDocumentService
   ) {}
 
   ngOnInit(): void {
-    // Get student's class ID from localStorage user info
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      try {
-        const user = JSON.parse(userStr);
-        // Assuming user object has classRoomId or classId
-        this.studentClassId = user.classRoomId || user.classId || null;
-
-        if (this.studentClassId) {
-          this.loadDocuments();
-        } else {
-          this.message.warning('Bạn chưa được phân lớp');
-        }
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-        this.message.error('Không thể lấy thông tin lớp học');
+    // Get classId from route parameter
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.classId = +id;
+        this.loadDocuments();
+      } else {
+        this.message.warning('Không tìm thấy thông tin lớp học');
       }
-    } else {
-      this.message.warning('Vui lòng đăng nhập lại');
-    }
+    });
   }
 
   loadDocuments(): void {
-    if (!this.studentClassId) return;
+    if (!this.classId) return;
 
     this.loading = true;
-    this.classDocumentService.getDocumentsByClassId(this.studentClassId).subscribe({
+    this.classDocumentService.getDocumentsByClassId(this.classId).subscribe({
       next: (data) => {
         this.documents = data;
         this.loading = false;
@@ -73,17 +65,14 @@ export class StudentDocumentsComponent implements OnInit {
       next: (blob) => {
         this.message.remove();
 
-        // Tạo URL từ blob
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
         link.download = doc.fileName;
 
-        // Trigger download
         document.body.appendChild(link);
         link.click();
 
-        // Cleanup
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
 

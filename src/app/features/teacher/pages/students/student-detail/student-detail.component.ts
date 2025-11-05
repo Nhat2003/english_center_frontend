@@ -2,7 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { StudentService } from '../../../../../core/services/student.service';
+import { AssignmentService, SubmissionHistoryResponse } from '../../../../../core/services/assignment.service';
 import { StudentDetail } from '../../../../../core/models/student-detail.model';
+
+interface GradeStatistics {
+  totalGraded: number;
+  averageGrade: number;
+  highestGrade: number;
+  lowestGrade: number;
+}
 
 @Component({
   selector: 'app-student-detail',
@@ -14,6 +22,16 @@ export class StudentDetailComponent implements OnInit {
   studentDetail?: StudentDetail;
   loading = false;
 
+  // Grade history
+  submissions: SubmissionHistoryResponse[] = [];
+  loadingGrades = false;
+  statistics: GradeStatistics = {
+    totalGraded: 0,
+    averageGrade: 0,
+    highestGrade: 0,
+    lowestGrade: 0
+  };
+
   // Chart data for attendance summary
   attendanceChartData: any[] = [];
 
@@ -21,6 +39,7 @@ export class StudentDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private studentService: StudentService,
+    private assignmentService: AssignmentService,
     private message: NzMessageService
   ) {}
 
@@ -29,6 +48,7 @@ export class StudentDetailComponent implements OnInit {
       this.studentId = +params['studentId'];
       if (this.studentId) {
         this.loadStudentDetail();
+        this.loadGradeHistory();
       }
     });
   }
@@ -54,6 +74,51 @@ export class StudentDetailComponent implements OnInit {
         }
       }
     });
+  }
+
+  loadGradeHistory(): void {
+    this.loadingGrades = true;
+    // Sử dụng API: GET /submissions/student/{studentId}/history
+    this.assignmentService.getStudentSubmissionHistory(this.studentId).subscribe({
+      next: (allSubmissions) => {
+        // Lọc ra các submission đã được chấm điểm
+        this.submissions = allSubmissions.filter(s =>
+          s.grade !== null && s.grade !== undefined
+        );
+
+        this.calculateStatistics();
+        this.loadingGrades = false;
+      },
+      error: (err) => {
+        console.error('Failed to load grade history:', err);
+        this.message.error('Không thể tải lịch sử điểm');
+        this.loadingGrades = false;
+      }
+    });
+  }
+
+  calculateStatistics(): void {
+    const gradedSubmissions = this.submissions.filter(s => s.grade !== null && s.grade !== undefined);
+
+    if (gradedSubmissions.length === 0) {
+      this.statistics = {
+        totalGraded: 0,
+        averageGrade: 0,
+        highestGrade: 0,
+        lowestGrade: 0
+      };
+      return;
+    }
+
+    const grades = gradedSubmissions.map(s => s.grade!);
+    const sum = grades.reduce((acc, grade) => acc + grade, 0);
+
+    this.statistics = {
+      totalGraded: gradedSubmissions.length,
+      averageGrade: Math.round((sum / gradedSubmissions.length) * 10) / 10,
+      highestGrade: Math.max(...grades),
+      lowestGrade: Math.min(...grades)
+    };
   }
 
   prepareChartData(): void {
@@ -94,9 +159,17 @@ export class StudentDetailComponent implements OnInit {
   }
 
   getGradeColor(grade: number): string {
-    if (grade >= 8) return '#52c41a';
-    if (grade >= 6.5) return '#faad14';
-    return '#ff4d4f';
+    if (grade >= 8) return 'success';
+    if (grade >= 6.5) return 'processing';
+    if (grade >= 5) return 'warning';
+    return 'error';
+  }
+
+  getGradeLabel(grade: number): string {
+    if (grade >= 8) return 'Giỏi';
+    if (grade >= 6.5) return 'Khá';
+    if (grade >= 5) return 'Trung bình';
+    return 'Yếu';
   }
 
   calculateAge(dob: string): number {

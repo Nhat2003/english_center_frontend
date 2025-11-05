@@ -90,7 +90,7 @@
         <li nz-menu-item routerLink="/teacher/notifications" routerLinkActive="ant-menu-item-selected">
           <span nz-icon nzType="notification" class="menu-icon"></span>
           <span>Thông báo cho học sinh</span>
-          <nz-badge [nzCount]="newNotifications" *ngIf="newNotifications > 0" class="notification-badge"></nz-badge>
+          <nz-badge [nzCount]="newNotifications" [nzShowZero]="false" class="notification-badge"></nz-badge>
         </li>
 
       </ul>
@@ -126,10 +126,10 @@
           <span>Tổng quan</span>
         </li>
 
-        <!-- Danh sách sinh viên -->
+        <!-- Danh sách học sinh -->
         <li nz-menu-item [routerLink]="['/teacher/classes', currentClassId, 'students']" routerLinkActive="ant-menu-item-selected">
           <span nz-icon nzType="team" class="menu-icon"></span>
-          <span>Danh sách sinh viên</span>
+          <span>Danh sách học sinh</span>
         </li>
 
         <!-- Bài tập -->

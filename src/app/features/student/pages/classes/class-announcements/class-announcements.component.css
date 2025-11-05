@@ -71,25 +71,6 @@
   color: #3bb273;
 }
 
-.create-btn {
-  height: 40px;
-  border-radius: 8px;
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(59, 178, 115, 0.25);
-  transition: all 0.3s;
-}
-
-.create-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(59, 178, 115, 0.35);
-}
-
-/* Info Banner */
-.info-banner {
-  margin-bottom: 20px;
-  border-radius: 8px;
-}
-
 /* Content */
 .announcements-content {
   background: white;
@@ -135,14 +116,28 @@
   top: 0;
   bottom: 0;
   width: 5px;
-  background: linear-gradient(180deg, #3bb273 0%, #52c41a 100%);
+  background: linear-gradient(180deg, #1890ff 0%, #096dd9 100%);
   transition: width 0.3s;
 }
 
+.announcement-card.new-announcement {
+  border-color: #52c41a;
+  background: linear-gradient(135deg, #f6ffed 0%, #ffffff 100%);
+}
+
+.announcement-card.new-announcement::before {
+  background: linear-gradient(180deg, #52c41a 0%, #73d13d 100%);
+}
+
 .announcement-card:hover {
-  box-shadow: 0 8px 24px rgba(59, 178, 115, 0.15);
+  box-shadow: 0 8px 24px rgba(24, 144, 255, 0.15);
   transform: translateY(-4px);
-  border-color: #3bb273;
+  border-color: #1890ff;
+}
+
+.announcement-card.new-announcement:hover {
+  box-shadow: 0 8px 24px rgba(82, 196, 26, 0.15);
+  border-color: #52c41a;
 }
 
 .announcement-card:hover::before {
@@ -172,7 +167,7 @@
 .announcement-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #3bb273 0%, #52c41a 100%);
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -180,7 +175,12 @@
   color: white;
   font-size: 22px;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(59, 178, 115, 0.3);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+}
+
+.new-announcement .announcement-icon {
+  background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
+  box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
 }
 
 .announcement-title-section {
@@ -212,25 +212,16 @@
 }
 
 .meta-item [nz-icon] {
-  color: #3bb273;
+  color: #1890ff;
+}
+
+.new-announcement .meta-item [nz-icon] {
+  color: #52c41a;
 }
 
 .meta-divider {
   color: #d9d9d9;
   margin: 0 4px;
-}
-
-.delete-btn {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  transition: all 0.3s;
-}
-
-.delete-btn:hover {
-  background: #fff1f0;
-  transform: scale(1.1);
 }
 
 .announcement-body {
@@ -245,160 +236,45 @@
   line-height: 1.8;
   white-space: pre-wrap;
   word-break: break-word;
+  background: #fafafa;
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 3px solid #1890ff;
+}
+
+.new-announcement .announcement-content {
+  background: #f6ffed;
+  border-left-color: #52c41a;
 }
 
 .announcement-footer {
   padding-left: 64px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.footer-left {
+  display: flex;
+  align-items: center;
   gap: 12px;
 }
 
-/* Modal Styles */
-.modal-header-info {
-  margin-bottom: 24px;
+.announcement-number {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8c8c8c;
+  background: #f0f0f0;
+  padding: 4px 10px;
+  border-radius: 12px;
 }
 
-.form-label {
+.footer-right {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-weight: 600;
-  color: #262626;
-}
-
-.form-label [nz-icon] {
-  color: #3bb273;
-  font-size: 16px;
-}
-
-.title-input {
-  font-size: 16px;
-  font-weight: 600;
-  height: 44px;
-  border-radius: 8px;
-  border: 2px solid #e8e8e8;
-  transition: all 0.3s;
-}
-
-.title-input:focus,
-.title-input:hover {
-  border-color: #3bb273;
-  box-shadow: 0 0 0 2px rgba(59, 178, 115, 0.1);
-}
-
-.content-textarea {
-  font-size: 15px;
-  line-height: 1.8;
-  border-radius: 8px;
-  border: 2px solid #e8e8e8;
-  transition: all 0.3s;
-  resize: vertical;
-}
-
-.content-textarea:focus,
-.content-textarea:hover {
-  border-color: #3bb273;
-  box-shadow: 0 0 0 2px rgba(59, 178, 115, 0.1);
-}
-
-.char-count {
-  color: #8c8c8c;
-  font-size: 12px;
-  margin-top: 6px;
-  display: block;
-  text-align: right;
-  font-weight: 500;
-}
-
-/* Preview Section */
-.preview-section {
-  margin-top: 24px;
-  padding-top: 24px;
-  border-top: 1px solid #e8e8e8;
-}
-
-.announcement-preview {
-  background: linear-gradient(135deg, #f0f9f4 0%, #ffffff 100%);
-  border: 2px solid #3bb273;
-  border-radius: 12px;
-  padding: 20px;
-  position: relative;
-  overflow: hidden;
-}
-
-.announcement-preview::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 5px;
-  background: linear-gradient(180deg, #3bb273 0%, #52c41a 100%);
-}
-
-.preview-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-  padding-left: 16px;
-}
-
-.preview-header [nz-icon] {
-  font-size: 20px;
-  color: #3bb273;
-}
-
-.preview-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #262626;
-}
-
-.preview-content {
-  padding-left: 16px;
-  color: #595959;
-  font-size: 14px;
-  line-height: 1.8;
-  white-space: pre-wrap;
-  margin-bottom: 12px;
-  min-height: 60px;
-}
-
-.preview-footer {
-  padding-left: 16px;
-  border-top: 1px solid rgba(59, 178, 115, 0.2);
-  padding-top: 12px;
-  margin-top: 12px;
-}
-
-.preview-footer small {
-  color: #8c8c8c;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.preview-footer [nz-icon] {
-  color: #3bb273;
-}
-
-/* Modal Footer Custom */
-:host ::ng-deep .ant-modal-footer {
-  padding: 16px 24px;
-  border-top: 1px solid #e8e8e8;
-}
-
-:host ::ng-deep .ant-modal-footer .ant-btn {
-  height: 40px;
-  border-radius: 8px;
-  font-weight: 600;
-}
-
-:host ::ng-deep .ant-modal-footer .ant-btn-primary {
-  box-shadow: 0 2px 8px rgba(59, 178, 115, 0.25);
 }
 
 /* Loading State */
@@ -437,10 +313,6 @@
     width: 100%;
   }
 
-  .create-btn {
-    width: 100%;
-  }
-
   .announcement-card {
     padding: 16px;
   }
@@ -453,6 +325,9 @@
   .announcement-footer {
     padding-left: 0;
     margin-top: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
 
   .header-left-content {
@@ -468,18 +343,6 @@
 
   .announcement-title {
     font-size: 16px;
-  }
-
-  .preview-header {
-    padding-left: 12px;
-  }
-
-  .preview-content {
-    padding-left: 12px;
-  }
-
-  .preview-footer {
-    padding-left: 12px;
   }
 }
 
@@ -503,10 +366,5 @@
   .announcement-badge {
     top: 12px;
     right: 12px;
-  }
-
-  :host ::ng-deep .ant-modal {
-    max-width: calc(100vw - 32px);
-    margin: 16px auto;
   }
 }

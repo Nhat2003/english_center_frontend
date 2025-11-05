@@ -2,8 +2,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { AuthService, User } from '../../../core/services/auth.service';
 import { ClassService } from '../../../core/services/class.service';
+import { StudentService } from '../../../core/services/student.service';
+import { AnnouncementService } from '../../../core/services/announcement.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { Subscription } from 'rxjs';
+import { Subscription, forkJoin } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -14,8 +16,9 @@ import { filter } from 'rxjs/operators';
 export class StudentLayoutComponent implements OnInit, OnDestroy {
   isCollapsed = false;
   currentUser: User | null = null;
-  newNotifications = 3;
+  newNotifications = 0; // Số thông báo mới (< 24h chưa đọc)
   private userSubscription?: Subscription;
+  private notificationCheckInterval: any;
 
   // Class management mode
   isClassManagementMode = false;
@@ -27,6 +30,8 @@ export class StudentLayoutComponent implements OnInit, OnDestroy {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private classService: ClassService,
+    private studentService: StudentService,
+    private announcementService: AnnouncementService,
     private message: NzMessageService
   ) {}
 
@@ -44,6 +49,11 @@ export class StudentLayoutComponent implements OnInit, OnDestroy {
           this.currentUser = storedUser;
         }
       }
+
+      // Load notifications khi có user
+      if (this.currentUser?.student?.id) {
+        this.loadUnreadNotifications();
+      }
     });
 
     // Theo dõi navigation để detect class management mode
@@ -55,6 +65,13 @@ export class StudentLayoutComponent implements OnInit, OnDestroy {
 
     // Check initial route
     this.checkClassManagementMode();
+
+    // Refresh notifications every 5 minutes
+    this.notificationCheckInterval = setInterval(() => {
+      if (this.currentUser?.student?.id) {
+        this.loadUnreadNotifications();
+      }
+    }, 5 * 60 * 1000); // 5 phút
   }
 
   checkClassManagementMode() {
@@ -91,9 +108,58 @@ export class StudentLayoutComponent implements OnInit, OnDestroy {
     this.router.navigate(['/student/classes']);
   }
 
+  loadUnreadNotifications() {
+    if (!this.currentUser?.student?.id) return;
+
+    const studentId = this.currentUser.student.id;
+
+    // Load tất cả lớp học của student
+    this.studentService.getClassesByStudent(studentId).subscribe({
+      next: (classes) => {
+        if (classes.length === 0) {
+          this.newNotifications = 0;
+          return;
+        }
+
+        // Load announcements từ tất cả các lớp
+        const announcementRequests = classes.map(cls =>
+          this.announcementService.getAnnouncementsByClass(cls.id)
+        );
+
+        forkJoin(announcementRequests).subscribe({
+          next: (results) => {
+            // Gộp tất cả announcements
+            const allAnnouncements: any[] = [];
+            results.forEach(arr => allAnnouncements.push(...arr));
+
+            // Đếm số thông báo mới (< 24 giờ)
+            const now = new Date();
+            const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+            this.newNotifications = allAnnouncements.filter(announcement => {
+              const createdAt = new Date(announcement.createdAt);
+              return createdAt > oneDayAgo;
+            }).length;
+          },
+          error: (err) => {
+            console.error('Error loading announcements:', err);
+            this.newNotifications = 0;
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Error loading classes:', err);
+        this.newNotifications = 0;
+      }
+    });
+  }
+
   ngOnDestroy() {
     if (this.userSubscription) {
       this.userSubscription.unsubscribe();
+    }
+    if (this.notificationCheckInterval) {
+      clearInterval(this.notificationCheckInterval);
     }
   }
 

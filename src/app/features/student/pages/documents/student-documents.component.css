@@ -6,61 +6,81 @@
   padding: 0;
 }
 
-/* Page Header */
-.page-header {
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 24px;
-  padding-bottom: 20px;
+  padding-bottom: 16px;
   border-bottom: 2px solid #f0f0f0;
 }
 
-.header-content h2 {
-  margin: 0 0 8px 0;
-  color: #262626;
-  font-size: 24px;
-  font-weight: 600;
-}
-
-.subtitle {
+.header h2 {
   margin: 0;
-  color: #8c8c8c;
-  font-size: 14px;
+  color: #262626;
+  font-size: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-/* Table */
-.documents-table {
+.header-icon {
+  color: var(--primary-color);
+  font-size: 22px;
+}
+
+/* Loading */
+nz-spin {
+  display: block;
+  padding: 60px 0;
+  text-align: center;
+}
+
+/* Table styles */
+::ng-deep .ant-table {
+  font-size: 13px;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
 }
 
-.documents-table ::ng-deep .ant-table {
-  font-size: 13px;
-}
-
-.documents-table ::ng-deep .ant-table-thead > tr > th {
+::ng-deep .ant-table-thead > tr > th {
   background-color: #fafafa;
   font-weight: 600;
-  padding: 10px 8px;
-  color: #262626;
-}
-
-.documents-table ::ng-deep .ant-table-tbody > tr > td {
   padding: 12px 8px;
+  color: #262626;
+  border-bottom: 2px solid #f0f0f0;
 }
 
-.documents-table ::ng-deep .ant-table-tbody > tr:hover {
+::ng-deep .ant-table-tbody > tr > td {
+  padding: 12px 8px;
+  vertical-align: middle;
+}
+
+::ng-deep .ant-table-tbody > tr:hover {
   background-color: rgba(59, 178, 115, 0.03);
 }
 
-.file-icon {
+/* File Icon and Name */
+.file-icon-table {
   margin-right: 8px;
   font-size: 18px;
   color: var(--primary-color);
 }
 
-.file-name {
+.file-name-text {
   color: #262626;
   font-size: 13px;
+  font-weight: 500;
+}
+
+/* File Type Tag */
+.file-type-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
   font-weight: 500;
 }
 
@@ -104,27 +124,23 @@
   margin-top: 16px;
   color: #8c8c8c;
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 
-/* Loading */
-nz-spin {
-  display: block;
-  padding: 60px 0;
-  text-align: center;
-}
-
-/* Tags */
-.documents-table ::ng-deep nz-tag {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-weight: 500;
+.empty-description span[nz-icon] {
+  font-size: 16px;
+  color: var(--primary-color);
+  margin-right: 6px;
 }
 
 /* Pagination */
 ::ng-deep .ant-pagination {
   margin-top: 16px;
+  text-align: center;
 }
 
 ::ng-deep .ant-pagination-item-active {
@@ -157,28 +173,28 @@ nz-spin {
 
 /* Responsive */
 @media (max-width: 768px) {
-  .page-header {
+  .header {
     margin-bottom: 16px;
-    padding-bottom: 16px;
+    padding-bottom: 12px;
   }
 
-  .header-content h2 {
+  .header h2 {
+    font-size: 18px;
+  }
+
+  .header-icon {
     font-size: 20px;
   }
 
-  .subtitle {
-    font-size: 13px;
-  }
-
-  .documents-table ::ng-deep .ant-table {
+  ::ng-deep .ant-table {
     font-size: 12px;
   }
 
-  .file-icon {
+  .file-icon-table {
     font-size: 16px;
   }
 
-  .file-name {
+  .file-name-text {
     font-size: 12px;
   }
 
@@ -189,5 +205,29 @@ nz-spin {
 
   .download-btn span[nz-icon] {
     font-size: 16px;
+  }
+
+  .file-type-tag {
+    font-size: 10px;
+    padding: 1px 6px;
+  }
+}
+
+@media (max-width: 576px) {
+  .header h2 {
+    font-size: 16px;
+  }
+
+  ::ng-deep .ant-table-thead > tr > th,
+  ::ng-deep .ant-table-tbody > tr > td {
+    padding: 8px 4px;
+  }
+
+  .empty-state {
+    padding: 40px 16px;
+  }
+
+  .empty-description {
+    font-size: 13px;
   }
 }

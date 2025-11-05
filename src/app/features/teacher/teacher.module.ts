@@ -33,6 +33,7 @@ import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
+import { NzSelectModule } from 'ng-zorro-antd/select';
 
 // Components
 import { TeacherLayoutComponent } from './teacher-layout/teacher-layout.component';
@@ -47,6 +48,7 @@ import { AssignmentDetailComponent } from './pages/classes/assignment-detail/ass
 import { ClassAttendanceComponent } from './pages/attendance/class-attendance.component';
 import { StudentDetailComponent } from './pages/students/student-detail/student-detail.component';
 import { ClassAnnouncementsComponent } from './pages/announcements/class-announcements.component';
+import { TeacherNotificationsComponent } from './pages/notifications/notifications.component';
 
 // Routes
 import { TEACHER_ROUTES } from './teacher.routes';
@@ -64,7 +66,8 @@ import { TEACHER_ROUTES } from './teacher.routes';
     AssignmentDetailComponent,
     ClassAttendanceComponent,
     StudentDetailComponent,
-    ClassAnnouncementsComponent
+    ClassAnnouncementsComponent,
+    TeacherNotificationsComponent
   ],
   imports: [
     CommonModule,
@@ -99,7 +102,8 @@ import { TEACHER_ROUTES } from './teacher.routes';
     NzDescriptionsModule,
     NzTabsModule,
     NzFormModule,
-    NzAlertModule
+    NzAlertModule,
+    NzSelectModule
   ]
 })
 export class TeacherModule { }

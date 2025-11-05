@@ -1,0 +1,310 @@
+:host {
+  --primary-color: #3bb273;
+}
+
+.class-attendance-container {
+  padding: 0;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.header h2 {
+  margin: 0;
+  color: #262626;
+  font-size: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-icon {
+  color: var(--primary-color);
+  font-size: 22px;
+}
+
+/* Statistics Section */
+.statistics-section {
+  margin-bottom: 24px;
+}
+
+/* Stat Cards */
+.stat-card {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  overflow: hidden;
+  position: relative;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, rgba(0,0,0,0.1) 0%, transparent 100%);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.total-card::before {
+  background: linear-gradient(90deg, #1890ff 0%, #40a9ff 100%);
+}
+
+.present-card::before {
+  background: linear-gradient(90deg, #52c41a 0%, #73d13d 100%);
+}
+
+.late-card::before {
+  background: linear-gradient(90deg, #faad14 0%, #ffc53d 100%);
+}
+
+.absent-card::before {
+  background: linear-gradient(90deg, #ff4d4f 0%, #ff7875 100%);
+}
+
+.stat-icon {
+  font-size: 24px;
+  margin-right: 8px;
+}
+
+::ng-deep .ant-statistic-title {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.65);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+::ng-deep .ant-statistic-content {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+/* Rate Card */
+.rate-card {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
+}
+
+.rate-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rate-label {
+  display: flex;
+  align-items: center;
+}
+
+.rate-value {
+  margin: 8px 0;
+}
+
+/* Table Card */
+.table-card {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Table Styles */
+::ng-deep .ant-table {
+  font-size: 13px;
+}
+
+::ng-deep .ant-table-thead > tr > th {
+  background-color: #fafafa;
+  font-weight: 600;
+  padding: 12px 8px;
+  color: #262626;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+::ng-deep .ant-table-tbody > tr > td {
+  padding: 12px 8px;
+  vertical-align: middle;
+}
+
+::ng-deep .ant-table-tbody > tr:hover {
+  background-color: rgba(59, 178, 115, 0.03);
+}
+
+/* Status Badge Styles */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 90px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status-badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.status-badge.status-success {
+  background: linear-gradient(135deg, #3bb273 0%, #52c41a 100%);
+  color: white;
+  border: 1px solid #3bb273;
+}
+
+.status-badge.status-warning {
+  background: linear-gradient(135deg, #faad14 0%, #ffc53d 100%);
+  color: white;
+  border: 1px solid #faad14;
+}
+
+.status-badge.status-error {
+  background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%);
+  color: white;
+  border: 1px solid #ff4d4f;
+}
+
+.status-badge.status-default {
+  background: linear-gradient(135deg, #8c8c8c 0%, #bfbfbf 100%);
+  color: white;
+  border: 1px solid #8c8c8c;
+}
+
+/* Empty State */
+.empty-state {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.empty-description {
+  margin-top: 16px;
+  color: #8c8c8c;
+  font-size: 14px;
+  line-height: 1.8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.empty-description span[nz-icon] {
+  font-size: 16px;
+  color: var(--primary-color);
+  margin-right: 6px;
+}
+
+/* Loading */
+::ng-deep .ant-spin-nested-loading {
+  min-height: 200px;
+}
+
+/* Pagination */
+::ng-deep .ant-pagination {
+  margin-top: 16px;
+  text-align: center;
+}
+
+::ng-deep .ant-pagination-item-active {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+::ng-deep .ant-pagination-item-active a {
+  color: #fff;
+}
+
+::ng-deep .ant-pagination-item:hover {
+  border-color: var(--primary-color);
+}
+
+::ng-deep .ant-pagination-item:hover a {
+  color: var(--primary-color);
+}
+
+::ng-deep .ant-pagination-prev:hover .ant-pagination-item-link,
+::ng-deep .ant-pagination-next:hover .ant-pagination-item-link {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+::ng-deep .ant-progress-bg {
+  border-radius: 6px !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+  }
+
+  .header h2 {
+    font-size: 18px;
+  }
+
+  .header-icon {
+    font-size: 20px;
+  }
+
+  .stat-card:hover {
+    transform: none;
+  }
+
+  ::ng-deep .ant-statistic-content {
+    font-size: 24px !important;
+  }
+
+  .rate-value span {
+    font-size: 28px !important;
+  }
+
+  ::ng-deep .ant-table {
+    font-size: 12px;
+  }
+
+  ::ng-deep .ant-table-thead > tr > th,
+  ::ng-deep .ant-table-tbody > tr > td {
+    padding: 8px 4px;
+  }
+}
+
+@media (max-width: 576px) {
+  .header h2 {
+    font-size: 16px;
+  }
+
+  ::ng-deep .ant-statistic-content {
+    font-size: 20px !important;
+  }
+
+  .rate-value span {
+    font-size: 24px !important;
+  }
+
+  .empty-state {
+    padding: 40px 16px;
+  }
+
+  .empty-description {
+    font-size: 13px;
+  }
+}

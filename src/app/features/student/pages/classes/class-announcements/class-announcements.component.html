@@ -1,0 +1,81 @@
+<div class="announcements-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <button nz-button nzType="text" (click)="goBack()" class="back-btn">
+        <span nz-icon nzType="arrow-left"></span>
+      </button>
+      <div class="header-info">
+        <h2>📢 Thông báo từ giáo viên</h2>
+        <p *ngIf="classInfo" class="class-name">
+          <span nz-icon nzType="read" nzTheme="outline"></span>
+          {{ classInfo.name }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Announcements List -->
+  <div class="announcements-content">
+    <nz-spin [nzSpinning]="loading" nzTip="Đang tải thông báo...">
+      <nz-empty
+        *ngIf="!loading && announcements.length === 0"
+        nzNotFoundContent="Chưa có thông báo nào từ giáo viên"
+        [nzNotFoundImage]="'simple'"
+        class="empty-state"
+      >
+        <p nz-typography>Giáo viên sẽ gửi thông báo quan trọng về lớp học tại đây.</p>
+      </nz-empty>
+
+      <div class="announcements-list" *ngIf="announcements.length > 0">
+        <div
+          class="announcement-card"
+          *ngFor="let announcement of announcements; let i = index"
+          [class.new-announcement]="isNew(announcement.createdAt)">
+
+          <div class="announcement-badge" *ngIf="isNew(announcement.createdAt)">
+            <nz-badge nzStatus="success" nzText="Mới"></nz-badge>
+          </div>
+
+          <div class="announcement-header">
+            <div class="header-left-content">
+              <div class="announcement-icon">
+                <span nz-icon nzType="sound" nzTheme="filled"></span>
+              </div>
+              <div class="announcement-title-section">
+                <h3 class="announcement-title">{{ announcement.title }}</h3>
+                <div class="announcement-meta">
+                  <span class="meta-item">
+                    <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
+                    {{ formatDate(announcement.createdAt) }}
+                  </span>
+                  <span class="meta-divider">•</span>
+                  <span class="meta-item">
+                    <span nz-icon nzType="user" nzTheme="outline"></span>
+                    Giáo viên
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="announcement-body">
+            <p class="announcement-content">{{ announcement.content }}</p>
+          </div>
+
+          <div class="announcement-footer">
+            <div class="footer-left">
+              <span class="announcement-number">#{{ announcements.length - i }}</span>
+            </div>
+            <div class="footer-right">
+              <nz-tag [nzColor]="'blue'">
+                <span nz-icon nzType="notification" nzTheme="outline"></span>
+                Thông báo lớp học
+              </nz-tag>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nz-spin>
+  </div>
+</div>

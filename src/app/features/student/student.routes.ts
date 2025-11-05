@@ -9,6 +9,9 @@ import { StudentClassesComponent } from './pages/classes/student-classes.compone
 import { StudentClassOverviewComponent } from './pages/classes/student-class-overview/student-class-overview.component';
 import { GradesComponent } from './pages/grades/grades.component';
 import { AttendanceHistoryComponent } from './pages/attendance-history/attendance-history.component';
+import { ClassAttendanceComponent } from './pages/classes/class-attendance/class-attendance.component';
+import { StudentClassAnnouncementsComponent } from './pages/classes/class-announcements/class-announcements.component';
+import { StudentNotificationsComponent } from './pages/notifications/notifications.component';
 
 export const STUDENT_ROUTES: Routes = [
   {
@@ -23,14 +26,15 @@ export const STUDENT_ROUTES: Routes = [
       { path: 'classes/:id/assignments', component: StudentAssignmentsComponent },
       { path: 'classes/:id/grades', component: GradesComponent },
       { path: 'classes/:id/materials', component: StudentDocumentsComponent },
-      { path: 'classes/:id/announcements', component: StudentDashboardComponent }, // TODO: Create component
+      { path: 'classes/:id/attendance', component: ClassAttendanceComponent },
+      { path: 'classes/:id/announcements', component: StudentClassAnnouncementsComponent },
       { path: 'assignments', component: StudentAssignmentsComponent },
       { path: 'assignments/:id', component: AssignmentDetailComponent },
       { path: 'attendance-history', component: AttendanceHistoryComponent },
       { path: 'payments', component: StudentDashboardComponent },
       { path: 'online-classes', component: StudentDashboardComponent },
       { path: 'documents', component: StudentDocumentsComponent },
-      { path: 'notifications', component: StudentDashboardComponent }
+      { path: 'notifications', component: StudentNotificationsComponent }
     ]
   }
 ];

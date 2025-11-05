@@ -11,6 +11,7 @@ import { AssignmentDetailComponent } from './pages/classes/assignment-detail/ass
 import { ClassAttendanceComponent } from './pages/attendance/class-attendance.component';
 import { StudentDetailComponent } from './pages/students/student-detail/student-detail.component';
 import { ClassAnnouncementsComponent } from './pages/announcements/class-announcements.component';
+import { TeacherNotificationsComponent } from './pages/notifications/notifications.component';
 
 export const TEACHER_ROUTES: Routes = [
   {
@@ -32,7 +33,7 @@ export const TEACHER_ROUTES: Routes = [
       { path: 'assignments', component: TeacherDashboardComponent },
       { path: 'online-classes', component: TeacherDashboardComponent },
       { path: 'materials', component: TeacherDashboardComponent },
-      { path: 'notifications', component: TeacherDashboardComponent }
+      { path: 'notifications', component: TeacherNotificationsComponent }
     ]
   }
 ];

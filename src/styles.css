@@ -347,15 +347,30 @@ nz-table {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-thead th {
+/* Global text-center for all table headers and cells */
+thead th,
+.ant-table-thead > tr > th {
   background: #f0f2f5 !important;
   font-weight: 600;
-  text-align: center;
+  text-align: center !important;
 }
 
-tbody td {
-  text-align: center;
+tbody td,
+.ant-table-tbody > tr > td {
+  text-align: center !important;
   vertical-align: middle;
+}
+
+/* Global responsive table wrapper */
+.ant-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Ensure table container is responsive */
+.ant-table-container {
+  width: 100%;
+  overflow-x: auto;
 }
 
 /* ================== BUTTON ================== */

@@ -1,11 +1,13 @@
 export interface Announcement {
   id: number;
   classId: number;
-  teacherId: number;
-  message: string;
+  title: string;
+  content: string;
   createdAt: string;
+  createdByTeacherId: number;
 }
 
 export interface CreateAnnouncementRequest {
-  message: string;
+  title: string;
+  content: string;
 }

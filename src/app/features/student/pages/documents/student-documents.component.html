@@ -1,9 +1,9 @@
 <div class="student-documents">
-  <div class="page-header">
-    <div class="header-content">
-      <h2>Tài liệu học tập</h2>
-      <p class="subtitle">Tài liệu và học liệu của lớp học</p>
-    </div>
+  <div class="header">
+    <h2>
+      <span nz-icon nzType="folder-open" class="header-icon"></span>
+      Tài liệu học tập
+    </h2>
   </div>
 
   <nz-spin *ngIf="loading" nzTip="Đang tải tài liệu..."></nz-spin>
@@ -13,7 +13,7 @@
     [nzData]="documents"
     [nzSize]="'small'"
     [nzBordered]="true"
-    class="documents-table">
+    [nzPageSize]="10">
     <thead>
       <tr>
         <th nzWidth="50px" nzAlign="center">#</th>
@@ -21,18 +21,18 @@
         <th nzWidth="100px" nzAlign="center">Loại</th>
         <th nzWidth="100px" nzAlign="center">Kích thước</th>
         <th nzWidth="140px" nzAlign="center">Ngày tải lên</th>
-        <th nzWidth="80px" nzAlign="center"></th>
+        <th nzWidth="80px" nzAlign="center">Thao tác</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let document of documents; let i = index">
         <td nzAlign="center">{{ i + 1 }}</td>
         <td>
-          <i nz-icon [nzType]="getFileIcon(document.fileName)" class="file-icon"></i>
-          <span class="file-name">{{ document.fileName }}</span>
+          <span nz-icon [nzType]="getFileIcon(document.fileName)" class="file-icon-table"></span>
+          <span class="file-name-text">{{ document.fileName }}</span>
         </td>
         <td nzAlign="center">
-          <nz-tag [nzColor]="'blue'">{{ getFileType(document) }}</nz-tag>
+          <nz-tag [nzColor]="'blue'" class="file-type-tag">{{ getFileType(document) }}</nz-tag>
         </td>
         <td nzAlign="center">{{ formatFileSize(document.fileSize) }}</td>
         <td nzAlign="center">{{ document.uploadedAt | date: 'dd/MM/yyyy HH:mm' }}</td>
@@ -44,7 +44,7 @@
             class="download-btn"
             (click)="downloadDocument(document)"
             nz-tooltip="Tải xuống">
-            <i nz-icon nzType="download"></i>
+            <span nz-icon nzType="download"></span>
           </button>
         </td>
       </tr>
@@ -56,7 +56,8 @@
       nzNotFoundImage="simple"
       nzNotFoundContent="Chưa có tài liệu nào">
       <p class="empty-description">
-        Giáo viên chưa tải lên tài liệu cho lớp học. <br>
+        <span nz-icon nzType="info-circle" nzTheme="outline"></span>
+        Giáo viên chưa tải lên tài liệu cho lớp học này.<br>
         Vui lòng quay lại sau.
       </p>
     </nz-empty>

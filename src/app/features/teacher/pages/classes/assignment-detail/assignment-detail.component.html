@@ -29,7 +29,7 @@
         <nz-card>
           <nz-statistic
             [nzValue]="getTotalStudents()"
-            nzTitle="Tổng số sinh viên"
+            nzTitle="Tổng số học sinh"
             [nzValueStyle]="{ color: '#1890ff' }">
             <ng-template #nzPrefix>
               <span nz-icon nzType="team"></span>
@@ -118,7 +118,7 @@
         <thead>
           <tr>
             <th nzWidth="50px" nzAlign="center">#</th>
-            <th>Sinh viên</th>
+            <th>học sinh</th>
             <th nzWidth="100px" nzAlign="center">Loại nộp</th>
             <th nzWidth="150px" nzAlign="center">Thời gian nộp</th>
             <th nzWidth="120px" nzAlign="center">Điểm</th>
@@ -205,7 +205,7 @@
     <div class="grading-form" *ngIf="selectedSubmission">
       <!-- Student Info -->
       <div class="form-group">
-        <label class="form-label">Sinh viên</label>
+        <label class="form-label">học sinh</label>
         <div class="student-info-card">
           <nz-avatar nzIcon="user" [nzSize]="40"></nz-avatar>
           <div class="student-details">
@@ -244,7 +244,7 @@
           nz-input
           [(ngModel)]="gradeForm.feedback"
           rows="5"
-          placeholder="Nhập nhận xét cho sinh viên...">
+          placeholder="Nhập nhận xét cho học sinh...">
         </textarea>
       </div>
     </div>
@@ -260,7 +260,7 @@
     <div class="view-submission-content" *ngIf="viewingSubmission">
       <!-- Student Info -->
       <div class="submission-section">
-        <h4>Thông tin sinh viên</h4>
+        <h4>Thông tin học sinh</h4>
         <div class="student-info-card">
           <nz-avatar nzIcon="user" [nzSize]="48"></nz-avatar>
           <div class="student-details">

@@ -359,3 +359,113 @@
   padding: 2px 10px;
   font-weight: 500;
 }
+
+/* Grade Statistics Cards */
+.grade-stat-card {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  overflow: hidden;
+  position: relative;
+  background: white;
+}
+
+.grade-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, rgba(0,0,0,0.1) 0%, transparent 100%);
+}
+
+.grade-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Grade Badge Styles */
+.grade-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  min-width: 70px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.grade-badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.grade-badge.grade-success {
+  background: linear-gradient(135deg, #3bb273 0%, #2e8b57 100%);
+  color: white;
+}
+
+.grade-badge.grade-processing {
+  background: linear-gradient(135deg, #2e8b57 0%, #1e6f47 100%);
+  color: white;
+}
+
+.grade-badge.grade-warning {
+  background: linear-gradient(135deg, #faad14 0%, #fa8c16 100%);
+  color: white;
+}
+
+.grade-badge.grade-error {
+  background: linear-gradient(135deg, #ff4d4f 0%, #f5222d 100%);
+  color: white;
+}
+
+/* Assignment Cell */
+.assignment-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Grades Table Specific Styles */
+::ng-deep .ant-table-tbody > tr > td {
+  vertical-align: middle;
+}
+
+::ng-deep .ant-badge-status-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Responsive adjustments for grades */
+@media (max-width: 768px) {
+  .grade-stat-card {
+    margin-bottom: 12px;
+  }
+
+  .grade-badge {
+    font-size: 13px;
+    padding: 4px 12px;
+    min-width: 60px;
+  }
+
+  .assignment-cell {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 576px) {
+  ::ng-deep .ant-statistic-content {
+    font-size: 24px !important;
+  }
+
+  ::ng-deep .ant-table {
+    font-size: 12px;
+  }
+}

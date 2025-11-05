@@ -34,6 +34,8 @@ import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { NzRateModule } from 'ng-zorro-antd/rate';
+import { NzTypographyModule } from 'ng-zorro-antd/typography';
+import { NzFormModule } from 'ng-zorro-antd/form';
 
 // Components
 import { StudentLayoutComponent } from './student-layout/student-layout.component';
@@ -46,6 +48,9 @@ import { StudentClassesComponent } from './pages/classes/student-classes.compone
 import { StudentClassOverviewComponent } from './pages/classes/student-class-overview/student-class-overview.component';
 import { GradesComponent } from './pages/grades/grades.component';
 import { AttendanceHistoryComponent } from './pages/attendance-history/attendance-history.component';
+import { ClassAttendanceComponent } from './pages/classes/class-attendance/class-attendance.component';
+import { StudentClassAnnouncementsComponent } from './pages/classes/class-announcements/class-announcements.component';
+import { StudentNotificationsComponent } from './pages/notifications/notifications.component';
 
 // Shared Components
 import { ClassTabsComponent } from '../../shared/class-tabs/class-tabs.component';
@@ -68,6 +73,9 @@ import { STUDENT_ROUTES } from './student.routes';
     StudentClassOverviewComponent,
     GradesComponent,
     AttendanceHistoryComponent,
+    ClassAttendanceComponent,
+    StudentClassAnnouncementsComponent,
+    StudentNotificationsComponent,
     ClassTabsComponent
   ],
   imports: [
@@ -105,7 +113,9 @@ import { STUDENT_ROUTES } from './student.routes';
     NzTabsModule,
     NzSelectModule,
     NzUploadModule,
-    NzRateModule
+    NzRateModule,
+    NzTypographyModule,
+    NzFormModule
   ],
   providers: [
     StudentScheduleService

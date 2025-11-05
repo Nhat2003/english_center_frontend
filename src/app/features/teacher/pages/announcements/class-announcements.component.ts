@@ -20,7 +20,10 @@ export class ClassAnnouncementsComponent implements OnInit {
 
   // Modal tạo thông báo
   isCreateModalVisible = false;
-  newAnnouncementMessage = '';
+  announcementForm = {
+    title: '',
+    content: ''
+  };
   isCreating = false;
 
   constructor(
@@ -70,29 +73,44 @@ export class ClassAnnouncementsComponent implements OnInit {
   }
 
   showCreateModal(): void {
-    this.newAnnouncementMessage = '';
+    this.announcementForm = {
+      title: '',
+      content: ''
+    };
     this.isCreateModalVisible = true;
   }
 
   handleCreateCancel(): void {
     this.isCreateModalVisible = false;
-    this.newAnnouncementMessage = '';
+    this.announcementForm = {
+      title: '',
+      content: ''
+    };
   }
 
   handleCreateOk(): void {
-    if (!this.newAnnouncementMessage.trim()) {
+    if (!this.announcementForm.title.trim()) {
+      this.message.warning('Vui lòng nhập tiêu đề thông báo');
+      return;
+    }
+
+    if (!this.announcementForm.content.trim()) {
       this.message.warning('Vui lòng nhập nội dung thông báo');
       return;
     }
 
     this.isCreating = true;
     this.announcementService.createAnnouncement(this.classId, {
-      message: this.newAnnouncementMessage
+      title: this.announcementForm.title,
+      content: this.announcementForm.content
     }).subscribe({
       next: (announcement) => {
-        this.message.success('Tạo thông báo thành công');
+        this.message.success('Tạo thông báo thành công! Tất cả học sinh trong lớp đã nhận được thông báo.');
         this.isCreateModalVisible = false;
-        this.newAnnouncementMessage = '';
+        this.announcementForm = {
+          title: '',
+          content: ''
+        };
         this.loadAnnouncements(); // Reload danh sách
         this.isCreating = false;
       },

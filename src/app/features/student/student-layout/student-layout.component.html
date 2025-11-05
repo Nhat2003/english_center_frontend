@@ -92,17 +92,17 @@
         </li>
 
         <!-- Lịch sử điểm danh -->
-        <li nz-menu-item routerLink="/student/attendance-history" routerLinkActive="ant-menu-item-selected">
+        <li nz-menu-item routerLink="" routerLinkActive="ant-menu-item-selected">
           <span nz-icon nzType="calendar"></span>
-          <span>Lịch sử điểm danh</span>
+          <span>Tin nhắn</span>
         </li>
 
         <!-- Thông báo -->
         <li nz-menu-item routerLink="/student/notifications" routerLinkActive="ant-menu-item-selected">
-          <nz-badge [nzCount]="newNotifications" nzSize="small">
+          <nz-badge [nzCount]="newNotifications" [nzShowZero]="false" nzSize="small">
             <span nz-icon nzType="bell"></span>
-            <span>Thông báo</span>
           </nz-badge>
+          <span>Thông báo</span>
         </li>
 
       </ul>
@@ -163,7 +163,7 @@
         </li>
 
         <!-- Điểm danh của tôi -->
-        <li nz-menu-item [routerLink]="['/student/classes', currentClassId, 'my-attendance']" routerLinkActive="ant-menu-item-selected">
+        <li nz-menu-item [routerLink]="['/student/classes', currentClassId, 'attendance']" routerLinkActive="ant-menu-item-selected">
           <span nz-icon nzType="check-circle" class="menu-icon"></span>
           <span>Điểm danh của tôi</span>
         </li>

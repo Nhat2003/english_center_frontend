@@ -115,12 +115,10 @@
             </div>
           </td>
           <td>
-            <nz-tag
-              [nzColor]="getStatusColor(record.status)"
-              class="status-tag">
+            <span class="status-badge" [ngClass]="'status-' + getStatusColor(record.status)">
               <i nz-icon [nzType]="getStatusIcon(record.status)" nzTheme="outline"></i>
               {{ getStatusText(record.status) }}
-            </nz-tag>
+            </span>
           </td>
           <td>
             <span class="note-text" *ngIf="record.note">

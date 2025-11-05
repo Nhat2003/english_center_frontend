@@ -3,49 +3,96 @@
   <div class="page-header">
     <div class="header-left">
       <button nz-button nzType="text" (click)="goBack()" class="back-btn">
-        <i nz-icon nzType="arrow-left"></i>
+        <span nz-icon nzType="arrow-left"></span>
       </button>
       <div class="header-info">
-        <h2>Thông báo lớp học</h2>
-        <p *ngIf="classInfo" class="class-name">{{ classInfo.name }}</p>
+        <h2>📢 Thông báo lớp học</h2>
+        <p *ngIf="classInfo" class="class-name">
+          <span nz-icon nzType="read" nzTheme="outline"></span>
+          {{ classInfo.name }}
+        </p>
       </div>
     </div>
-    <button nz-button nzType="primary" (click)="showCreateModal()">
-      <i nz-icon nzType="plus"></i>
-      Tạo thông báo
+    <button nz-button nzType="primary" (click)="showCreateModal()" class="create-btn">
+      <span nz-icon nzType="plus-circle" nzTheme="outline"></span>
+      Tạo thông báo mới
     </button>
   </div>
 
+  <!-- Info Banner -->
+  <nz-alert
+    nzType="info"
+    nzMessage="Thông tin"
+    nzDescription="Khi bạn tạo thông báo mới, tất cả học sinh trong lớp sẽ nhận được thông báo ngay lập tức."
+    nzShowIcon
+    [nzCloseable]="true"
+    class="info-banner"
+  ></nz-alert>
+
   <!-- Announcements List -->
   <div class="announcements-content">
-    <nz-spin [nzSpinning]="loading">
+    <nz-spin [nzSpinning]="loading" nzTip="Đang tải thông báo...">
       <nz-empty
         *ngIf="!loading && announcements.length === 0"
-        nzNotFoundContent="Chưa có thông báo nào"
+        nzNotFoundContent="Chưa có thông báo nào cho lớp này"
         [nzNotFoundImage]="'simple'"
-      ></nz-empty>
+        class="empty-state"
+      >
+        <p nz-typography>Hãy tạo thông báo đầu tiên để chia sẻ thông tin quan trọng với học sinh!</p>
+        <button nz-button nzType="primary" (click)="showCreateModal()">
+          <span nz-icon nzType="plus"></span>
+          Tạo thông báo ngay
+        </button>
+      </nz-empty>
 
       <div class="announcements-list" *ngIf="announcements.length > 0">
-        <div class="announcement-card" *ngFor="let announcement of announcements">
+        <div class="announcement-card" *ngFor="let announcement of announcements; let i = index">
+          <div class="announcement-badge">
+            <nz-badge [nzCount]="announcements.length - i" [nzStyle]="{ backgroundColor: '#3bb273' }"></nz-badge>
+          </div>
+
           <div class="announcement-header">
-            <div class="announcement-icon">
-              <i nz-icon nzType="sound" nzTheme="outline"></i>
-            </div>
-            <div class="announcement-meta">
-              <span class="announcement-time">{{ formatDate(announcement.createdAt) }}</span>
+            <div class="header-left-content">
+              <div class="announcement-icon">
+                <span nz-icon nzType="sound" nzTheme="filled"></span>
+              </div>
+              <div class="announcement-title-section">
+                <h3 class="announcement-title">{{ announcement.title }}</h3>
+                <div class="announcement-meta">
+                  <span class="meta-item">
+                    <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
+                    {{ formatDate(announcement.createdAt) }}
+                  </span>
+                  <span class="meta-divider">•</span>
+                  <span class="meta-item">
+                    <span nz-icon nzType="user" nzTheme="outline"></span>
+                    Giáo viên
+                  </span>
+                </div>
+              </div>
             </div>
             <button
               nz-button
               nzType="text"
               nzDanger
               nz-tooltip="Xóa thông báo"
+              nzTooltipPlacement="left"
               (click)="deleteAnnouncement(announcement)"
+              class="delete-btn"
             >
-              <i nz-icon nzType="delete"></i>
+              <span nz-icon nzType="delete" nzTheme="outline"></span>
             </button>
           </div>
+
           <div class="announcement-body">
-            <p class="announcement-message">{{ announcement.message }}</p>
+            <p class="announcement-content">{{ announcement.content }}</p>
+          </div>
+
+          <div class="announcement-footer">
+            <nz-tag [nzColor]="'green'">
+              <span nz-icon nzType="check-circle" nzTheme="outline"></span>
+              Đã gửi đến tất cả học sinh
+            </nz-tag>
           </div>
         </div>
       </div>
@@ -56,26 +103,93 @@
 <!-- Modal tạo thông báo -->
 <nz-modal
   [(nzVisible)]="isCreateModalVisible"
-  nzTitle="Tạo thông báo mới"
+  nzTitle="Tạo thông báo mới cho lớp học"
   (nzOnCancel)="handleCreateCancel()"
   (nzOnOk)="handleCreateOk()"
   [nzOkLoading]="isCreating"
-  nzOkText="Tạo thông báo"
+  nzOkText="Gửi thông báo"
   nzCancelText="Hủy"
-  [nzWidth]="600"
+  [nzWidth]="700"
+  nzCentered
+  [nzBodyStyle]="{ padding: '24px' }"
 >
   <ng-container *nzModalContent>
-    <nz-form-item>
-      <nz-form-label [nzSpan]="24">Nội dung thông báo</nz-form-label>
-      <nz-form-control [nzSpan]="24">
-        <textarea
-          nz-input
-          [(ngModel)]="newAnnouncementMessage"
-          placeholder="Nhập nội dung thông báo cho học sinh..."
-          [nzAutosize]="{ minRows: 4, maxRows: 8 }"
-        ></textarea>
-        <small class="char-count">{{ newAnnouncementMessage.length }} ký tự</small>
-      </nz-form-control>
-    </nz-form-item>
+    <div class="modal-header-info">
+      <nz-alert
+        nzType="warning"
+        nzMessage="Lưu ý"
+        nzDescription="Thông báo sẽ được gửi đến tất cả học sinh trong lớp ngay sau khi bạn nhấn 'Gửi thông báo'."
+        nzShowIcon
+        [nzCloseable]="false"
+        style="margin-bottom: 24px;"
+      ></nz-alert>
+    </div>
+
+    <form nz-form nzLayout="vertical">
+      <nz-form-item>
+        <nz-form-label nzRequired [nzSpan]="24">
+          <span class="form-label">
+            <span nz-icon nzType="font-size" nzTheme="outline"></span>
+            Tiêu đề thông báo
+          </span>
+        </nz-form-label>
+        <nz-form-control [nzSpan]="24" nzErrorTip="Vui lòng nhập tiêu đề thông báo">
+          <input
+            nz-input
+            [(ngModel)]="announcementForm.title"
+            name="title"
+            placeholder="VD: Thông báo buổi học, Thay đổi lịch học, Bài kiểm tra..."
+            [maxLength]="100"
+            class="title-input"
+          />
+          <small class="char-count">{{ announcementForm.title.length }}/100 ký tự</small>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzRequired [nzSpan]="24">
+          <span class="form-label">
+            <span nz-icon nzType="file-text" nzTheme="outline"></span>
+            Nội dung chi tiết
+          </span>
+        </nz-form-label>
+        <nz-form-control [nzSpan]="24" nzErrorTip="Vui lòng nhập nội dung thông báo">
+          <textarea
+            nz-input
+            [(ngModel)]="announcementForm.content"
+            name="content"
+            placeholder="Nhập nội dung chi tiết thông báo mà bạn muốn gửi đến học sinh...&#10;&#10;VD: Tuần này học bù vào thứ 7 lúc 8h, các em chuẩn bị bài Unit 5."
+            [nzAutosize]="{ minRows: 5, maxRows: 10 }"
+            [maxLength]="500"
+            class="content-textarea"
+          ></textarea>
+          <small class="char-count">{{ announcementForm.content.length }}/500 ký tự</small>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item class="preview-section">
+        <nz-form-label [nzSpan]="24">
+          <span class="form-label">
+            <span nz-icon nzType="eye" nzTheme="outline"></span>
+            Xem trước
+          </span>
+        </nz-form-label>
+        <div class="announcement-preview">
+          <div class="preview-header">
+            <span nz-icon nzType="sound" nzTheme="filled"></span>
+            <span class="preview-title">{{ announcementForm.title || 'Tiêu đề thông báo' }}</span>
+          </div>
+          <div class="preview-content">
+            {{ announcementForm.content || 'Nội dung thông báo sẽ hiển thị ở đây...' }}
+          </div>
+          <div class="preview-footer">
+            <small>
+              <span nz-icon nzType="clock-circle"></span>
+              Vừa xong
+            </small>
+          </div>
+        </div>
+      </nz-form-item>
+    </form>
   </ng-container>
 </nz-modal>

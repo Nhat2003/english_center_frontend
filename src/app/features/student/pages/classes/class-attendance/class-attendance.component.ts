@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { AttendanceService } from '../../../../core/services/attendance.service';
-import { AuthService } from '../../../../core/services/auth.service';
-import { Attendance, AttendanceStatus } from '../../../../core/models/attendance.model';
+import { AttendanceService } from '../../../../../core/services/attendance.service';
+import { AuthService } from '../../../../../core/services/auth.service';
+import { Attendance, AttendanceStatus } from '../../../../../core/models/attendance.model';
 
 interface AttendanceStatistics {
   total: number;
@@ -13,14 +14,15 @@ interface AttendanceStatistics {
 }
 
 @Component({
-  selector: 'app-attendance-history',
-  templateUrl: './attendance-history.component.html',
-  styleUrls: ['./attendance-history.component.css']
+  selector: 'app-class-attendance',
+  templateUrl: './class-attendance.component.html',
+  styleUrls: ['./class-attendance.component.css']
 })
-export class AttendanceHistoryComponent implements OnInit {
+export class ClassAttendanceComponent implements OnInit {
+  classId: number | null = null;
+  studentId: number | null = null;
   attendanceRecords: Attendance[] = [];
   loading = false;
-  studentId: number | null = null;
   statistics: AttendanceStatistics = {
     total: 0,
     present: 0,
@@ -30,12 +32,21 @@ export class AttendanceHistoryComponent implements OnInit {
   };
 
   constructor(
+    private route: ActivatedRoute,
     private attendanceService: AttendanceService,
     private authService: AuthService,
     private message: NzMessageService
   ) {}
 
   ngOnInit(): void {
+    // Get classId from route parameter
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.classId = +id;
+      }
+    });
+
     // Get current user's student ID
     const currentUser = this.authService.getCurrentUser();
     if (currentUser?.student?.id) {
@@ -55,10 +66,18 @@ export class AttendanceHistoryComponent implements OnInit {
     this.loading = true;
     this.attendanceService.getByStudent(this.studentId).subscribe({
       next: (records) => {
-        this.attendanceRecords = records.sort((a, b) => {
-          // Sắp xếp theo ngày mới nhất trước
+        // Lọc theo classId nếu có
+        if (this.classId) {
+          this.attendanceRecords = records.filter(r => r.classRoom?.id === this.classId);
+        } else {
+          this.attendanceRecords = records;
+        }
+
+        // Sắp xếp theo ngày mới nhất trước
+        this.attendanceRecords.sort((a, b) => {
           return new Date(b.sessionDate).getTime() - new Date(a.sessionDate).getTime();
         });
+
         this.calculateStatistics();
         this.loading = false;
       },
