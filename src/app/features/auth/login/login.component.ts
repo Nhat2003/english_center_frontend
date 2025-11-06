@@ -38,9 +38,9 @@ export class LoginComponent implements OnInit {
       loginObservable.subscribe({
         next: (response) => {
           this.setFormLoadingState(false);
-          if (response.success) {
+          if (response.success && response.user) {
             this.message.success(response.message || 'Đăng nhập thành công!');
-            this.redirectBasedOnRole(response.user?.role || '');
+            this.redirectBasedOnRole(response.user.role);
           } else {
             this.message.error(response.message || 'Đăng nhập thất bại!');
           }

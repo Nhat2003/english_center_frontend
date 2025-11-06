@@ -60,6 +60,7 @@ import { StudentScheduleService } from '../../core/services/student-schedule.ser
 
 // Routes
 import { STUDENT_ROUTES } from './student.routes';
+import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -115,7 +116,8 @@ import { STUDENT_ROUTES } from './student.routes';
     NzUploadModule,
     NzRateModule,
     NzTypographyModule,
-    NzFormModule
+    NzFormModule,
+    SharedModule
   ],
   providers: [
     StudentScheduleService

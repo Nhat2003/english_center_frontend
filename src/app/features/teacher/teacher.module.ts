@@ -52,6 +52,7 @@ import { TeacherNotificationsComponent } from './pages/notifications/notificatio
 
 // Routes
 import { TEACHER_ROUTES } from './teacher.routes';
+import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -103,7 +104,8 @@ import { TEACHER_ROUTES } from './teacher.routes';
     NzTabsModule,
     NzFormModule,
     NzAlertModule,
-    NzSelectModule
+    NzSelectModule,
+    SharedModule
   ]
 })
 export class TeacherModule { }
