@@ -95,6 +95,12 @@ export class ScheduleService {
     return this.http.get<ScheduleItemForTeacherDTO[]>(`${this.baseUrl}/teacher/${teacherId}/day`, { params });
   }
 
+  // Get teacher schedule for today (helper method)
+  getTeacherScheduleToday(teacherId: number): Observable<ScheduleItemForTeacherDTO[]> {
+    const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    return this.getTeacherScheduleByDate(teacherId, today);
+  }
+
   // Get current teacher's schedule by date (uses /me endpoint)
   getMyScheduleByDate(date: string): Observable<ScheduleItemForTeacherDTO[]> {
     const params = new HttpParams().set('date', date);
@@ -142,7 +148,7 @@ export class ScheduleService {
 
   // Get all rooms
   getRooms(): Observable<Room[]> {
-    return this.http.get<Room[]>(`${this.baseUrl}/rooms`);
+    return this.http.get<Room[]>(`${this.baseUrl}/room`);
   }
 
   // Save fixed schedule

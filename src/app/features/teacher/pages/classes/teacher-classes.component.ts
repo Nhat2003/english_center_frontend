@@ -35,6 +35,7 @@ export class TeacherClassesComponent implements OnInit {
     this.loadingClasses = true;
     this.teacherService.getClassesByTeacher(this.teacherId).subscribe({
       next: (data) => {
+        console.log('Classes data:', data);
         this.classes = data;
         this.loadingClasses = false;
       },
@@ -46,8 +47,13 @@ export class TeacherClassesComponent implements OnInit {
   }
 
   selectClass(classRoom: any): void {
-    // Chuyển đến trang quản lý lớp - mặc định là overview
-    this.router.navigate(['/teacher/classes', classRoom.id, 'overview']);
+    // Chuyển đến trang danh sách học sinh
+    this.router.navigate(['/teacher/classes', classRoom.id, 'students']);
+  }
+
+  viewStudents(classRoom: any): void {
+    // Chuyển đến trang danh sách học sinh
+    this.router.navigate(['/teacher/classes', classRoom.id, 'students']);
   }
 
   goToAttendance(classRoom: any): void {

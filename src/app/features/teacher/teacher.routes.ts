@@ -22,7 +22,6 @@ export const TEACHER_ROUTES: Routes = [
       { path: 'dashboard', component: TeacherDashboardComponent },
       { path: 'schedule', component: TeacherScheduleComponent },
       { path: 'classes', component: TeacherClassesComponent },
-      { path: 'classes/:id/overview', component: ClassOverviewComponent },
       { path: 'classes/:id/students', component: ClassStudentsComponent },
       { path: 'classes/:id/assignments', component: ClassAssignmentsComponent },
       { path: 'classes/:id/assignments/:assignmentId', component: AssignmentDetailComponent },

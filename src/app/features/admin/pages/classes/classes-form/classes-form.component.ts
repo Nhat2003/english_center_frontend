@@ -1,17 +1,19 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 import { ClassService } from '../../../../../core/services/class.service';
 import { CourseService } from '../../../../../core/services/course.service';
 import { TeacherService } from '../../../../../core/services/teacher.service';
 import { StudentService } from '../../../../../core/services/student.service';
 import { ScheduleService } from '../../../../../core/services/schedule.service';
-import { NzModalRef } from 'ng-zorro-antd/modal';
+import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Class } from '../../../../../core/models/class.model';
 import { Course } from '../../../../../core/models/course.model';
 import { Teacher } from '../../../../../core/models/teacher.model';
 import { Student } from '../../../../../core/models/student.model';
 import { Schedule } from '../../../../../core/models/schedule.model';
+import { Room } from '../../../../../core/models/fixed-schedule.model';
 import * as XLSX from 'xlsx';
 
 @Component({
@@ -33,12 +35,20 @@ export class ClassesFormComponent implements OnInit {
   courses: Course[] = [];
   teachers: Teacher[] = [];
   students: Student[] = [];
-  schedules: Schedule[] = [];
+  schedules: any[] = []; // Changed to any[] to support both Schedule and FixedSchedule types
+  rooms: Room[] = [];
+
+  // Student selection
+  filteredStudents: Student[] = [];
+  studentSearchText = '';
+  selectAllStudents = false;
+  isIndeterminate = false;
 
   isLoadingCourses = false;
   isLoadingTeachers = false;
   isLoadingStudents = false;
   isLoadingSchedules = false;
+  isLoadingRooms = false;
 
   constructor(
     private fb: FormBuilder,
@@ -48,14 +58,18 @@ export class ClassesFormComponent implements OnInit {
     private studentService: StudentService,
     private scheduleService: ScheduleService,
     private modal: NzModalRef,
+    private modalService: NzModalService,
     private message: NzMessageService
   ) {
     this.classForm = this.fb.group({
       name: [null, Validators.required],
       description: [null],
-      scheduleId: [null, Validators.required],
+      fixedScheduleId: [null, Validators.required], // Changed from scheduleId to fixedScheduleId
       teacherId: [null, Validators.required],
       courseId: [null, Validators.required],
+      roomId: [null], // Changed from roomName to roomId
+      startDate: [null, Validators.required],
+      endDate: [{ value: null, disabled: true }], // Auto-calculated, disabled input
       studentIds: [[]],
       maxStudents: [30],
       status: ['active']
@@ -65,25 +79,28 @@ export class ClassesFormComponent implements OnInit {
   ngOnInit() {
     this.isEditMode = this.mode === 'edit';
 
-    // Load dropdown data
-    this.loadDropdownData();
+    // Load dropdown data first, then populate form when schedules are loaded
+    this.loadDropdownData().then(() => {
+      // Handle different ways class data can be passed
+      if (this.classData) {
+        console.log('Received class data:', this.classData);
 
-    // Handle different ways class data can be passed
-    if (this.classData) {
-      console.log('Received class data:', this.classData);
+        // If we have full class data with more than just ID
+        if (this.classData.name || this.classData.teacherId || this.classData.courseId) {
+          console.log('Using full class data');
+          this.classDetails = this.classData as Class;
+          this.populateForm(this.classData);
+        }
+        // If we only have ID, load details from API
+        else if (this.classData.id) {
+          console.log('Loading class details by ID:', this.classData.id);
+          this.loadClassDetails(this.classData.id);
+        }
+      }
+    });
 
-      // If we have full class data with more than just ID
-      if (this.classData.name || this.classData.teacherId || this.classData.courseId) {
-        console.log('Using full class data');
-        this.classDetails = this.classData as Class;
-        this.populateForm(this.classData);
-      }
-      // If we only have ID, load details from API
-      else if (this.classData.id) {
-        console.log('Loading class details by ID:', this.classData.id);
-        this.loadClassDetails(this.classData.id);
-      }
-    }
+    // Setup auto-calculate endDate when courseId or startDate changes
+    this.setupEndDateCalculation();
 
     // Disable form nếu là view mode
     if (this.mode === 'view') {
@@ -91,120 +108,169 @@ export class ClassesFormComponent implements OnInit {
     }
   }
 
-  loadDropdownData() {
+  loadDropdownData(): Promise<void> {
     console.log('Loading dropdown data...');
-    // Load courses
-    this.isLoadingCourses = true;
-    this.courseService.getCourses(0, 1000).subscribe({
-      next: (data: any) => {
-        // Xử lý response từ backend
-        if (data && data.content && Array.isArray(data.content)) {
-          this.courses = data.content;
-        } else if (Array.isArray(data)) {
-          this.courses = data;
-        } else {
-          this.courses = [];
-        }
-        this.isLoadingCourses = false;
-      },
-      error: (error) => {
-        console.error('Error loading courses:', error);
-        this.isLoadingCourses = false;
-      }
-    });
 
-    // Load teachers
-    this.isLoadingTeachers = true;
-    this.teacherService.getTeachers().subscribe({
-      next: (data: any) => {
-        const arr = Array.isArray(data) ? data : (data.content || []);
-        this.teachers = arr.map((t: any) => ({
-          id: t.id,
-          name: t.fullName || '',
-          email: t.email || '',
-          phone: t.phone || '',
-          speciality: t.speciality || '',
-          fullName: t.fullName || '',
-          userId: t.userId,
-          dob: t.dob,
-          gender: t.gender,
-          address: t.address,
-          hiredAt: t.hiredAt
-        }));
-        this.isLoadingTeachers = false;
-      },
-      error: (error) => {
-        console.error('Error loading teachers:', error);
-        this.isLoadingTeachers = false;
-      }
-    });
+    return new Promise((resolve) => {
+      this.isLoadingCourses = true;
+      this.isLoadingTeachers = true;
+      this.isLoadingStudents = true;
+      this.isLoadingSchedules = true;
+      this.isLoadingRooms = true;
 
-    // Load students
-    this.isLoadingStudents = true;
-    this.studentService.getStudents(0, 1000).subscribe({
-      next: (data: any) => {
-        // Xử lý response từ backend
-        if (data && data.content && Array.isArray(data.content)) {
-          this.students = data.content.map((s: any) => ({
-            id: s.id,
-            name: s.fullName || '',
-            email: s.email || '',
-            phone: s.phone || '',
-            fullName: s.fullName || '',
-            userId: s.userId,
-            dob: s.dob,
-            gender: s.gender,
-            address: s.address,
-            joinedAt: s.joinedAt,
-            className: s.className || ''
-          }));
-        } else if (Array.isArray(data)) {
-          this.students = data.map((s: any) => ({
-            id: s.id,
-            name: s.fullName || '',
-            email: s.email || '',
-            phone: s.phone || '',
-            fullName: s.fullName || '',
-            userId: s.userId,
-            dob: s.dob,
-            gender: s.gender,
-            address: s.address,
-            joinedAt: s.joinedAt,
-            className: s.className || ''
-          }));
-        } else {
-          this.students = [];
-        }
-        this.isLoadingStudents = false;
-      },
-      error: (error) => {
-        console.error('Error loading students:', error);
-        this.isLoadingStudents = false;
-      }
-    });
+      const courses$ = this.courseService.getCourses(0, 1000);
+      const teachers$ = this.teacherService.getTeachers();
+      const students$ = this.studentService.getStudents(0, 1000);
+      const schedules$ = this.scheduleService.getFixedSchedules();
+      const rooms$ = this.scheduleService.getRooms();
 
-    // Load schedules
-    this.isLoadingSchedules = true;
-    this.scheduleService.getAllSchedules().subscribe({
-      next: (schedules) => {
-        this.schedules = schedules;
-        this.isLoadingSchedules = false;
-      },
-      error: (error) => {
-        console.error('Error loading schedules from API:', error);
-        // Fallback to mock data if API fails
-        this.scheduleService.getMockSchedules().subscribe({
-          next: (mockSchedules) => {
-            this.schedules = mockSchedules;
-            this.isLoadingSchedules = false;
-          },
-          error: () => {
-            this.schedules = [];
-            this.isLoadingSchedules = false;
+      forkJoin({
+        courses: courses$,
+        teachers: teachers$,
+        students: students$,
+        schedules: schedules$,
+        rooms: rooms$
+      }).subscribe({
+        next: (results) => {
+          // Process courses
+          if (results.courses && (results.courses as any).content && Array.isArray((results.courses as any).content)) {
+            this.courses = (results.courses as any).content;
+          } else if (Array.isArray(results.courses)) {
+            this.courses = results.courses as any[];
+          } else {
+            this.courses = [];
           }
-        });
-      }
+
+          // Process teachers
+          const teacherArr = Array.isArray(results.teachers) ? results.teachers : ((results.teachers as any).content || []);
+          this.teachers = teacherArr.map((t: any) => ({
+            id: t.id,
+            name: t.fullName || '',
+            email: t.email || '',
+            phone: t.phone || '',
+            speciality: t.speciality || '',
+            fullName: t.fullName || '',
+            userId: t.userId,
+            dob: t.dob,
+            gender: t.gender,
+            address: t.address,
+            hiredAt: t.hiredAt
+          }));
+
+          // Process students
+          if (results.students && (results.students as any).content && Array.isArray((results.students as any).content)) {
+            this.students = (results.students as any).content.map((s: any) => ({
+              id: s.id,
+              name: s.fullName || '',
+              email: s.email || '',
+              phone: s.phone || '',
+              fullName: s.fullName || '',
+              userId: s.userId,
+              dob: s.dob,
+              gender: s.gender,
+              address: s.address,
+              joinedAt: s.joinedAt,
+              className: s.className || '',
+              checked: false
+            }));
+          } else if (Array.isArray(results.students)) {
+            this.students = (results.students as any[]).map((s: any) => ({
+              id: s.id,
+              name: s.fullName || '',
+              email: s.email || '',
+              phone: s.phone || '',
+              fullName: s.fullName || '',
+              userId: s.userId,
+              dob: s.dob,
+              gender: s.gender,
+              address: s.address,
+              joinedAt: s.joinedAt,
+              className: s.className || '',
+              checked: false
+            }));
+          } else {
+            this.students = [];
+          }
+
+          // Initialize filtered students
+          this.filteredStudents = [...this.students];
+
+          // Process schedules
+          this.schedules = results.schedules as any[];
+          console.log('Loaded fixed schedules:', this.schedules);
+
+          // Process rooms
+          this.rooms = Array.isArray(results.rooms) ? results.rooms : [];
+          console.log('Loaded rooms:', this.rooms);
+
+          // Mark all as loaded
+          this.isLoadingCourses = false;
+          this.isLoadingTeachers = false;
+          this.isLoadingStudents = false;
+          this.isLoadingSchedules = false;
+          this.isLoadingRooms = false;
+
+          console.log('All dropdown data loaded');
+          resolve();
+        },
+        error: (error) => {
+          console.error('Error loading dropdown data:', error);
+          this.isLoadingCourses = false;
+          this.isLoadingTeachers = false;
+          this.isLoadingStudents = false;
+          this.isLoadingSchedules = false;
+          this.isLoadingRooms = false;
+          resolve(); // Resolve anyway to not block form
+        }
+      });
     });
+  }
+
+  setupEndDateCalculation() {
+    // Listen to changes in courseId and startDate
+    this.classForm.get('courseId')?.valueChanges.subscribe(() => {
+      this.calculateEndDate();
+    });
+
+    this.classForm.get('startDate')?.valueChanges.subscribe(() => {
+      this.calculateEndDate();
+    });
+  }
+
+  calculateEndDate() {
+    const courseId = this.classForm.get('courseId')?.value;
+    const startDate = this.classForm.get('startDate')?.value;
+
+    if (!courseId || !startDate) {
+      // Clear endDate if missing required fields
+      this.classForm.get('endDate')?.setValue(null);
+      return;
+    }
+
+    // Find selected course
+    const selectedCourse = this.courses.find(c => c.id === courseId);
+    if (!selectedCourse || !selectedCourse.duration) {
+      console.warn('Course not found or missing duration');
+      this.classForm.get('endDate')?.setValue(null);
+      return;
+    }
+
+    // Calculate end date
+    const start = new Date(startDate);
+    const durationDays = selectedCourse.duration * 7; // Convert weeks to days
+    const end = new Date(start);
+    end.setDate(start.getDate() + durationDays);
+
+    console.log('Auto-calculated endDate:', {
+      courseId,
+      courseName: selectedCourse.name,
+      durationWeeks: selectedCourse.duration,
+      startDate: start.toISOString().split('T')[0],
+      endDate: end.toISOString().split('T')[0]
+    });
+
+    // Set the calculated end date
+    this.classForm.get('endDate')?.setValue(end);
   }
 
   getLevelColor(level: string): string {
@@ -214,6 +280,110 @@ export class ClassesFormComponent implements OnInit {
       case 'advanced': return 'red';
       default: return 'blue';
     }
+  }
+
+  formatDaysOfWeek(daysOfWeek: string | null | undefined): string {
+    if (!daysOfWeek) return '';
+
+    const dayMap: { [key: string]: string } = {
+      '2': 'T2',
+      '3': 'T3',
+      '4': 'T4',
+      '5': 'T5',
+      '6': 'T6',
+      '7': 'T7',
+      '8': 'CN'
+    };
+
+    return daysOfWeek.split(',').map(d => dayMap[d.trim()] || d).join(', ');
+  }
+
+  getScheduleDisplayText(schedule: any): string {
+    if (!schedule) return '';
+
+    let text = schedule.name || '';
+
+    if (schedule.daysOfWeek && schedule.startTime && schedule.endTime) {
+      const days = this.formatDaysOfWeek(schedule.daysOfWeek);
+      const startTime = schedule.startTime.substring(0, 5); // HH:mm
+      const endTime = schedule.endTime.substring(0, 5);     // HH:mm
+      text += ` (${days}) ${startTime} - ${endTime}`;
+    }
+
+    return text;
+  }
+
+  // Student selection methods
+  get selectedStudentIds(): number[] {
+    return this.students.filter(s => (s as any).checked).map(s => s.id!);
+  }
+
+  filterStudents() {
+    const searchText = this.studentSearchText.toLowerCase().trim();
+
+    if (!searchText) {
+      this.filteredStudents = [...this.students];
+    } else {
+      this.filteredStudents = this.students.filter(student =>
+        (student.fullName?.toLowerCase().includes(searchText)) ||
+        (student.email?.toLowerCase().includes(searchText))
+      );
+    }
+
+    this.updateSelectAllState();
+  }
+
+  onStudentCheckChange() {
+    this.updateSelectAllState();
+    this.updateFormValue();
+  }
+
+  onSelectAllStudents(checked: boolean) {
+    this.filteredStudents.forEach(student => {
+      (student as any).checked = checked;
+    });
+    this.updateFormValue();
+  }
+
+  updateSelectAllState() {
+    const checkedCount = this.filteredStudents.filter(s => (s as any).checked).length;
+    this.selectAllStudents = checkedCount === this.filteredStudents.length && this.filteredStudents.length > 0;
+    this.isIndeterminate = checkedCount > 0 && checkedCount < this.filteredStudents.length;
+  }
+
+  updateFormValue() {
+    const studentIds = this.selectedStudentIds;
+    this.classForm.patchValue({ studentIds });
+  }
+
+  getStudentName(studentId: number): string {
+    const student = this.students.find(s => s.id === studentId);
+    return student?.fullName || 'Unknown';
+  }
+
+  removeStudent(studentId: number) {
+    const student = this.students.find(s => s.id === studentId);
+    if (student) {
+      (student as any).checked = false;
+      this.updateFormValue();
+      this.updateSelectAllState();
+    }
+  }
+
+  isStudentSelectionModalVisible = false;
+
+  openStudentSelectionModal() {
+    this.isStudentSelectionModalVisible = true;
+    this.filterStudents(); // Reset filter
+  }
+
+  handleStudentSelectionOk() {
+    this.updateFormValue();
+    this.isStudentSelectionModalVisible = false;
+  }
+
+  handleStudentSelectionCancel() {
+    this.isStudentSelectionModalVisible = false;
   }
 
   loadClassDetails(classId: number) {
@@ -234,14 +404,82 @@ export class ClassesFormComponent implements OnInit {
   }
 
   populateForm(classItem: any) {
+    console.log('populateForm called with:', classItem);
+    console.log('Available teachers:', this.teachers);
+    console.log('Available courses:', this.courses);
+    console.log('Available schedules:', this.schedules);
+
+    // API trả về fixedSchedule object thay vì fixedScheduleId
+    // Nên cần match fixedSchedule với schedule trong dropdown để lấy ID
+    let fixedScheduleId = classItem.fixedScheduleId || classItem.scheduleId || classItem.schedule || null;
+
+    // Nếu API trả về fixedSchedule object, tìm schedule tương ứng trong dropdown
+    if (!fixedScheduleId && classItem.fixedSchedule && this.schedules.length > 0) {
+      const matchedSchedule = this.schedules.find(s =>
+        s.name === classItem.fixedSchedule.name &&
+        s.daysOfWeek === classItem.fixedSchedule.daysOfWeek &&
+        s.startTime === classItem.fixedSchedule.startTime &&
+        s.endTime === classItem.fixedSchedule.endTime
+      );
+      if (matchedSchedule) {
+        fixedScheduleId = matchedSchedule.id;
+        console.log('Matched schedule from fixedSchedule:', matchedSchedule);
+      }
+    }
+
+    // API trả về teacherName (string) thay vì teacherId
+    // Cần match với teacher trong dropdown
+    let teacherId = classItem.teacherId || null;
+    if (!teacherId && classItem.teacherName && this.teachers.length > 0) {
+      const matchedTeacher = this.teachers.find(t =>
+        t.fullName === classItem.teacherName
+      );
+      if (matchedTeacher) {
+        teacherId = matchedTeacher.id;
+        console.log('Matched teacher from teacherName:', matchedTeacher);
+      } else {
+        console.warn('Could not find teacher with name:', classItem.teacherName);
+      }
+    }
+
+    // API trả về courseName (string) thay vì courseId
+    // Cần match với course trong dropdown
+    let courseId = classItem.courseId || null;
+    if (!courseId && classItem.courseName && this.courses.length > 0) {
+      const matchedCourse = this.courses.find(c =>
+        c.name === classItem.courseName
+      );
+      if (matchedCourse) {
+        courseId = matchedCourse.id;
+        console.log('Matched course from courseName:', matchedCourse);
+      } else {
+        console.warn('Could not find course with name:', classItem.courseName);
+      }
+    }
+
     // Map the class data to form fields with detailed logging
+    const studentIds = classItem.studentIds || classItem.students || [];
+
+    // Get roomId from roomName if needed
+    let roomId = classItem.roomId || null;
+    if (!roomId && classItem.roomName && this.rooms.length > 0) {
+      const matchedRoom = this.rooms.find(r => r.name === classItem.roomName);
+      if (matchedRoom) {
+        roomId = matchedRoom.id;
+        console.log('Matched room from roomName:', matchedRoom);
+      }
+    }
+
     const formData = {
       name: classItem.name || '',
       description: classItem.description || '',
-      scheduleId: classItem.scheduleId || classItem.schedule || null,
-      teacherId: classItem.teacherId || null,
-      courseId: classItem.courseId || null,
-      studentIds: classItem.studentIds || [],
+      fixedScheduleId: fixedScheduleId,
+      teacherId: teacherId,
+      courseId: courseId,
+      roomId: roomId,
+      startDate: classItem.startDate || null,
+      endDate: classItem.endDate || null,
+      studentIds: studentIds,
       maxStudents: classItem.maxStudents || 30,
       status: classItem.status || 'active'
     };
@@ -251,6 +489,15 @@ export class ClassesFormComponent implements OnInit {
     console.log('Form before patch:', this.classForm.value);
 
     this.classForm.patchValue(formData);
+
+    // Mark students as checked based on studentIds
+    if (studentIds && Array.isArray(studentIds)) {
+      this.students.forEach(student => {
+        (student as any).checked = studentIds.includes(student.id);
+      });
+      this.filteredStudents = [...this.students];
+      this.updateSelectAllState();
+    }
 
     console.log('Form after patch:', this.classForm.value);
 
@@ -263,17 +510,23 @@ export class ClassesFormComponent implements OnInit {
       this.isLoading = true;
       const rawFormData = this.classForm.value;
 
-      // Prepare form data to match backend requirements
-      // Include all required fields: courseId might be required
+      // Get endDate from disabled control
+      const endDateValue = this.classForm.get('endDate')?.value;
+
+      // Prepare form data to match backend requirements (Postman format)
       const formData: any = {
         name: rawFormData.name,
-        schedule: rawFormData.scheduleId, // Backend database expects 'schedule' field
-        courseId: rawFormData.courseId,   // Include courseId as it might be required
+        courseId: rawFormData.courseId,
         teacherId: rawFormData.teacherId,
+        fixedScheduleId: rawFormData.fixedScheduleId,
+        startDate: this.formatDateToString(rawFormData.startDate),
         studentIds: rawFormData.studentIds || []
       };
 
-      // Add optional fields if they have values
+      // Convert roomId to send to backend (backend may accept roomId)
+      if (rawFormData.roomId) {
+        formData.roomId = rawFormData.roomId;
+      }
       if (rawFormData.description) {
         formData.description = rawFormData.description;
       }
@@ -284,8 +537,11 @@ export class ClassesFormComponent implements OnInit {
         formData.status = rawFormData.status;
       }
 
+      console.log('=== FORM SUBMISSION DEBUG ===');
       console.log('Raw form data:', rawFormData);
-      console.log('Sending to backend:', formData);
+      console.log('Prepared formData:', formData);
+      console.log('Mode:', this.mode);
+      console.log('Class details:', this.classDetails);
 
       // Xử lý create vs edit mode
       const apiCall = this.mode === 'edit' && this.classDetails?.id
@@ -303,17 +559,23 @@ export class ClassesFormComponent implements OnInit {
         },
         error: (error) => {
           this.isLoading = false;
-          console.error(`Error ${action}ing class:`, error);
+          console.error(`=== ERROR ${action}ing class ===`);
+          console.error('Error object:', error);
           console.error('Error status:', error.status);
-          console.error('Error message:', error.error);
+          console.error('Error statusText:', error.statusText);
+          console.error('Error error:', error.error);
+          console.error('Error message:', error.message);
+          console.error('Error headers:', error.headers);
 
           // Log the exact error response from backend
           if (error.error) {
             console.error('Backend error response:', error.error);
           }
 
-          // For 400 Bad Request, try alternative approach
-          if (error.status === 400) {
+          // Handle different error codes
+          if (error.status === 403) {
+            this.message.error('Bạn không có quyền thực hiện thao tác này. Vui lòng kiểm tra lại token hoặc quyền truy cập.');
+          } else if (error.status === 400) {
             console.log('400 Bad Request - trying alternative field mapping...');
             this.tryAlternativeCreate(rawFormData, action);
           } else {
@@ -368,14 +630,16 @@ export class ClassesFormComponent implements OnInit {
     // Try with minimal required fields only - matching your sample request
     const alternativeData: any = {
       name: rawFormData.name,
-      scheduleId: rawFormData.scheduleId, // Try with scheduleId instead of schedule
+      fixedScheduleId: rawFormData.fixedScheduleId,
       teacherId: rawFormData.teacherId,
+      courseId: rawFormData.courseId,
+      startDate: this.formatDateToString(rawFormData.startDate),
       studentIds: rawFormData.studentIds || []
     };
 
-    // Add optional fields
-    if (rawFormData.courseId) {
-      alternativeData.courseId = rawFormData.courseId;
+    // Add roomId if available
+    if (rawFormData.roomId) {
+      alternativeData.roomId = rawFormData.roomId;
     }
 
     console.log('Trying alternative data:', alternativeData);
@@ -526,6 +790,33 @@ export class ClassesFormComponent implements OnInit {
     }
 
     return '';
+  }
+
+  formatDateToString(date: any): string | null {
+    if (!date) return null;
+
+    // Nếu là Date object
+    if (date instanceof Date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    // Nếu là string
+    if (typeof date === 'string') {
+      // Kiểm tra xem đã đúng format yyyy-MM-dd chưa
+      if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return date;
+      }
+      // Thử parse và format lại
+      const parsedDate = new Date(date);
+      if (!isNaN(parsedDate.getTime())) {
+        return this.formatDateToString(parsedDate);
+      }
+    }
+
+    return null;
   }
 
   processBulkAddStudents() {

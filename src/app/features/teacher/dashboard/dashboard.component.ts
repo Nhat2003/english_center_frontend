@@ -150,12 +150,13 @@ export class TeacherDashboardComponent implements OnInit {
       }
     });
 
-    // Load today's schedule
+    // Load today's schedule using teacher ID
     const today = new Date();
     const todayStr = this.formatDate(today);
-    console.log('Loading schedule for date:', todayStr);
+    console.log('Loading schedule for teacher:', this.teacherId, 'date:', todayStr);
 
-    this.scheduleService.getMyScheduleByDate(todayStr).subscribe({
+    // Use getTeacherScheduleToday instead of getMyScheduleByDate
+    this.scheduleService.getTeacherScheduleToday(this.teacherId).subscribe({
       next: (schedule) => {
         console.log('Schedule loaded:', schedule);
         this.todaySchedule = schedule.map(item => ({

@@ -181,7 +181,51 @@
   vertical-align: middle;
 }
 
-:host ::ng-deep .ant-table-thead > tr > th {
+/* Class Table Styles */
+/* Search Bar */
+.search-bar {
+  margin-bottom: 16px;
+}
+
+.search-bar nz-input-group {
+  max-width: 400px;
+}
+
+:host ::ng-deep .search-bar .ant-input-affix-wrapper {
+  border-radius: 20px;
+  border-color: #e0e0e0;
+  transition: all 0.3s;
+  height: 38px;
+  background: #fafafa;
+}
+
+:host ::ng-deep .search-bar .ant-input-affix-wrapper:hover {
+  background: #fff;
+  border-color: #1890ff;
+}
+
+:host ::ng-deep .search-bar .ant-input-affix-wrapper-focused {
+  background: #fff;
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.08);
+}
+
+:host ::ng-deep .search-bar .ant-input {
+  font-size: 13px;
+  background: transparent;
+}
+
+:host ::ng-deep .search-bar .ant-input::placeholder {
+  color: #bfbfbf;
+  font-size: 13px;
+}
+
+:host ::ng-deep .search-bar .ant-input-prefix {
+  color: #bfbfbf;
+  font-size: 14px;
+}
+
+:host ::ng-deep thead th {
   background: #fafafa;
   font-weight: 600;
   color: #262626;

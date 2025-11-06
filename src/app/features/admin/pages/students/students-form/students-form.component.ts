@@ -21,6 +21,9 @@ export class StudentsFormComponent implements OnInit {
   form: FormGroup;
   loading = false;
   availableUsers: User[] = [];
+  filteredUsers: User[] = [];
+  userSearchText = '';
+  isUserSelectionModalVisible = false;
   studentData: Student | null = null;
   isViewMode = false;
 
@@ -72,6 +75,7 @@ export class StudentsFormComponent implements OnInit {
       next: (users) => {
         // Filter thêm isActive = true để đảm bảo
         this.availableUsers = users.filter(user => user.isActive === true);
+        this.filteredUsers = [...this.availableUsers];
         console.log('Available active users for student profile (API):', this.availableUsers);
       },
       error: (error) => {
@@ -81,6 +85,7 @@ export class StudentsFormComponent implements OnInit {
           next: (users) => {
             // Chỉ lấy users có isActive = true
             this.availableUsers = users.filter(user => user.isActive === true);
+            this.filteredUsers = [...this.availableUsers];
             console.log('Available active users for student profile (filtered):', this.availableUsers);
           },
           error: (err) => {
@@ -190,5 +195,50 @@ export class StudentsFormComponent implements OnInit {
 
   onCancel() {
     this.modal.close(false); // Đóng modal và trả về false
+  }
+
+  // User selection modal methods
+  openUserSelectionModal() {
+    console.log('Opening user selection modal...');
+    console.log('Available users:', this.availableUsers);
+    console.log('Current userId:', this.form.get('userId')?.value);
+    this.isUserSelectionModalVisible = true;
+    this.filterUsers();
+  }
+
+  handleUserSelectionOk() {
+    this.isUserSelectionModalVisible = false;
+  }
+
+  handleUserSelectionCancel() {
+    this.isUserSelectionModalVisible = false;
+  }
+
+  filterUsers() {
+    const searchText = this.userSearchText.toLowerCase().trim();
+
+    if (!searchText) {
+      this.filteredUsers = [...this.availableUsers];
+    } else {
+      this.filteredUsers = this.availableUsers.filter(user =>
+        (user.fullName?.toLowerCase().includes(searchText)) ||
+        (user.username?.toLowerCase().includes(searchText)) ||
+        (user.email?.toLowerCase().includes(searchText))
+      );
+    }
+  }
+
+  selectUser(user: User) {
+    this.form.patchValue({ userId: user.id });
+    this.isUserSelectionModalVisible = false;
+    this.message.success(`Đã chọn: ${user.fullName || user.username}`);
+  }
+
+  getSelectedUserName(): string {
+    const userId = this.form.get('userId')?.value;
+    if (!userId) return '';
+
+    const user = this.availableUsers.find(u => u.id === userId);
+    return user ? (user.fullName || user.username || '') : '';
   }
 }

@@ -23,6 +23,7 @@ import { StatsComponent } from './pages/stats/stats.component';
 import { TeachersComponent } from './pages/teachers/teachers.component';
 import { EditUserComponent } from './pages/users/edit-user/edit-user.component';
 import { AddUserComponent } from './pages/users/add-user/add-user.component';
+import { ViewUserComponent } from './pages/users/view-user/view-user.component';
 import { StudentsComponent } from './pages/students/students.component';
 import { StudentsFormComponent } from './pages/students/students-form/students-form.component';
 import { TeachersFormComponent } from './pages/teachers/teachers-form/teachers-form.component';
@@ -50,6 +51,7 @@ import { NzStatisticModule } from 'ng-zorro-antd/statistic';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
 import { NzTimelineModule } from 'ng-zorro-antd/timeline';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { PaymentListComponent } from './pages/payments/payment-list/payment-list.component';
 import { AddPaymentComponent } from './pages/payments/add-payment/add-payment.component';
 import { PaymentDetailComponent } from './pages/payments/payment-detail/payment-detail.component';
@@ -63,6 +65,7 @@ import { PaymentsComponent } from './pages/payments/payments.component';
     TeachersComponent,
     EditUserComponent,
     AddUserComponent,
+    ViewUserComponent,
     StudentsComponent,
     StudentsFormComponent,
     TeachersFormComponent,
@@ -110,6 +113,7 @@ import { PaymentsComponent } from './pages/payments/payments.component';
     NzInputNumberModule,
     NzDescriptionsModule,
     NzTimelineModule,
+    NzDividerModule,
     NzDatePickerModule,
     RouterModule.forChild(ADMIN_ROUTES)
   ]

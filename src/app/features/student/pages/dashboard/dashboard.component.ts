@@ -7,6 +7,7 @@ import { AssignmentService, SubmissionHistoryResponse } from '../../../../core/s
 import { PaymentService } from '../../../../core/services/payment.service';
 import { AttendanceService } from '../../../../core/services/attendance.service';
 import { AnnouncementService } from '../../../../core/services/announcement.service';
+import { StudentOverviewResponse } from '../../../../core/models/student.model';
 import { forkJoin } from 'rxjs';
 import { NzMessageService } from 'ng-zorro-antd/message';
 
@@ -112,7 +113,73 @@ export class StudentDashboardComponent implements OnInit {
     });
   }
 
+  /**
+   * Load dashboard data using new Overview API
+   * Falls back to old method if API not available
+   */
   loadDashboardData() {
+    this.loading = true;
+
+    // Try to use new Overview API first
+    this.studentService.getMyOverview().subscribe({
+      next: (overview) => {
+        this.loadDashboardFromOverview(overview);
+      },
+      error: (error) => {
+        console.warn('Overview API not available, falling back to old method:', error);
+        this.loadDashboardDataLegacy();
+      }
+    });
+  }
+
+  /**
+   * Load dashboard using new Overview API response
+   */
+  loadDashboardFromOverview(overview: StudentOverviewResponse) {
+    console.log('Dashboard overview loaded:', overview);
+
+    // Update stats from overview
+    this.attendanceSummary = {
+      totalSessions: overview.attendanceTotal,
+      presentCount: overview.attendancePresent,
+      absentCount: overview.attendanceAbsent,
+      lateCount: overview.attendanceLate,
+      attendanceRate: overview.attendanceRate
+    };
+
+    this.totalAssignments = overview.assignmentsTotal;
+    this.totalCompletedAssignments = overview.assignmentsSubmitted;
+    this.pendingAssignments = overview.assignmentsPending;
+    this.averageGrade = overview.averageGrade || 0;
+
+    // Still need to load detailed data for display
+    forkJoin({
+      classes: this.studentService.getClassesByStudent(this.studentId),
+      schedule: this.scheduleService.getStudentSchedule(this.studentId),
+      assignments: this.assignmentService.getMyAssignments(),
+      submissions: this.assignmentService.getMySubmissionHistory(),
+      payments: this.paymentService.getPayments(1, 100)
+    }).subscribe({
+      next: (data) => {
+        this.processClassesData(data.classes);
+        this.processScheduleData(data.schedule);
+        this.processAssignmentsDataFromOverview(data.assignments, data.submissions, overview);
+        this.processPaymentData(data.payments.data);
+        this.loadAnnouncements();
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading detailed dashboard data:', error);
+        this.message.error('Không thể tải đầy đủ dữ liệu trang chủ');
+        this.loading = false;
+      }
+    });
+  }
+
+  /**
+   * Legacy method - load dashboard data using multiple API calls
+   */
+  loadDashboardDataLegacy() {
     this.loading = true;
 
     forkJoin({
@@ -232,6 +299,33 @@ export class StudentDashboardComponent implements OnInit {
       const total = gradedSubmissions.reduce((sum, s) => sum + (s.grade || 0), 0);
       this.averageGrade = Math.round((total / gradedSubmissions.length) * 10) / 10;
     }
+  }
+
+  /**
+   * Process assignments data with stats from overview API
+   */
+  processAssignmentsDataFromOverview(assignments: any[], submissions: SubmissionHistoryResponse[], overview: StudentOverviewResponse) {
+    // Use stats from overview API
+    this.pendingAssignments = overview.assignmentsPending;
+    this.totalAssignments = overview.assignmentsTotal;
+    this.totalCompletedAssignments = overview.assignmentsSubmitted;
+    this.averageGrade = overview.averageGrade || 0;
+
+    // Find nearest deadline
+    const now = new Date();
+    const pendingWithDeadline = assignments
+      .filter(a => !a.submitted && new Date(a.dueDate) > now)
+      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+
+    if (pendingWithDeadline.length > 0) {
+      this.nearestDeadline = this.formatDate(pendingWithDeadline[0].dueDate);
+    }
+
+    // Get recent grades (last 5)
+    this.recentGrades = submissions
+      .filter(s => s.grade !== null)
+      .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
+      .slice(0, 5);
   }
 
   processAttendanceData(attendance: any[]) {

@@ -13,6 +13,22 @@
   </div>
 </div>
 
+<!-- Search Bar -->
+<div class="search-bar">
+  <nz-input-group [nzPrefix]="prefixIconSearch" nzSize="large">
+    <input
+      nz-input
+      type="text"
+      placeholder="Tìm kiếm theo tên, email, số điện thoại..."
+      [(ngModel)]="searchText"
+      (ngModelChange)="onSearch()"
+    />
+  </nz-input-group>
+</div>
+<ng-template #prefixIconSearch>
+  <span nz-icon nzType="search"></span>
+</ng-template>
+
 <div class="card">
   <nz-table
     [nzBordered]="false"

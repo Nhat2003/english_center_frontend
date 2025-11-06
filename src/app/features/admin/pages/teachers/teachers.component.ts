@@ -26,9 +26,11 @@ import { TeacherService } from '../../../../core/services/teacher.service';
 })
 export class TeachersComponent {
   teachers: Teacher[] = [];
+  allTeachers: Teacher[] = []; // Store all teachers for search
   pageIndex = 1;
   pageSize = 5;
   loading = false;
+  searchText = '';
 
   constructor(
     private modal: NzModalService,
@@ -77,13 +79,14 @@ export class TeachersComponent {
     this.teacherService.getTeachers().subscribe({
       next: (data: any) => {
         const arr = Array.isArray(data) ? data : (data.content || []);
-        this.teachers = arr.map((t: any) => ({
+        this.allTeachers = arr.map((t: any) => ({
           id: t.id,
           name: t.fullName || '',
           email: t.email || '',
           phone: t.phone || '',
           subject: t.speciality || ''
         }));
+        this.teachers = [...this.allTeachers]; // Copy to display array
         this.loading = false;
       },
       error: (error) => {
@@ -92,6 +95,24 @@ export class TeachersComponent {
         this.loading = false;
       }
     });
+  }
+
+  onSearch() {
+    if (!this.searchText.trim()) {
+      // If search is empty, show all teachers
+      this.teachers = [...this.allTeachers];
+    } else {
+      // Filter teachers based on search text
+      const searchLower = this.searchText.toLowerCase();
+      this.teachers = this.allTeachers.filter(teacher =>
+        teacher.name?.toLowerCase().includes(searchLower) ||
+        teacher.email?.toLowerCase().includes(searchLower) ||
+        teacher.phone?.toLowerCase().includes(searchLower) ||
+        teacher.subject?.toLowerCase().includes(searchLower)
+      );
+    }
+    // Reset to first page when searching
+    this.pageIndex = 1;
   }
 
   deleteTeacher(teacher: Teacher) {

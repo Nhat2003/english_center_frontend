@@ -14,13 +14,36 @@
         <nz-form-item>
           <nz-form-label [nzRequired]="true" nzFor="userId">Chọn người dùng</nz-form-label>
           <nz-form-control>
-            <nz-select formControlName="userId" id="userId" nzPlaceHolder="Chọn người dùng để tạo hồ sơ học viên">
-              <nz-option
-                *ngFor="let user of availableUsers"
-                [nzValue]="user.id"
-                [nzLabel]="user.fullName">
-              </nz-option>
-            </nz-select>
+            <div class="user-selection-area">
+              <div class="selected-user-display">
+                <div class="user-tag" *ngIf="form.get('userId')?.value">
+                  <nz-tag
+                    nzColor="blue"
+                    [nzMode]="!isViewMode ? 'closeable' : 'default'"
+                    (nzOnClose)="form.patchValue({ userId: null })"
+                  >
+                    {{ getSelectedUserName() }}
+                  </nz-tag>
+                </div>
+                <div class="no-user-selected" *ngIf="!form.get('userId')?.value">
+                  <span nz-icon nzType="user" nzTheme="outline"></span>
+                  <span>Chưa chọn người dùng</span>
+                </div>
+              </div>
+
+              <div class="user-actions">
+                <button
+                  nz-button
+                  nzType="default"
+                  type="button"
+                  (click)="openUserSelectionModal()"
+                  [disabled]="isViewMode"
+                >
+                  <span nz-icon nzType="user-add" nzTheme="outline"></span>
+                  Chọn người dùng
+                </button>
+              </div>
+            </div>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -102,3 +125,64 @@
     </div>
   </form>
 </div>
+
+<!-- User Selection Modal -->
+<nz-modal
+  [(nzVisible)]="isUserSelectionModalVisible"
+  nzTitle="Chọn người dùng"
+  (nzOnCancel)="handleUserSelectionCancel()"
+  (nzOnOk)="handleUserSelectionOk()"
+  [nzWidth]="600"
+  nzOkText="Xác nhận"
+  nzCancelText="Huỷ"
+>
+  <div class="user-selection-modal">
+    <!-- Search box -->
+    <nz-input-group [nzPrefix]="prefixIconSearch" style="margin-bottom: 16px;">
+      <input
+        nz-input
+        type="text"
+        placeholder="Tìm kiếm theo tên, username hoặc email..."
+        [(ngModel)]="userSearchText"
+        [ngModelOptions]="{standalone: true}"
+        (ngModelChange)="filterUsers()"
+      />
+    </nz-input-group>
+    <ng-template #prefixIconSearch>
+      <span nz-icon nzType="search"></span>
+    </ng-template>
+
+    <!-- User list -->
+    <div class="user-checkbox-list-modal">
+      <div
+        *ngIf="filteredUsers.length === 0"
+        style="padding: 40px; text-align: center; color: #8c8c8c;"
+      >
+        <span nz-icon nzType="inbox" nzTheme="outline" style="font-size: 48px; margin-bottom: 8px; display: block;"></span>
+        <p>Không tìm thấy người dùng</p>
+      </div>
+
+      <div class="user-items">
+        <div
+          *ngFor="let user of filteredUsers"
+          class="user-checkbox-item"
+          (click)="selectUser(user)"
+          [class.selected]="form.get('userId')?.value === user.id"
+        >
+          <div class="user-info">
+            <div class="user-avatar">
+              {{ (user.fullName || user.username)?.charAt(0)?.toUpperCase() }}
+            </div>
+            <div class="user-details">
+              <div class="user-name-modal">{{ user.fullName || user.username }}</div>
+              <div class="user-email">{{ user.email }}</div>
+            </div>
+            <div class="check-icon" *ngIf="form.get('userId')?.value === user.id">
+              <span nz-icon nzType="check-circle" nzTheme="fill" class="check-icon-success"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nz-modal>

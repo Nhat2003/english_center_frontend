@@ -19,10 +19,12 @@ import { ClassesFormComponent } from './classes-form/classes-form.component';
 })
 export class ClassesComponent implements OnInit {
   classes: Class[] = [];
+  allClasses: Class[] = []; // Store all classes for search
   total = 0;
   pageIndex = 1;
   pageSize = 10;
   loading = false;
+  searchText = '';
 
   constructor(
     private classService: ClassService,
@@ -39,9 +41,11 @@ export class ClassesComponent implements OnInit {
     this.classService.getClasses(this.pageIndex - 1, this.pageSize).subscribe({
       next: (data: any) => {
         if (data && data.content && data.totalElements !== undefined) {
+          this.allClasses = data.content;
           this.classes = data.content;
           this.total = data.totalElements;
         } else if (Array.isArray(data)) {
+          this.allClasses = data;
           this.classes = data;
           this.total = data.length;
         }
@@ -51,6 +55,26 @@ export class ClassesComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  onSearch() {
+    if (!this.searchText.trim()) {
+      // If search is empty, show all classes
+      this.classes = [...this.allClasses];
+      this.total = this.allClasses.length;
+    } else {
+      // Filter classes based on search text
+      const searchLower = this.searchText.toLowerCase();
+      this.classes = this.allClasses.filter(classItem =>
+        classItem.name?.toLowerCase().includes(searchLower) ||
+        classItem.courseName?.toLowerCase().includes(searchLower) ||
+        classItem.teacherName?.toLowerCase().includes(searchLower) ||
+        classItem.roomName?.toLowerCase().includes(searchLower)
+      );
+      this.total = this.classes.length;
+    }
+    // Reset to first page when searching
+    this.pageIndex = 1;
   }
 
   onPageIndexChange(index: number) {

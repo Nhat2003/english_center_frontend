@@ -21,10 +21,12 @@ import { ImportStudentsComponent } from './import-students/import-students.compo
 })
 export class StudentsComponent implements OnInit {
   students: Student[] = [];
+  allStudents: Student[] = []; // Store all students for search
   total = 0;
   pageIndex = 1;
   pageSize = 10;
   loading = false;
+  searchText = '';
 
   constructor(
     private studentService: StudentService,
@@ -83,10 +85,12 @@ export class StudentsComponent implements OnInit {
       next: (data: any) => {
         console.log('Students API response (without pagination):', data);
         if (Array.isArray(data)) {
+          this.allStudents = data; // Store all students
           this.students = data;
           this.total = data.length;
         } else {
           console.warn('Unexpected API response format:', data);
+          this.allStudents = [];
           this.students = [];
           this.total = 0;
         }
@@ -121,6 +125,26 @@ export class StudentsComponent implements OnInit {
         });
       }
     });
+  }
+
+  onSearch() {
+    if (!this.searchText.trim()) {
+      // If search is empty, show all students
+      this.students = this.allStudents;
+      this.total = this.allStudents.length;
+    } else {
+      // Filter students based on search text
+      const searchLower = this.searchText.toLowerCase();
+      this.students = this.allStudents.filter(student =>
+        student.fullName?.toLowerCase().includes(searchLower) ||
+        student.email?.toLowerCase().includes(searchLower) ||
+        student.phone?.toLowerCase().includes(searchLower) ||
+        student.className?.toLowerCase().includes(searchLower)
+      );
+      this.total = this.students.length;
+    }
+    // Reset to first page when searching
+    this.pageIndex = 1;
   }
 
 

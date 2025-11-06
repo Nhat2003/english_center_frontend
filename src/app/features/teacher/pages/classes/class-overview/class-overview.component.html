@@ -1,35 +1,191 @@
-<div class="class-overview">
-  <h2>Tổng quan lớp học</h2>
-  <nz-spin *ngIf="loading" nzTip="Đang tải..."></nz-spin>
+<div class="class-overview-container">
+  <nz-spin [nzSpinning]="loading" nzTip="Đang tải dữ liệu...">
+    <div *ngIf="!loading && classInfo">
+      <!-- Header Section -->
+      <div class="overview-header">
+        <div class="header-content">
+          <h1 class="class-name">{{ classInfo.name }}</h1>
+          <p class="class-info">
+            <span class="info-item">
+              <i nz-icon nzType="book" nzTheme="outline"></i>
+              {{ classInfo.courseName }}
+            </span>
+            <span class="info-item">
+              <i nz-icon nzType="environment" nzTheme="outline"></i>
+              {{ classInfo.roomName }}
+            </span>
+          </p>
+        </div>
+        <div class="header-actions">
+          <button nz-button nzType="primary" (click)="goToAttendance()">
+            <i nz-icon nzType="calendar" nzTheme="outline"></i>
+            Điểm danh
+          </button>
+          <button nz-button nzType="default" (click)="goToAssignments()">
+            <i nz-icon nzType="file-text" nzTheme="outline"></i>
+            Bài tập
+          </button>
+          <button nz-button nzType="default" (click)="createAnnouncement()">
+            <i nz-icon nzType="notification" nzTheme="outline"></i>
+            Thông báo
+          </button>
+        </div>
+      </div>
 
-  <div *ngIf="!loading && classInfo" class="overview-content">
-    <nz-row [nzGutter]="16">
-      <nz-col [nzSpan]="8">
-        <nz-card nzTitle="Thông tin lớp" [nzBordered]="true">
-          <p><strong>Tên lớp:</strong> {{ classInfo.name }}</p>
-          <p><strong>Khóa học:</strong> {{ classInfo.courseName }}</p>
-          <p><strong>Phòng học:</strong> {{ classInfo.roomName }}</p>
-        </nz-card>
-      </nz-col>
-      <nz-col [nzSpan]="8">
-        <nz-card nzTitle="Thống kê" [nzBordered]="true">
-          <nz-statistic [nzValue]="studentCount" nzTitle="Số học sinh"></nz-statistic>
-          <nz-statistic [nzValue]="assignmentCount" nzTitle="Bài tập" class="mt-16"></nz-statistic>
-        </nz-card>
-      </nz-col>
-      <nz-col [nzSpan]="8">
-        <nz-card nzTitle="Tài liệu" [nzBordered]="true">
-          <nz-statistic [nzValue]="materialCount" nzTitle="Số tài liệu"></nz-statistic>
-        </nz-card>
-      </nz-col>
-    </nz-row>
+      <!-- Statistics Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon student-icon">
+            <i nz-icon nzType="team" nzTheme="outline"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ studentCount }}</div>
+            <div class="stat-label">Học sinh</div>
+          </div>
+          <div class="stat-action">
+            <a (click)="viewStudents()">Xem chi tiết →</a>
+          </div>
+        </div>
 
-    <nz-card nzTitle="Lịch dạy gần đây" [nzBordered]="true" class="mt-16">
-      <p>Chưa có lịch dạy nào</p>
-    </nz-card>
-  </div>
+        <div class="stat-card">
+          <div class="stat-icon assignment-icon">
+            <i nz-icon nzType="file-text" nzTheme="outline"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ assignmentCount }}</div>
+            <div class="stat-label">Bài tập</div>
+            <div class="stat-detail">
+              {{ gradedAssignments }} đã chấm • {{ pendingGrading }} chờ chấm
+            </div>
+          </div>
+        </div>
 
-  <div *ngIf="!loading && !classInfo" class="empty-state">
-    <nz-empty nzNotFoundContent="Không tìm thấy thông tin lớp"></nz-empty>
-  </div>
+        <div class="stat-card">
+          <div class="stat-icon attendance-icon">
+            <i nz-icon nzType="check-circle" nzTheme="outline"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ attendanceRate }}%</div>
+            <div class="stat-label">Tỉ lệ tham gia</div>
+            <div class="stat-detail">Trung bình cả lớp</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon material-icon">
+            <i nz-icon nzType="folder" nzTheme="outline"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ materialCount }}</div>
+            <div class="stat-label">Tài liệu</div>
+          </div>
+          <div class="stat-action">
+            <a (click)="goToMaterials()">Quản lý →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content Grid -->
+      <div class="content-grid">
+        <!-- Recent Announcements -->
+        <div class="content-card">
+          <div class="card-header">
+            <h3>
+              <i nz-icon nzType="notification" nzTheme="outline"></i>
+              Thông báo gần đây
+            </h3>
+            <a (click)="createAnnouncement()" class="header-action">+ Tạo mới</a>
+          </div>
+          <div class="card-body">
+            <div *ngIf="recentAnnouncements.length === 0" class="empty-state">
+              <nz-empty nzNotFoundContent="Chưa có thông báo nào"></nz-empty>
+            </div>
+            <div *ngIf="recentAnnouncements.length > 0" class="announcements-list">
+              <div *ngFor="let announcement of recentAnnouncements" class="announcement-item">
+                <div class="announcement-header">
+                  <span class="announcement-title">{{ announcement.title }}</span>
+                  <span class="announcement-time">{{ formatDate(announcement.createdAt) }}</span>
+                </div>
+                <div class="announcement-content">{{ announcement.content }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="content-card">
+          <div class="card-header">
+            <h3>
+              <i nz-icon nzType="thunderbolt" nzTheme="outline"></i>
+              Thao tác nhanh
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="quick-actions">
+              <button nz-button nzBlock class="action-btn attendance-btn" (click)="goToAttendance()">
+                <i nz-icon nzType="calendar-check" nzTheme="outline"></i>
+                <div class="action-text">
+                  <div class="action-title">Điểm danh hôm nay</div>
+                  <div class="action-desc">Ghi nhận sự hiện diện</div>
+                </div>
+              </button>
+
+              <button nz-button nzBlock class="action-btn assignment-btn" (click)="goToAssignments()">
+                <i nz-icon nzType="edit" nzTheme="outline"></i>
+                <div class="action-text">
+                  <div class="action-title">Tạo bài tập mới</div>
+                  <div class="action-desc">Giao bài cho học sinh</div>
+                </div>
+              </button>
+
+              <button nz-button nzBlock class="action-btn material-btn" (click)="goToMaterials()">
+                <i nz-icon nzType="file-add" nzTheme="outline"></i>
+                <div class="action-text">
+                  <div class="action-title">Tải tài liệu lên</div>
+                  <div class="action-desc">Chia sẻ tài liệu học tập</div>
+                </div>
+              </button>
+
+              <button nz-button nzBlock class="action-btn student-btn" (click)="viewStudents()">
+                <i nz-icon nzType="team" nzTheme="outline"></i>
+                <div class="action-text">
+                  <div class="action-title">Danh sách học sinh</div>
+                  <div class="action-desc">Xem thông tin chi tiết</div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Class Schedule Info (if available) -->
+      <div class="schedule-section" *ngIf="classInfo.schedule">
+        <div class="schedule-card">
+          <h3>
+            <i nz-icon nzType="clock-circle" nzTheme="outline"></i>
+            Lịch học
+          </h3>
+          <div class="schedule-details">
+            <div class="schedule-item" *ngIf="classInfo.startDate">
+              <span class="schedule-label">Ngày bắt đầu:</span>
+              <span class="schedule-value">{{ classInfo.startDate | date: 'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="schedule-item" *ngIf="classInfo.endDate">
+              <span class="schedule-label">Ngày kết thúc:</span>
+              <span class="schedule-value">{{ classInfo.endDate | date: 'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="schedule-item" *ngIf="classInfo.totalSessions">
+              <span class="schedule-label">Tổng số buổi:</span>
+              <span class="schedule-value">{{ classInfo.totalSessions }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && !classInfo" class="empty-container">
+      <nz-empty nzNotFoundContent="Không tìm thấy thông tin lớp học"></nz-empty>
+    </div>
+  </nz-spin>
 </div>

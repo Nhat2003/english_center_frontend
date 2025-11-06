@@ -13,7 +13,15 @@ export class AddUserComponent implements OnInit {
     this.modalRef.close(null);
   }
   userForm!: FormGroup;
-  roles = ['TEACHER', 'STUDENT', 'ADMIN'];
+
+  // Map role tiếng Việt với backend
+  backendRoleMap = {
+    'ADMIN': 'Quản trị viên',
+    'TEACHER': 'Giáo viên',
+    'STUDENT': 'Học sinh'
+  };
+
+  roles = Object.values(this.backendRoleMap);
 
   // Thêm output để thông báo cho component cha
   @Output() userAdded = new EventEmitter<void>();
@@ -37,7 +45,12 @@ export class AddUserComponent implements OnInit {
 
   submitForm(): void {
     if (this.userForm.valid) {
-      this.userService.createUser(this.userForm.value).subscribe({
+      // Chuyển role tiếng Việt về format backend (ADMIN, TEACHER, STUDENT)
+      const formValue = { ...this.userForm.value };
+      const roleEntry = Object.entries(this.backendRoleMap).find(([key, val]) => val === formValue.role);
+      formValue.role = roleEntry ? roleEntry[0] : formValue.role;
+
+      this.userService.createUser(formValue).subscribe({
         next: (result) => {
           this.message.success('Thêm user thành công!');
           this.userForm.reset();

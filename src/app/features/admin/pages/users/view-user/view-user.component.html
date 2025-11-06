@@ -1,0 +1,160 @@
+<div class="view-user-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
+    <p class="loading-text">Đang tải thông tin...</p>
+  </div>
+
+  <!-- User Details -->
+  <div *ngIf="!isLoading && userData" class="user-details">
+    <!-- Header Section -->
+    <div class="user-header">
+      <div class="user-avatar">
+        <span nz-icon nzType="user" nzTheme="outline"></span>
+      </div>
+      <div class="user-header-info">
+        <h3 class="user-name">{{ userData.fullName || userData.username }}</h3>
+        <p class="user-username">@{{ userData.username }}</p>
+      </div>
+      <div class="user-status-badge">
+        <nz-tag [nzColor]="getStatusColor(userData)">
+          {{ getStatusLabel(userData) }}
+        </nz-tag>
+      </div>
+    </div>
+
+    <nz-divider></nz-divider>
+
+    <!-- Info Grid -->
+    <div class="info-grid">
+      <!-- Thông tin cơ bản -->
+      <div class="info-section">
+        <h4 class="section-title">
+          <span nz-icon nzType="idcard" nzTheme="outline"></span>
+          Thông tin cơ bản
+        </h4>
+        <div class="info-items">
+          <div class="info-item">
+            <span class="info-label">Họ và tên:</span>
+            <span class="info-value">{{ userData.fullName || userData.student?.fullName || 'Chưa cập nhật' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Tên đăng nhập:</span>
+            <span class="info-value">{{ userData.username }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Email:</span>
+            <span class="info-value">{{ userData.email || userData.student?.email || 'Chưa cập nhật' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vai trò & Quyền -->
+      <div class="info-section">
+        <h4 class="section-title">
+          <span nz-icon nzType="safety-certificate" nzTheme="outline"></span>
+          Vai trò & Quyền
+        </h4>
+        <div class="info-items">
+          <div class="info-item">
+            <span class="info-label">Vai trò:</span>
+            <span class="info-value">
+              <nz-tag [nzColor]="userData.role === 'ADMIN' ? 'red' : userData.role === 'TEACHER' ? 'blue' : 'green'">
+                {{ getRoleLabel(userData.role) }}
+              </nz-tag>
+            </span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Quyền quản trị:</span>
+            <span class="info-value">
+              <nz-tag [nzColor]="userData.root ? 'orange' : 'default'">
+                {{ userData.root ? 'Có' : 'Không' }}
+              </nz-tag>
+            </span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Trạng thái:</span>
+            <span class="info-value">{{ getStatusLabel(userData) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thông tin sinh viên (nếu có) -->
+      <div class="info-section full-width" *ngIf="userData.student">
+        <h4 class="section-title">
+          <span nz-icon nzType="solution" nzTheme="outline"></span>
+          Thông tin sinh viên
+        </h4>
+        <div class="info-items">
+          <div class="info-item">
+            <span class="info-label">Ngày sinh:</span>
+            <span class="info-value">{{ userData.student.dob || 'Chưa cập nhật' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Giới tính:</span>
+            <span class="info-value">{{ userData.student.gender || 'Chưa cập nhật' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Số điện thoại:</span>
+            <span class="info-value">{{ userData.student.phone || 'Chưa cập nhật' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Địa chỉ:</span>
+            <span class="info-value">{{ userData.student.address || 'Chưa cập nhật' }}</span>
+          </div>
+          <div class="info-item" *ngIf="userData.student.className">
+            <span class="info-label">Lớp học:</span>
+            <span class="info-value">{{ userData.student.className }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Ngày tham gia:</span>
+            <span class="info-value">{{ userData.student.joinedAt || 'Chưa cập nhật' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thông tin hệ thống -->
+      <div class="info-section full-width">
+        <h4 class="section-title">
+          <span nz-icon nzType="database" nzTheme="outline"></span>
+          Thông tin hệ thống
+        </h4>
+        <div class="info-items">
+          <div class="info-item">
+            <span class="info-label">User ID:</span>
+            <span class="info-value">{{ userData.id }}</span>
+          </div>
+          <div class="info-item" *ngIf="userData.student">
+            <span class="info-label">Student ID:</span>
+            <span class="info-value">{{ userData.student.id }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Trạng thái hệ thống:</span>
+            <span class="info-value">
+              <nz-tag [nzColor]="userData.status === 'ACTIVE' ? 'success' : 'default'">
+                {{ getStatusCodeLabel(userData.status) }}
+              </nz-tag>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="modal-footer">
+      <button nz-button nzType="default" (click)="close()">
+        <span nz-icon nzType="close"></span>
+        Đóng
+      </button>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!isLoading && !userData" class="error-container">
+    <span nz-icon nzType="exclamation-circle" nzTheme="outline" class="error-icon"></span>
+    <p class="error-text">Không thể tải thông tin người dùng</p>
+    <button nz-button nzType="primary" (click)="close()" class="error-button">
+      Đóng
+    </button>
+  </div>
+</div>

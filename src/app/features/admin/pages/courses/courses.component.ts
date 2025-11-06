@@ -18,10 +18,12 @@ import { CoursesFormComponent } from './courses-form/courses-form.component';
 })
 export class CoursesComponent implements OnInit {
   courses: Course[] = [];
+  allCourses: Course[] = []; // Store all courses for search
   total = 0;
   pageIndex = 1;
   pageSize = 10;
   loading = false;
+  searchText = '';
 
   constructor(
     private courseService: CourseService,
@@ -39,10 +41,12 @@ export class CoursesComponent implements OnInit {
       next: (data: any) => {
         // Nếu backend trả về { content: Course[], totalElements: number }
         if (data && data.content && data.totalElements !== undefined) {
+          this.allCourses = data.content;
           this.courses = data.content;
           this.total = data.totalElements;
         } else if (Array.isArray(data)) {
           // Nếu backend trả về mảng đơn giản
+          this.allCourses = data;
           this.courses = data;
           this.total = data.length;
         }
@@ -52,6 +56,24 @@ export class CoursesComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  onSearch() {
+    if (!this.searchText.trim()) {
+      // If search is empty, show all courses
+      this.courses = [...this.allCourses];
+      this.total = this.allCourses.length;
+    } else {
+      // Filter courses based on search text
+      const searchLower = this.searchText.toLowerCase();
+      this.courses = this.allCourses.filter(course =>
+        course.name?.toLowerCase().includes(searchLower) ||
+        course.description?.toLowerCase().includes(searchLower)
+      );
+      this.total = this.courses.length;
+    }
+    // Reset to first page when searching
+    this.pageIndex = 1;
   }
 
   onPageIndexChange(index: number) {

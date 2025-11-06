@@ -20,6 +20,15 @@
             nz-button
             nzType="primary"
             nzSize="small"
+            (click)="viewStudents(classRoom)"
+            style="margin-right: 8px;">
+            <span nz-icon nzType="team"></span>
+            Quản lí
+          </button>
+          <button
+            nz-button
+            nzType="default"
+            nzSize="small"
             (click)="goToAttendance(classRoom)"
             style="margin-right: 8px;">
             <span nz-icon nzType="check-square"></span>
@@ -29,18 +38,9 @@
             nz-button
             nzType="default"
             nzSize="small"
-            (click)="goToAnnouncements(classRoom)"
-            style="margin-right: 8px;">
+            (click)="goToAnnouncements(classRoom)">
             <span nz-icon nzType="sound"></span>
             Thông báo
-          </button>
-          <button
-            nz-button
-            nzType="default"
-            nzSize="small"
-            (click)="selectClass(classRoom)">
-            <span nz-icon nzType="setting"></span>
-            Quản lí
           </button>
         </td>
       </tr>

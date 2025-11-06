@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Student } from '../models/student.model';
+import { Student, StudentOverviewResponse } from '../models/student.model';
 import { User } from '../models/user.model';
 import { StudentDetail } from '../models/student-detail.model';
 import { environment } from '../../../environments/environment';
@@ -107,6 +107,18 @@ export class StudentService {
 	getStudentsWithoutPagination(): Observable<Student[]> {
 		console.log('Calling students API without pagination');
 		return this.http.get<Student[]>(this.apiUrl)
+			.pipe(
+				catchError(this.handleError)
+			);
+	}
+
+	/**
+	 * Get student overview data for dashboard
+	 * API: GET /students/me/overview
+	 * @returns StudentOverviewResponse with all stats
+	 */
+	getMyOverview(): Observable<StudentOverviewResponse> {
+		return this.http.get<StudentOverviewResponse>(`${this.apiUrl}/me/overview`)
 			.pipe(
 				catchError(this.handleError)
 			);

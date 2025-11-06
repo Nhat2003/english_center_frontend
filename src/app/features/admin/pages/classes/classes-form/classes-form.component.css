@@ -39,6 +39,36 @@ nz-form-label {
   color: #595959;
 }
 
+/* Date Range Row */
+.date-range-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.date-range-row .half-width {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.auto-label {
+  color: #52c41a;
+  font-size: 12px;
+  margin-left: 4px;
+  font-weight: normal;
+}
+
+.help-text {
+  display: block;
+  margin-top: 4px;
+  color: #8c8c8c;
+  font-size: 12px;
+}
+
+.help-text [nz-icon] {
+  margin-right: 4px;
+}
+
 /* Select Options */
 .teacher-option,
 .course-option,
@@ -116,6 +146,127 @@ nz-form-label {
 .student-email {
   font-size: 12px;
   color: #666;
+}
+
+/* Student Selection Area */
+.student-selection-area {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.selected-students-display {
+  min-height: 60px;
+  padding: 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.student-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.no-students {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #8c8c8c;
+  font-size: 14px;
+  padding: 8px 0;
+}
+
+.no-students [nz-icon] {
+  font-size: 18px;
+}
+
+.student-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Student Checkbox List in Modal */
+.student-selection-modal {
+  padding: 8px 0;
+}
+
+.student-checkbox-list-modal {
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  max-height: 450px;
+  overflow-y: auto;
+  background: #fff;
+}
+
+.student-list-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.student-count-modal {
+  color: #1890ff;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.student-items {
+  padding: 8px 0;
+}
+
+.student-checkbox-item {
+  display: block;
+  padding: 12px 16px;
+  margin: 0;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.student-checkbox-item:last-child {
+  border-bottom: none;
+}
+
+.student-checkbox-item:hover {
+  background: #f5f5f5;
+}
+
+.student-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: 8px;
+}
+
+.student-icon {
+  color: #1890ff;
+  font-size: 16px;
+}
+
+.student-details {
+  flex: 1;
+}
+
+.student-details .student-name {
+  display: block;
+  font-weight: 500;
+  color: #262626;
+  margin-bottom: 2px;
+}
+
+.student-details .student-email {
+  display: block;
+  font-size: 12px;
+  color: #8c8c8c;
 }
 
 /* Bulk Import Modal Styles */

@@ -7,7 +7,10 @@
         nzType="text"
         nzSize="large"
         (click)="isCollapsed = !isCollapsed"
-        class="trigger">
+        class="trigger"
+        [nz-tooltip]="isCollapsed ? 'Mở rộng menu' : 'Thu gọn menu'"
+        nzTooltipPlacement="right"
+        [title]="isCollapsed ? 'Mở rộng menu' : 'Thu gọn menu'">
         <span nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></span>
       </button>
       <div class="logo-wrapper">
@@ -126,7 +129,7 @@
         </button>
       </div>
       <div class="class-sidebar-header-collapsed" *ngIf="isCollapsed">
-        <button nz-button nzType="text" nzSize="small" (click)="backToClasses()" class="back-button-collapsed">
+        <button nz-button nzType="text" nzSize="small" (click)="backToClasses()" class="back-button-collapsed" nz-tooltip="Quay lại danh sách lớp" nzTooltipPlacement="right" title="Quay lại danh sách lớp">
           <span nz-icon nzType="arrow-left"></span>
         </button>
       </div>

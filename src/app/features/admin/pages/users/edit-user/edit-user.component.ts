@@ -12,15 +12,11 @@ export class EditUserComponent implements OnInit {
     @Input() userData: any = null;
   userForm!: FormGroup;
   backendRoleMap = {
-    'ADMIN': 'Admin',
-    'TEACHER': 'Teacher',
-    'STUDENT': 'Student'
+    'ADMIN': 'Quản trị viên',
+    'TEACHER': 'Giáo viên',
+    'STUDENT': 'Học sinh'
   };
-  roles = Object.values({
-    'ADMIN': 'Admin',
-    'TEACHER': 'Teacher',
-    'STUDENT': 'Student'
-  });
+  roles = Object.values(this.backendRoleMap);
   statusOptions = [
     { label: 'Hoạt động', value: true },
     { label: 'Ngừng hoạt động', value: false }
@@ -51,9 +47,12 @@ export class EditUserComponent implements OnInit {
       // Logic xử lý trạng thái giống như user-list
       let isActive = this.isUserActive(this.userData);
 
+      // Lấy fullName từ user hoặc student nếu có
+      const fullName = this.userData?.fullName || this.userData?.student?.fullName || '';
+
       this.userForm.patchValue({
         username: this.userData?.username || '',
-        fullName: this.userData?.fullName || '',
+        fullName: fullName,
   // email: this.userData?.email || '',
         role: role,
         isActive: isActive,
@@ -83,9 +82,13 @@ export class EditUserComponent implements OnInit {
     } else {
       role = this.roles[0];
     }
+
+    // Lấy fullName từ user hoặc student nếu có
+    const fullName = this.userData?.fullName || this.userData?.student?.fullName || '';
+
     this.userForm = this.fb.group({
       username: [this.userData?.username || '', [Validators.required]],
-      fullName: [this.userData?.fullName || '', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
+      fullName: [fullName, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
   // email: [this.userData?.email || '', [Validators.required, Validators.email]],
       role: [role, [Validators.required]],
       isActive: [isActive, [Validators.required]],

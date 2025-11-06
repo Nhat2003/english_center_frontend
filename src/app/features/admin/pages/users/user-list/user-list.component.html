@@ -13,6 +13,22 @@
   </div>
 </div>
 
+<!-- Search Bar -->
+<div class="search-bar">
+  <nz-input-group [nzPrefix]="prefixIconSearch" nzSize="large">
+    <input
+      nz-input
+      type="text"
+      placeholder="Tìm kiếm theo tên đăng nhập, họ tên, vai trò..."
+      [(ngModel)]="searchText"
+      (ngModelChange)="onSearch()"
+    />
+  </nz-input-group>
+</div>
+<ng-template #prefixIconSearch>
+  <span nz-icon nzType="search"></span>
+</ng-template>
+
 <!-- Bảng người dùng -->
 <div class="card">
   <nz-table
@@ -33,8 +49,8 @@
     <tbody>
   <tr *ngFor="let user of paginatedUsers">
         <td>{{ user.username }}</td>
-        <td>{{ user.fullName || 'Chưa cập nhật' }}</td>
-        <td>{{ user.role }}</td>
+        <td>{{ user.fullName || user.student?.fullName || 'Chưa cập nhật' }}</td>
+        <td>{{ getRoleLabel(user.role) }}</td>
         <td>
           <nz-tag *ngIf="isUserActive(user)" style="color: #5bc069;" [nzColor]="'#d9eed9'">Hoạt động</nz-tag>
           <nz-tag *ngIf="!isUserActive(user)" [nzColor]="'#d9d9d9'">Không hoạt động</nz-tag>
@@ -48,6 +64,7 @@
               class="btn-view"
               (click)="viewUser(user)"
               nz-tooltip="Xem chi tiết"
+              title="Xem chi tiết"
             >
               <span nz-icon nzType="eye"></span>
             </button>
@@ -58,6 +75,7 @@
               class="btn-edit"
               (click)="openEditUser(user)"
               nz-tooltip="Chỉnh sửa"
+              title="Chỉnh sửa"
             >
               <span nz-icon nzType="edit"></span>
             </button>
@@ -69,6 +87,7 @@
               class="btn-delete"
               (click)="deleteUser(user)"
               nz-tooltip="Xóa"
+              title="Xóa"
             >
               <span nz-icon nzType="delete"></span>
             </button>

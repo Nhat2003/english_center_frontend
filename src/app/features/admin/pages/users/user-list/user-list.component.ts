@@ -12,6 +12,7 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 
 import { AddUserComponent } from '../add-user/add-user.component';
 import { EditUserComponent } from '../edit-user/edit-user.component';
+import { ViewUserComponent } from '../view-user/view-user.component';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { UserService } from '../../../../../core/services/user.service';
 
@@ -22,8 +23,17 @@ import { UserService } from '../../../../../core/services/user.service';
 })
 export class UserListComponent implements OnInit {
   users: User[] = [];
+  allUsers: User[] = []; // Store all users for search
   pageIndex = 1;
   pageSize = 5;
+  searchText = '';
+
+  // Map role từ backend sang tiếng Việt
+  roleMap = {
+    'ADMIN': 'Quản trị viên',
+    'TEACHER': 'Giáo viên',
+    'STUDENT': 'Học sinh'
+  };
 
   constructor(
     private modal: NzModalService,
@@ -38,11 +48,34 @@ export class UserListComponent implements OnInit {
   loadUsers(): void {
     this.userService.getUsers().subscribe({
       next: (data) => {
-        this.users = data;
-        console.log('Users data from backend:', data); // Debug log
+        this.allUsers = data.map(user => ({
+          ...user,
+          // Đảm bảo fullName được map từ student nếu có
+          fullName: user.fullName || user.student?.fullName || ''
+        }));
+        this.users = [...this.allUsers]; // Copy to display array
+        console.log('Users data from backend:', this.users); // Debug log
       },
       error: (err) => console.error(' Lỗi load users:', err),
     });
+  }
+
+  onSearch() {
+    if (!this.searchText.trim()) {
+      // If search is empty, show all users
+      this.users = [...this.allUsers];
+    } else {
+      // Filter users based on search text
+      const searchLower = this.searchText.toLowerCase();
+      this.users = this.allUsers.filter(user =>
+        user.username?.toLowerCase().includes(searchLower) ||
+        user.fullName?.toLowerCase().includes(searchLower) ||
+        user.email?.toLowerCase().includes(searchLower) ||
+        this.getRoleLabel(user.role)?.toLowerCase().includes(searchLower)
+      );
+    }
+    // Reset to first page when searching
+    this.pageIndex = 1;
   }
 
   get totalUsers() {
@@ -66,6 +99,11 @@ export class UserListComponent implements OnInit {
     }
     // Default false nếu không có thông tin
     return false;
+  }
+
+  // Chuyển role sang tiếng Việt
+  getRoleLabel(role: string): string {
+    return this.roleMap[role] || role;
   }
 
   onPageIndexChange(index: number) {
@@ -101,12 +139,18 @@ export class UserListComponent implements OnInit {
   openEditUser(user: User): void {
     this.userService.getUser(user.id).subscribe({
       next: (freshUser) => {
+        // Đảm bảo fullName được lấy từ student nếu có
+        const userData = {
+          ...freshUser,
+          fullName: freshUser.fullName || freshUser.student?.fullName || ''
+        };
+
         const modalRef = this.modal.create({
           nzTitle: 'Chỉnh sửa User',
           nzContent: EditUserComponent,
           nzFooter: null,
           nzWidth: 600,
-          nzComponentParams: { userData: freshUser },
+          nzComponentParams: { userData },
         });
 
         modalRef.afterClose.subscribe((result) => {
@@ -133,21 +177,12 @@ export class UserListComponent implements OnInit {
 
 
   viewUser(user: User) {
-    this.modal.info({
-      nzTitle: `Thông tin người dùng: ${user.username}`,
-      nzContent: `
-        <div style="padding: 16px 0;">
-          <p><strong>Tên đăng nhập:</strong> ${user.username}</p>
-          <p><strong>Họ tên:</strong> ${user.fullName || 'Chưa cập nhật'}</p>
-          <p><strong>Email:</strong> ${user.email || 'Chưa cập nhật'}</p>
-          <p><strong>Vai trò:</strong> ${user.role}</p>
-          <p><strong>Trạng thái:</strong> ${user.isActive ? 'Hoạt động' : 'Không hoạt động'}</p>
-          <p><strong>Quyền root:</strong> ${user.root ? 'Có' : 'Không'}</p>
-          <p><strong>Status:</strong> ${user.status}</p>
-        </div>
-      `,
-      nzWidth: 500,
-      nzOkText: 'Đóng'
+    const modalRef = this.modal.create({
+      nzTitle: 'Thông tin chi tiết người dùng',
+      nzContent: ViewUserComponent,
+      nzFooter: null,
+      nzWidth: 800,
+      nzComponentParams: { userId: user.id },
     });
   }
 
