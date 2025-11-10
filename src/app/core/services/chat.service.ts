@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import * as SockJS from 'sockjs-client';
+import { Client, Message, StompSubscription } from '@stomp/stompjs';
 
 export interface ChatMessage {
   id?: number;
@@ -17,17 +18,19 @@ export interface ChatMessage {
 export interface Conversation {
   conversationId: string;
   otherUserId: number;
-  otherUserFullName: string;
+  otherUserName?: string;        // From backend
+  otherUserFullName?: string;    // For compatibility
   otherUserAvatar?: string;
-  lastMessage?: ChatMessage;
+  lastMessage?: ChatMessage | string;  // Can be string from backend
+  lastAt?: string;               // Backend field
   unreadCount: number;
 }
 
-// Simple STOMP Frame interface
-interface StompFrame {
-  command: string;
-  headers: { [key: string]: string };
-  body: string;
+export interface ChatContact {
+  id: number;
+  fullName: string;
+  avatar?: string;
+  role: string;
 }
 
 @Injectable({
@@ -35,9 +38,9 @@ interface StompFrame {
 })
 export class ChatService {
   private baseUrl = 'http://localhost:8080';
-  private websocket: WebSocket | null = null;
+  private stompClient: Client | null = null;
   private connected$ = new BehaviorSubject<boolean>(false);
-  private subscriptions: Map<string, (msg: ChatMessage) => void> = new Map();
+  private subscriptions: Map<string, StompSubscription> = new Map();
 
   // Subjects để emit messages
   public personalMessages$ = new BehaviorSubject<ChatMessage | null>(null);
@@ -95,107 +98,172 @@ export class ChatService {
     return this.http.get<Conversation[]>(`${this.baseUrl}/chat/conversations`, { params });
   }
 
+  // REST API: Get contacts list (users who can chat)
+  getContacts(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/chat/contacts`);
+  }
+
   // WebSocket: Connect with STOMP over SockJS
   connect(): void {
-    if (this.websocket) {
-      return; // Already connected
+    if (this.stompClient && this.stompClient.connected) {
+      console.log('Already connected to WebSocket');
+      return;
+    }
+
+    const token = this.getToken();
+    if (!token) {
+      console.warn('No token available for WebSocket connection');
+      return;
     }
 
     try {
-      const socket = new SockJS(`${this.baseUrl}/ws`);
-      this.websocket = socket as any;
+      // Initialize STOMP client with SockJS
+      this.stompClient = new Client({
+        webSocketFactory: () => {
+          // Use SockJS with token as query parameter
+          return new SockJS(`${this.baseUrl}/ws/chat?token=${token}`) as any;
+        },
 
-      this.websocket.onopen = () => {
-        console.log('WebSocket connected');
-        this.connected$.next(true);
+        // Connection headers (token in header as backup)
+        connectHeaders: {
+          Authorization: `Bearer ${token}`
+        },
 
-        // Send CONNECT frame
-        this.sendStompFrame('CONNECT', {
-          'accept-version': '1.1,1.0',
-          'heart-beat': '10000,10000'
-        });
-      };
+        // Debug output
+        debug: (str) => {
+          console.log('[STOMP Debug]:', str);
+        },
 
-      this.websocket.onmessage = (event) => {
-        try {
-          const frame = this.parseStompFrame(event.data);
+        // Reconnect settings
+        reconnectDelay: 5000,
+        heartbeatIncoming: 10000,
+        heartbeatOutgoing: 10000,
 
-          if (frame.command === 'CONNECTED') {
-            console.log('STOMP connected');
-            // Subscribe to personal messages
-            const userId = this.getCurrentUserId();
-            if (userId && userId > 0) {
-              this.sendStompFrame('SUBSCRIBE', {
-                'id': 'sub-0',
-                'destination': `/user/${userId}/queue/messages`
-              });
-            }
-          } else if (frame.command === 'MESSAGE') {
-            // Handle incoming message
-            try {
-              const message: ChatMessage = JSON.parse(frame.body);
-              this.personalMessages$.next(message);
+        // Connection callback
+        onConnect: (frame) => {
+          console.log('✅ STOMP Connected:', frame);
+          this.connected$.next(true);
 
-              // Also notify conversation-specific subscribers
-              if (message.conversationId && this.subscriptions.has(message.conversationId)) {
-                const callback = this.subscriptions.get(message.conversationId);
-                if (callback) callback(message);
+          // Subscribe to personal queue
+          const userId = this.getCurrentUserId();
+          if (userId && userId > 0) {
+            const personalSub = this.stompClient?.subscribe(
+              `/user/queue/messages`,
+              (message: Message) => {
+                this.handleIncomingMessage(message);
               }
-            } catch (e) {
-              console.error('Failed to parse message:', e);
+            );
+
+            if (personalSub) {
+              this.subscriptions.set('personal-queue', personalSub);
             }
+
+            console.log(`📩 Subscribed to /user/queue/messages`);
           }
-        } catch (e) {
-          console.error('Failed to process WebSocket message:', e);
+        },
+
+        // Disconnect callback
+        onStompError: (frame) => {
+          console.error('❌ STOMP Error:', frame.headers['message']);
+          console.error('Additional details:', frame.body);
+          this.connected$.next(false);
+        },
+
+        // WebSocket error
+        onWebSocketError: (event) => {
+          console.warn('⚠️ WebSocket error (chat may not work):', event);
+        },
+
+        // WebSocket close
+        onWebSocketClose: (event) => {
+          console.log('🔌 WebSocket closed');
+          this.connected$.next(false);
         }
-      };
+      });
 
-      this.websocket.onerror = (error) => {
-        console.warn('WebSocket error (chat may not work):', error);
-        this.connected$.next(false);
-        // Don't throw error - allow app to continue
-      };
+      // Activate the client
+      this.stompClient.activate();
+      console.log('🔄 Activating STOMP client...');
 
-      this.websocket.onclose = () => {
-        console.log('WebSocket closed');
-        this.connected$.next(false);
-        this.websocket = null;
-      };
     } catch (error) {
-      console.warn('Failed to connect WebSocket (chat will be unavailable):', error);
-      this.websocket = null;
+      console.warn('Failed to initialize WebSocket (chat will be unavailable):', error);
       this.connected$.next(false);
-      // Don't throw error - allow app to continue without chat
+    }
+  }
+
+  // Handle incoming STOMP message
+  private handleIncomingMessage(message: Message): void {
+    try {
+      const chatMessage: ChatMessage = JSON.parse(message.body);
+      console.log('📬 Received message:', chatMessage);
+
+      // Emit to personal messages stream
+      this.personalMessages$.next(chatMessage);
+
+      // Also emit to conversation-specific stream
+      this.conversationMessages$.next(chatMessage);
+    } catch (e) {
+      console.error('Failed to parse incoming message:', e);
     }
   }
 
   // WebSocket: Disconnect
   disconnect(): void {
     try {
-      if (this.websocket) {
-        this.sendStompFrame('DISCONNECT', {});
-        this.websocket.close();
-        this.websocket = null;
+      if (this.stompClient && this.stompClient.connected) {
+        // Unsubscribe all
+        this.subscriptions.forEach((sub) => {
+          sub.unsubscribe();
+        });
+        this.subscriptions.clear();
+
+        // Deactivate client
+        this.stompClient.deactivate();
+        this.stompClient = null;
         this.connected$.next(false);
-        console.log('WebSocket disconnected');
+        console.log('✅ WebSocket disconnected');
       }
     } catch (error) {
       console.warn('Error during WebSocket disconnect:', error);
-      this.websocket = null;
+      this.stompClient = null;
       this.connected$.next(false);
     }
   }
 
   // Subscribe to specific conversation for realtime updates
   subscribeToConversation(conversationId: string, callback: (msg: ChatMessage) => void): void {
-    this.subscriptions.set(conversationId, callback);
-    console.log('Subscribed to conversation:', conversationId);
+    if (!this.stompClient || !this.stompClient.connected) {
+      console.warn('Cannot subscribe to conversation - not connected');
+      return;
+    }
+
+    // Subscribe to conversation topic
+    const subscription = this.stompClient.subscribe(
+      `/topic/conversation.${conversationId}`,
+      (message: Message) => {
+        try {
+          const chatMessage: ChatMessage = JSON.parse(message.body);
+          callback(chatMessage);
+        } catch (e) {
+          console.error('Failed to parse conversation message:', e);
+        }
+      }
+    );
+
+    this.subscriptions.set(`conversation-${conversationId}`, subscription);
+    console.log('📩 Subscribed to conversation:', conversationId);
   }
 
   // Unsubscribe from conversation
   unsubscribeFromConversation(conversationId: string): void {
-    this.subscriptions.delete(conversationId);
-    console.log('Unsubscribed from conversation:', conversationId);
+    const key = `conversation-${conversationId}`;
+    const subscription = this.subscriptions.get(key);
+
+    if (subscription) {
+      subscription.unsubscribe();
+      this.subscriptions.delete(key);
+      console.log('🚫 Unsubscribed from conversation:', conversationId);
+    }
   }
 
   // Send message via WebSocket STOMP
@@ -205,62 +273,27 @@ export class ChatService {
       content
     };
 
-    if (this.websocket && this.connected$.value) {
-      // Send via WebSocket STOMP
-      this.sendStompFrame('SEND', {
-        'destination': '/app/chat.send'
-      }, JSON.stringify(payload));
+    if (this.stompClient && this.stompClient.connected) {
+      // Send via WebSocket STOMP to /app/chat.sendMessage
+      // Backend will save to DB and broadcast to both users
+      this.stompClient.publish({
+        destination: '/app/chat.sendMessage',
+        body: JSON.stringify(payload)
+      });
+      console.log('📤 Message sent via WebSocket STOMP to /app/chat.sendMessage');
     } else {
-      // Fallback to HTTP if WebSocket not connected
-      console.warn('WebSocket not connected, using HTTP fallback');
+      // Fallback to REST API POST /chat/send if WebSocket not connected
+      console.warn('⚠️ WebSocket not connected, using HTTP fallback');
       this.http.post(`${this.baseUrl}/chat/send`, payload).subscribe({
         next: (response) => {
-          console.log('Message sent via HTTP:', response);
+          console.log('📤 Message sent via REST API POST /chat/send:', response);
         },
-        error: (err) => console.error('Send message error:', err)
+        error: (err) => console.error('❌ Send message error:', err)
       });
     }
   }
 
-  // Helper: Send STOMP frame
-  private sendStompFrame(command: string, headers: { [key: string]: string }, body: string = ''): void {
-    if (!this.websocket) return;
-
-    let frame = command + '\n';
-    for (const key in headers) {
-      frame += `${key}:${headers[key]}\n`;
-    }
-    frame += '\n' + body + '\0';
-
-    this.websocket.send(frame);
-  }
-
-  // Helper: Parse STOMP frame
-  private parseStompFrame(data: string): StompFrame {
-    const lines = data.split('\n');
-    const command = lines[0];
-    const headers: { [key: string]: string } = {};
-    let bodyStartIndex = 1;
-
-    for (let i = 1; i < lines.length; i++) {
-      if (lines[i] === '') {
-        bodyStartIndex = i + 1;
-        break;
-      }
-      const colonIndex = lines[i].indexOf(':');
-      if (colonIndex > 0) {
-        const key = lines[i].substring(0, colonIndex);
-        const value = lines[i].substring(colonIndex + 1);
-        headers[key] = value;
-      }
-    }
-
-    const body = lines.slice(bodyStartIndex).join('\n').replace(/\0$/, '');
-
-    return { command, headers, body };
-  }
-
-  // Check if connected (polling active)
+  // Check if connected
   isConnected(): Observable<boolean> {
     return this.connected$.asObservable();
   }

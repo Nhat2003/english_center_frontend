@@ -7,6 +7,7 @@ import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzNotificationModule } from 'ng-zorro-antd/notification';
 import { ChatboxComponent } from './chatbox/chatbox.component';
 
 @NgModule({
@@ -21,7 +22,8 @@ import { ChatboxComponent } from './chatbox/chatbox.component';
     NzBadgeModule,
     NzInputModule,
     NzButtonModule,
-    NzModalModule
+    NzModalModule,
+    NzNotificationModule
   ],
   exports: [
     ChatboxComponent

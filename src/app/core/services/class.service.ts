@@ -51,4 +51,12 @@ export class ClassService {
   getAllClasses(): Observable<Class[]> {
     return this.http.get<Class[]>(`${this.apiUrl}/all`);
   }
+
+  // Lấy danh sách lớp của giáo viên
+  getClassesByTeacher(teacherId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/by-teacher/${teacherId}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
 }

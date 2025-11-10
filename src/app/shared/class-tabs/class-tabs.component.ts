@@ -66,12 +66,6 @@ export class ClassTabsComponent implements OnInit {
         visible: this.role === 'student' // Chỉ học sinh mới thấy điểm
       },
       {
-        label: this.role === 'student' ? 'Điểm danh của tôi' : 'Điểm danh',
-        icon: 'check-square',
-        route: `${baseRoute}/classes/${this.classId}/attendance`,
-        visible: true // Cả giáo viên và học sinh đều thấy
-      },
-      {
         label: 'Thông báo',
         icon: 'sound',
         route: `${baseRoute}/classes/${this.classId}/announcements`,

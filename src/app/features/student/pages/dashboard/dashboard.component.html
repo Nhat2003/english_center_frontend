@@ -11,21 +11,21 @@
         </div>
         <div class="stats-row">
           <div class="stat-item">
-            <span nz-icon nzType="read" nzTheme="filled"></span>
+            <span nz-icon nzType="read" nzTheme="fill"></span>
             <div class="stat-info">
               <span class="value">{{ myClasses.length }}</span>
               <span class="label">Lớp học</span>
             </div>
           </div>
           <div class="stat-item">
-            <span nz-icon nzType="file-text" nzTheme="filled"></span>
+            <span nz-icon nzType="file-text" nzTheme="fill"></span>
             <div class="stat-info">
               <span class="value">{{ totalCompletedAssignments }}/{{ totalAssignments }}</span>
               <span class="label">Bài tập hoàn thành</span>
             </div>
           </div>
           <div class="stat-item">
-            <span nz-icon nzType="trophy" nzTheme="filled"></span>
+            <span nz-icon nzType="trophy" nzTheme="fill"></span>
             <div class="stat-info">
               <span class="value">{{ averageGrade > 0 ? averageGrade.toFixed(1) : '--' }}</span>
               <span class="label">Điểm TB</span>
@@ -45,7 +45,7 @@
         <nz-card class="next-class-card" *ngIf="nextClass">
           <span class="badge">Sắp diễn ra</span>
           <div class="time-badge">
-            <span nz-icon nzType="clock-circle" nzTheme="filled"></span>
+            <span nz-icon nzType="clock-circle" nzTheme="fill"></span>
             {{ nextClass.time }}
           </div>
           <h2>{{ nextClass.subject }}</h2>
@@ -109,11 +109,11 @@
             </div>
             <div class="stats-list">
               <div class="stat-row">
-                <span><span nz-icon nzType="hourglass" nzTheme="filled"></span> Chờ nộp</span>
+                <span><span nz-icon nzType="hourglass" nzTheme="fill"></span> Chờ nộp</span>
                 <strong>{{ pendingAssignments }}</strong>
               </div>
               <div class="stat-row" *ngIf="nearestDeadline">
-                <span><span nz-icon nzType="clock-circle" nzTheme="filled"></span> Hạn gần nhất</span>
+                <span><span nz-icon nzType="clock-circle" nzTheme="fill"></span> Hạn gần nhất</span>
                 <strong>{{ nearestDeadline }}</strong>
               </div>
               <button nz-button nzBlock routerLink="/student/classes">Xem chi tiết</button>
@@ -172,7 +172,7 @@
 
         <!-- Attendance -->
         <nz-card class="attendance-card">
-          <h4><span nz-icon nzType="check-square" nzTheme="filled"></span> Điểm danh</h4>
+          <h4><span nz-icon nzType="check-square" nzTheme="fill"></span> Điểm danh</h4>
           <div class="attendance-body">
             <nz-progress
               [nzPercent]="attendanceSummary.attendanceRate"
@@ -206,7 +206,7 @@
 
         <!-- Recent Grades -->
         <nz-card class="grades-card" *ngIf="recentGrades.length > 0">
-          <h4><span nz-icon nzType="trophy" nzTheme="filled"></span> Điểm gần đây</h4>
+          <h4><span nz-icon nzType="trophy" nzTheme="fill"></span> Điểm gần đây</h4>
           <div class="grades-list">
             <div class="grade-row" *ngFor="let grade of recentGrades.slice(0, 5)">
               <div class="grade-info">
@@ -222,7 +222,7 @@
 
         <!-- Announcements -->
         <nz-card class="announcements-card" *ngIf="latestAnnouncements.length > 0">
-          <h4><span nz-icon nzType="sound" nzTheme="filled"></span> Thông báo mới</h4>
+          <h4><span nz-icon nzType="sound" nzTheme="fill"></span> Thông báo mới</h4>
           <div class="announcement-list">
             <div class="announcement-row" *ngFor="let announcement of latestAnnouncements.slice(0, 3)">
               <nz-badge nzDot [nzStatus]="isNewAnnouncement(announcement.createdAt) ? 'processing' : 'default'">
@@ -244,22 +244,22 @@
 
         <!-- Quick Actions -->
         <nz-card class="quick-card">
-          <h4><span nz-icon nzType="thunderbolt" nzTheme="filled"></span> Truy cập nhanh</h4>
+          <h4><span nz-icon nzType="thunderbolt" nzTheme="fill"></span> Truy cập nhanh</h4>
           <div class="quick-grid">
             <button nz-button routerLink="/student/schedule">
-              <span nz-icon nzType="calendar" nzTheme="filled"></span>
+              <span nz-icon nzType="calendar" nzTheme="fill"></span>
               Lịch học
             </button>
             <button nz-button routerLink="/student/classes">
-              <span nz-icon nzType="book" nzTheme="filled"></span>
+              <span nz-icon nzType="book" nzTheme="fill"></span>
               Lớp học
             </button>
             <button nz-button routerLink="/student/payments">
-              <span nz-icon nzType="credit-card" nzTheme="filled"></span>
+              <span nz-icon nzType="credit-card" nzTheme="fill"></span>
               Học phí
             </button>
             <button nz-button routerLink="/student/notifications">
-              <span nz-icon nzType="bell" nzTheme="filled"></span>
+              <span nz-icon nzType="bell" nzTheme="fill"></span>
               Thông báo
             </button>
           </div>

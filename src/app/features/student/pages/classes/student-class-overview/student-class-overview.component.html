@@ -1,77 +1,170 @@
-<app-class-tabs
+<!-- <app-class-tabs
   [classId]="classId"
   [role]="'student'"
   [className]="classInfo?.name || 'Đang tải...'">
-</app-class-tabs>
+</app-class-tabs> -->
 
-<div class="class-overview-content">
-  <nz-spin *ngIf="loading" nzTip="Đang tải..."></nz-spin>
+<div class="class-overview-wrapper">
+  <nz-spin *ngIf="loading" nzTip="Đang tải thông tin lớp học..."></nz-spin>
 
-  <div *ngIf="!loading && classInfo" class="overview-cards">
-    <nz-row [nzGutter]="[16, 16]">
-      <nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8">
-        <nz-card nzTitle="Thông tin lớp" class="info-card">
-          <div class="info-item">
-            <i nz-icon nzType="read"></i>
-            <div>
-              <label>Tên lớp:</label>
-              <span>{{ classInfo.name }}</span>
-            </div>
+  <div *ngIf="!loading && classInfo" class="overview-container">
+
+    <!-- Header Section -->
+    <div class="overview-header">
+      <div class="header-content">
+        <div class="class-badge">
+          <span nz-icon nzType="read" nzTheme="fill"></span>
+          {{ classInfo.courseName }}
+        </div>
+        <h1 class="class-title">{{ classInfo.name }}</h1>
+        <div class="class-meta">
+          <span class="meta-item">
+            <span nz-icon nzType="user"></span>
+            {{ classInfo.teacherName }}
+          </span>
+          <span class="meta-item">
+            <span nz-icon nzType="home"></span>
+            {{ classInfo.roomName }}
+          </span>
+          <span class="meta-item">
+            <span nz-icon nzType="team"></span>
+            {{ classInfo.studentCount || 0 }} học viên
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Grid Layout -->
+    <div class="overview-grid">
+
+      <!-- Left Column -->
+      <div class="left-column">
+
+        <!-- Schedule Card -->
+        <nz-card class="schedule-card">
+          <div class="card-header">
+            <span nz-icon nzType="calendar" nzTheme="fill"></span>
+            <h3>Lịch học</h3>
           </div>
-          <div class="info-item">
-            <i nz-icon nzType="book"></i>
-            <div>
-              <label>Khóa học:</label>
-              <span>{{ classInfo.courseName }}</span>
+          <div class="schedule-content" *ngIf="classInfo.fixedSchedule">
+            <div class="schedule-item">
+              <div class="schedule-label">Thời gian</div>
+              <div class="schedule-value">
+                <span nz-icon nzType="clock-circle"></span>
+                {{ classInfo.fixedSchedule.startTime }} - {{ classInfo.fixedSchedule.endTime }}
+              </div>
             </div>
-          </div>
-          <div class="info-item">
-            <i nz-icon nzType="home"></i>
-            <div>
-              <label>Phòng học:</label>
-              <span>{{ classInfo.roomName }}</span>
+            <div class="schedule-item">
+              <div class="schedule-label">Ngày học</div>
+              <div class="schedule-value">
+                <span nz-icon nzType="calendar-check"></span>
+                {{ formatDaysOfWeek(classInfo.fixedSchedule.daysOfWeek) }}
+              </div>
             </div>
-          </div>
-          <div class="info-item">
-            <i nz-icon nzType="user"></i>
-            <div>
-              <label>Giáo viên:</label>
-              <span>{{ classInfo.teacherName }}</span>
+            <div class="schedule-item">
+              <div class="schedule-label">Lịch cố định</div>
+              <div class="schedule-value">
+                <span nz-icon nzType="schedule"></span>
+                {{ classInfo.fixedSchedule.name }}
+              </div>
             </div>
           </div>
         </nz-card>
-      </nz-col>
 
-      <nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8">
-        <nz-card nzTitle="Lịch học" class="schedule-card">
-          <div class="schedule-info" *ngIf="classInfo.fixedSchedule">
-            <p>
-              <i nz-icon nzType="calendar"></i>
-              <strong>{{ classInfo.fixedSchedule.name }}</strong>
-            </p>
-            <p>
-              <i nz-icon nzType="clock-circle"></i>
-              {{ classInfo.fixedSchedule.startTime }} - {{ classInfo.fixedSchedule.endTime }}
-            </p>
-            <p>
-              <i nz-icon nzType="calendar-check"></i>
-              {{ classInfo.fixedSchedule.daysOfWeek }}
+        <!-- Course Description Card -->
+        <nz-card class="description-card">
+          <div class="card-header">
+            <span nz-icon nzType="book" nzTheme="fill"></span>
+            <h3>Giới thiệu khóa học</h3>
+          </div>
+          <div class="description-content">
+            <div *ngIf="classInfo.courseDescription" [innerHTML]="formatDescription(classInfo.courseDescription)"></div>
+            <p *ngIf="!classInfo.courseDescription" class="no-description">
+              <span nz-icon nzType="info-circle"></span>
+              Chưa có mô tả cho khóa học này
             </p>
           </div>
         </nz-card>
-      </nz-col>
 
-      <nz-col [nzXs]="24" [nzSm]="24" [nzMd]="8">
-        <nz-card nzTitle="Thời gian" class="time-card">
-          <p>
-            <strong>Bắt đầu:</strong> {{ classInfo.startDate | date: 'dd/MM/yyyy' }}
-          </p>
-          <p>
-            <strong>Kết thúc:</strong> {{ classInfo.endDate | date: 'dd/MM/yyyy' }}
-          </p>
+      </div>
+
+      <!-- Right Column -->
+      <div class="right-column">
+
+        <!-- Duration Card -->
+        <nz-card class="duration-card">
+          <div class="card-header">
+            <span nz-icon nzType="field-time" nzTheme="fill"></span>
+            <h3>Thời gian khóa học</h3>
+          </div>
+          <div class="duration-content">
+            <div class="date-row">
+              <div class="date-item start">
+                <span class="date-label">Bắt đầu</span>
+                <div class="date-display">
+                  <span nz-icon nzType="play-circle" nzTheme="fill"></span>
+                  <span class="date-text">{{ classInfo.startDate | date: 'dd/MM/yyyy' }}</span>
+                </div>
+              </div>
+              <div class="date-divider">
+                <span nz-icon nzType="arrow-right"></span>
+              </div>
+              <div class="date-item end">
+                <span class="date-label">Kết thúc</span>
+                <div class="date-display">
+                  <span nz-icon nzType="check-circle" nzTheme="fill"></span>
+                  <span class="date-text">{{ classInfo.endDate | date: 'dd/MM/yyyy' }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="duration-summary">
+              <span nz-icon nzType="hourglass"></span>
+              Thời lượng: {{ calculateDuration(classInfo.startDate, classInfo.endDate) }}
+            </div>
+          </div>
         </nz-card>
-      </nz-col>
-    </nz-row>
+
+        <!-- Quick Stats Card -->
+        <nz-card class="stats-card">
+          <div class="card-header">
+            <span nz-icon nzType="bar-chart" nzTheme="fill"></span>
+            <h3>Thông tin nhanh</h3>
+          </div>
+          <div class="stats-content">
+            <div class="stat-row">
+              <span class="stat-icon">
+                <span nz-icon nzType="team" nzTheme="fill"></span>
+              </span>
+              <div class="stat-info">
+                <span class="stat-label">Tổng học viên</span>
+                <span class="stat-value">{{ classInfo.studentCount || 0 }}</span>
+              </div>
+            </div>
+            <div class="stat-row">
+              <span class="stat-icon">
+                <span nz-icon nzType="home" nzTheme="fill"></span>
+              </span>
+              <div class="stat-info">
+                <span class="stat-label">Phòng học</span>
+                <span class="stat-value">{{ classInfo.roomName }}</span>
+              </div>
+            </div>
+            <div class="stat-row">
+              <span class="stat-icon">
+                <span nz-icon nzType="user" nzTheme="fill"></span>
+              </span>
+              <div class="stat-info">
+                <span class="stat-label">Giảng viên</span>
+                <span class="stat-value">{{ classInfo.teacherName }}</span>
+              </div>
+            </div>
+          </div>
+        </nz-card>
+
+      </div>
+
+    </div>
+
   </div>
 
   <nz-empty

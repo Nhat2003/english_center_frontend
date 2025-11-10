@@ -2,6 +2,7 @@ export interface Class {
   id: number;
   name: string;
   courseName: string;
+  courseDescription?: string; // Course description from Course entity
   teacherName: string;
   roomName: string;
   fixedSchedule: {

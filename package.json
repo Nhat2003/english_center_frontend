@@ -36,6 +36,7 @@
     "@ngrx/store-devtools": "^9.2.0",
     "@ngx-translate/core": "^12.1.2",
     "@ngx-translate/http-loader": "^4.0.0",
+    "@stomp/stompjs": "^5.4.4",
     "@tinymce/tinymce-angular": "^4.2.0",
     "@types/faker": "^5.1.2",
     "angular-js-xlsx": "0.0.3",
