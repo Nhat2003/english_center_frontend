@@ -64,58 +64,12 @@
       </div>
     </div>
 
-    <!-- No Classes Message & Payment History -->
+    <!-- No Classes Message -->
     <div *ngIf="classes.length === 0">
       <div class="no-classes-message">
         <i nz-icon nzType="check-circle" nzTheme="fill" style="color: #3bb273;"></i>
         <h3>Bạn đã thanh toán đủ học phí</h3>
         <p>Bạn đã hoàn tất thanh toán học phí cho tất cả các lớp đang học</p>
-      </div>
-
-      <!-- All Payment History -->
-      <div class="history-container" *ngIf="paymentHistory.length > 0">
-        <div class="history-header">
-          <i nz-icon nzType="history" nzTheme="outline"></i>
-          <span>Lịch sử thanh toán của bạn</span>
-        </div>
-        <div class="history-list">
-          <div class="history-item" *ngFor="let p of paymentHistory">
-            <div class="history-item-header">
-              <span class="transaction-id">Mã GD: {{ p.vnpTxnRef || p.id }}</span>
-              <span class="status-badge" [ngClass]="{
-                'status-success': p.status === 'SUCCESS',
-                'status-pending': p.status === 'PENDING',
-                'status-failed': p.status === 'FAILED'
-              }">
-                <i *ngIf="p.status === 'SUCCESS'" nz-icon nzType="check-circle" nzTheme="fill"></i>
-                <i *ngIf="p.status === 'PENDING'" nz-icon nzType="clock-circle" nzTheme="fill"></i>
-                <i *ngIf="p.status === 'FAILED'" nz-icon nzType="close-circle" nzTheme="fill"></i>
-                {{ p.status === 'SUCCESS' ? 'Thành công' : p.status === 'PENDING' ? 'Đang xử lý' : 'Thất bại' }}
-              </span>
-            </div>
-            <div class="history-item-body">
-              <div class="transaction-info">
-                <div class="info-row">
-                  <span class="info-label">Lớp học:</span>
-                  <span class="info-value">Lớp ID {{ p.classRoomId }}</span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Số tiền:</span>
-                  <span class="info-value transaction-amount">
-                    <strong>{{ p.amount | number }}</strong> {{ p.currency }}
-                  </span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Thời gian:</span>
-                  <span class="info-value">
-                    <i nz-icon nzType="calendar" nzTheme="outline"></i>
-                    {{ p.createdAt | date:'dd/MM/yyyy HH:mm' }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -191,6 +145,52 @@
               <div class="transaction-date">
                 <i nz-icon nzType="calendar" nzTheme="outline"></i>
                 {{ p.createdAt | date:'dd/MM/yyyy HH:mm' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- All Payment History (Always Show) -->
+    <div class="history-container" *ngIf="paymentHistory.length > 0" style="margin-top: 24px;">
+      <div class="history-header">
+        <i nz-icon nzType="history" nzTheme="outline"></i>
+        <span>Lịch sử thanh toán của bạn</span>
+      </div>
+      <div class="history-list">
+        <div class="history-item" *ngFor="let p of paymentHistory">
+          <div class="history-item-header">
+            <span class="transaction-id">Mã GD: {{ p.vnpTxnRef || p.id }}</span>
+            <span class="status-badge" [ngClass]="{
+              'status-success': p.status === 'SUCCESS',
+              'status-pending': p.status === 'PENDING',
+              'status-failed': p.status === 'FAILED'
+            }">
+              <i *ngIf="p.status === 'SUCCESS'" nz-icon nzType="check-circle" nzTheme="fill"></i>
+              <i *ngIf="p.status === 'PENDING'" nz-icon nzType="clock-circle" nzTheme="fill"></i>
+              <i *ngIf="p.status === 'FAILED'" nz-icon nzType="close-circle" nzTheme="fill"></i>
+              {{ p.status === 'SUCCESS' ? 'Thành công' : p.status === 'PENDING' ? 'Đang xử lý' : 'Thất bại' }}
+            </span>
+          </div>
+          <div class="history-item-body">
+            <div class="transaction-info">
+              <div class="info-row">
+                <span class="info-label">Lớp học:</span>
+                <span class="info-value">Lớp ID {{ p.classRoomId }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Số tiền:</span>
+                <span class="info-value transaction-amount">
+                  <strong>{{ p.amount | number }}</strong> {{ p.currency }}
+                </span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Thời gian:</span>
+                <span class="info-value">
+                  <i nz-icon nzType="calendar" nzTheme="outline"></i>
+                  {{ p.createdAt | date:'dd/MM/yyyy HH:mm' }}
+                </span>
               </div>
             </div>
           </div>

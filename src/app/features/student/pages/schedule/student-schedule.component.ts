@@ -137,7 +137,7 @@ export class StudentScheduleComponent implements OnInit {
   }
 
   getDayLabel(dayIndex: number): string {
-    const dayNumber = (dayIndex + 1).toString();
+    const dayNumber = (dayIndex + 2).toString();
     return DAY_NAMES_VI[dayNumber] || `Day ${dayIndex}`;
   }
 

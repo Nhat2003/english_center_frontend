@@ -44,6 +44,8 @@ export class StudentPaymentComponent implements OnInit {
       const status = params['status'];
       const paymentId = params['paymentId'];
       const classRoomIdParam = params['classRoomId'];
+      const vnpResponseCode = params['vnp_ResponseCode'] || params['rspCode']; // Backend có thể trả về rspCode hoặc vnp_ResponseCode
+      const vnpTransactionStatus = params['vnp_TransactionStatus'];
 
       // Bước 4: Luôn gọi GET /payments/due-for-student để làm mới công nợ
       if (this.studentId) {
@@ -51,41 +53,51 @@ export class StudentPaymentComponent implements OnInit {
           // Lọc chỉ lấy các lớp chưa thanh toán
           this.classes = (res || []).filter((cls: any) => !cls.isPaid);
 
-          // Nếu không còn lớp nào cần thanh toán, load lịch sử
-          if (this.classes.length === 0) {
-            this.loadPaymentHistory();
-          }
+          // Luôn load lịch sử thanh toán
+          this.loadPaymentHistory();
 
-          // Hiển thị thông báo kết quả thanh toán sau khi load xong dữ liệu
-          if (status === 'success') {
-            this.message.success('Thanh toán thành công!');
-            // Bước 5: (Khuyến nghị) Gọi GET /payments/{paymentId} để xác nhận
-            // Đợi 500ms để đảm bảo backend đã xử lý xong IPN/Return
-            setTimeout(() => {
-              if (paymentId && this.studentId) {
-                // Gọi API kiểm tra trạng thái payment cụ thể
-                this.checkPaymentStatus(paymentId, classRoomIdParam);
-              } else if (classRoomIdParam && this.studentId) {
-                // Fallback: reload trạng thái theo class
-                const foundClass = this.classes.find(c => c.classRoomId == +classRoomIdParam);
-                if (foundClass) {
-                  this.selectClass(foundClass);
-                } else if (this.classes.length > 0) {
-                  this.selectClass(this.classes[0]);
+          // Ưu tiên kiểm tra vnpResponseCode trước nếu có
+          if (vnpResponseCode || vnpTransactionStatus) {
+            // Xử lý theo VNPAY response codes
+            if (vnpResponseCode === '00' && vnpTransactionStatus === '00') {
+              // Thanh toán thành công
+              this.message.success('Thanh toán thành công!');
+              setTimeout(() => {
+                if (paymentId) {
+                  this.checkPaymentStatusFromReturn(paymentId, classRoomIdParam, vnpResponseCode, status);
+                } else {
+                  this.reloadClassData(classRoomIdParam);
                 }
-              }
-            }, 500);
-          } else if (status === 'failed') {
-            this.message.error('Thanh toán thất bại. Vui lòng thử lại!');
-            if (this.classes.length > 0) {
-              const foundClass = classRoomIdParam ?
-                this.classes.find(c => c.classRoomId == +classRoomIdParam) : null;
-              if (foundClass) {
-                this.selectClass(foundClass);
-              } else {
-                this.selectClass(this.classes[0]);
-              }
+              }, 500);
+            } else if (vnpResponseCode === '24') {
+              // User hủy tại cổng thanh toán
+              this.message.warning('Bạn đã hủy thanh toán tại cổng thanh toán. Vui lòng thử lại!');
+              this.selectClassAndClearParams(classRoomIdParam);
+            } else {
+              // Các mã lỗi khác
+              const errorMessages: { [key: string]: string } = {
+                '07': 'Giao dịch bị nghi ngờ gian lận',
+                '09': 'Thẻ/Tài khoản chưa đăng ký dịch vụ',
+                '10': 'Thẻ/Tài khoản không đủ số dư',
+                '11': 'Giao dịch vượt quá hạn mức',
+                '12': 'Thẻ/Tài khoản bị khóa',
+                '13': 'Sai mật khẩu xác thực giao dịch',
+                '51': 'Tài khoản không đủ số dư',
+                '65': 'Tài khoản đã vượt quá hạn mức giao dịch',
+                '75': 'Ngân hàng thanh toán đang bảo trì',
+                '79': 'Giao dịch vượt quá số lần nhập sai mật khẩu',
+                '99': 'Lỗi không xác định'
+              };
+              const errorMsg = errorMessages[vnpResponseCode] || 'Thanh toán thất bại';
+              this.message.error(`${errorMsg}. Vui lòng thử lại!`);
+              this.selectClassAndClearParams(classRoomIdParam);
             }
+          } else if (paymentId) {
+            // Không có vnpResponseCode, kiểm tra qua paymentId
+            this.checkPaymentStatusFromReturn(paymentId, classRoomIdParam, vnpResponseCode, status);
+          } else if (status) {
+            // Fallback: xử lý theo status trực tiếp nếu không có paymentId
+            this.handlePaymentStatusDirect(status, classRoomIdParam);
           } else {
             // Không có status từ callback, load bình thường
             if (this.classes.length > 0) {
@@ -98,16 +110,93 @@ export class StudentPaymentComponent implements OnInit {
               }
             }
           }
-
-          // Clear query params sau khi xử lý
-          if (status || paymentId) {
-            this.router.navigate([], {
-              queryParams: {},
-              replaceUrl: true
-            });
-          }
         });
       }
+    });
+  }
+
+  checkPaymentStatusFromReturn(paymentId: string, classRoomIdParam?: string, vnpResponseCode?: string, status?: string) {
+    const paymentIdNum = parseInt(paymentId, 10);
+    if (isNaN(paymentIdNum)) {
+      // Nếu paymentId không hợp lệ, fallback về xử lý status trực tiếp
+      this.handlePaymentStatusDirect(status, classRoomIdParam);
+      return;
+    }
+
+    // Gọi API kiểm tra trạng thái payment theo ID
+    this.paymentService.getPaymentById(paymentIdNum).subscribe({
+      next: (payment) => {
+        // Kiểm tra nếu status=PENDING và vnpResponseCode="24" → user đã hủy tại cổng
+        if (payment.status === 'PENDING' && vnpResponseCode === '24') {
+          this.message.warning('Bạn đã hủy thanh toán tại cổng thanh toán. Vui lòng thử lại!');
+          this.selectClassAndClearParams(classRoomIdParam);
+        } else if (payment.status === 'COMPLETED') {
+          // Thanh toán thành công
+          this.message.success('Thanh toán thành công!');
+          // Reload lại dữ liệu sau khi thanh toán thành công
+          setTimeout(() => {
+            this.reloadClassData(classRoomIdParam);
+          }, 500);
+        } else if (payment.status === 'PENDING') {
+          // Pending nhưng không phải do hủy (có thể đang chờ xử lý)
+          this.message.warning('Thanh toán đang được xử lý. Vui lòng đợi hoặc thử lại!');
+          this.selectClassAndClearParams(classRoomIdParam);
+        } else if (payment.status === 'FAILED') {
+          // Failed
+          this.message.error('Thanh toán thất bại. Vui lòng thử lại!');
+          this.selectClassAndClearParams(classRoomIdParam);
+        } else {
+          // Các trạng thái khác (REFUNDED, etc.)
+          this.message.info(`Trạng thái thanh toán: ${payment.status}`);
+          this.selectClassAndClearParams(classRoomIdParam);
+        }
+      },
+      error: () => {
+        // Nếu API lỗi, fallback về xử lý status trực tiếp
+        this.message.warning('Không thể kiểm tra trạng thái thanh toán');
+        this.handlePaymentStatusDirect(status, classRoomIdParam);
+      }
+    });
+  }
+
+  handlePaymentStatusDirect(status?: string, classRoomIdParam?: string) {
+    if (status === 'success') {
+      this.message.success('Thanh toán thành công!');
+      setTimeout(() => {
+        this.reloadClassData(classRoomIdParam);
+      }, 500);
+    } else if (status === 'pending') {
+      this.message.warning('Thanh toán chưa được thực hiện');
+      this.selectClassAndClearParams(classRoomIdParam);
+    } else if (status === 'failed' || status === 'cancel') {
+      if (status === 'cancel') {
+        this.message.warning('Bạn đã hủy thanh toán');
+      } else {
+        this.message.error('Thanh toán thất bại. Vui lòng thử lại!');
+      }
+      this.selectClassAndClearParams(classRoomIdParam);
+    } else {
+      // Không có status, chọn lớp bình thường
+      this.selectClassAndClearParams(classRoomIdParam);
+    }
+  }
+
+  selectClassAndClearParams(classRoomIdParam?: string) {
+    // Chọn lại lớp
+    if (this.classes.length > 0) {
+      const foundClass = classRoomIdParam ?
+        this.classes.find(c => c.classRoomId == +classRoomIdParam) : null;
+      if (foundClass) {
+        this.selectClass(foundClass);
+      } else {
+        this.selectClass(this.classes[0]);
+      }
+    }
+
+    // Clear query params
+    this.router.navigate([], {
+      queryParams: {},
+      replaceUrl: true
     });
   }
 

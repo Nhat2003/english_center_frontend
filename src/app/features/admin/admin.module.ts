@@ -56,6 +56,9 @@ import { PaymentListComponent } from './pages/payments/payment-list/payment-list
 import { AddPaymentComponent } from './pages/payments/add-payment/add-payment.component';
 import { PaymentDetailComponent } from './pages/payments/payment-detail/payment-detail.component';
 import { PaymentsComponent } from './pages/payments/payments.component';
+import { ClassPaymentsComponent } from './pages/payments/class-payments/class-payments.component';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { NzTabsModule } from 'ng-zorro-antd/tabs';
 @NgModule({
   declarations: [
     UserListComponent,
@@ -77,7 +80,8 @@ import { PaymentsComponent } from './pages/payments/payments.component';
     PaymentListComponent,
     AddPaymentComponent,
     PaymentDetailComponent,
-    PaymentsComponent
+    PaymentsComponent,
+    ClassPaymentsComponent
 
   ],
   imports: [
@@ -115,6 +119,8 @@ import { PaymentsComponent } from './pages/payments/payments.component';
     NzTimelineModule,
     NzDividerModule,
     NzDatePickerModule,
+    NzEmptyModule,
+    NzTabsModule,
     RouterModule.forChild(ADMIN_ROUTES)
   ]
 })

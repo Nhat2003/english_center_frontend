@@ -1,11 +1,64 @@
-<div class="payment-success-container">
-  <h2>Thanh toán thành công!</h2>
-  <div class="icon-success">
-    <svg width="64" height="64" fill="none" viewBox="0 0 64 64">
-      <circle cx="32" cy="32" r="32" fill="#e3f9e5"/>
-      <path d="M20 34l8 8 16-16" stroke="#43a047" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
+<div class="payment-result-container">
+  <!-- Loading -->
+  <div *ngIf="isProcessing" class="result-card processing">
+    <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
+    <h2>Đang xử lý...</h2>
+    <p>Vui lòng đợi trong giây lát</p>
   </div>
-  <p class="success-message">Cảm ơn bạn đã thanh toán học phí.<br>Giao dịch của bạn đã được ghi nhận thành công.</p>
-  <a routerLink="/student/dashboard" class="back-link">Quay về trang học sinh</a>
+
+  <!-- Success -->
+  <div *ngIf="isSuccess" class="result-card success">
+    <div class="icon-wrapper success-icon">
+      <i nz-icon nzType="check-circle" nzTheme="fill"></i>
+    </div>
+    <h2>Thanh toán thành công!</h2>
+    <p class="message">Cảm ơn bạn đã thanh toán học phí.<br>Giao dịch của bạn đã được ghi nhận thành công.</p>
+    <div class="countdown-section">
+      <p>Tự động chuyển về trang thanh toán sau <strong>{{ countdown }}</strong> giây</p>
+      <button nz-button nzType="primary" nzSize="large" (click)="redirectToPayment()">
+        <i nz-icon nzType="arrow-left"></i>
+        Quay lại ngay
+      </button>
+    </div>
+  </div>
+
+  <!-- Cancelled -->
+  <div *ngIf="isCancelled" class="result-card cancelled">
+    <div class="icon-wrapper warning-icon">
+      <i nz-icon nzType="close-circle" nzTheme="fill"></i>
+    </div>
+    <h2>Đã hủy thanh toán</h2>
+    <p class="message">{{ errorMessage }}</p>
+    <p class="sub-message">Bạn có thể thử lại thanh toán bất cứ lúc nào</p>
+    <div class="action-buttons">
+      <button nz-button nzType="primary" nzSize="large" (click)="redirectToPayment()">
+        <i nz-icon nzType="reload"></i>
+        Thử lại thanh toán
+      </button>
+      <button nz-button nzType="default" nzSize="large" routerLink="/student/dashboard">
+        <i nz-icon nzType="home"></i>
+        Về trang chủ
+      </button>
+    </div>
+  </div>
+
+  <!-- Failed -->
+  <div *ngIf="isFailed" class="result-card failed">
+    <div class="icon-wrapper error-icon">
+      <i nz-icon nzType="exclamation-circle" nzTheme="fill"></i>
+    </div>
+    <h2>Thanh toán thất bại</h2>
+    <p class="message error-text">{{ errorMessage }}</p>
+    <p class="sub-message">Vui lòng kiểm tra lại thông tin và thử lại</p>
+    <div class="action-buttons">
+      <button nz-button nzType="primary" nzSize="large" (click)="redirectToPayment()">
+        <i nz-icon nzType="reload"></i>
+        Thử lại thanh toán
+      </button>
+      <button nz-button nzType="default" nzSize="large" routerLink="/student/dashboard">
+        <i nz-icon nzType="home"></i>
+        Về trang chủ
+      </button>
+    </div>
+  </div>
 </div>

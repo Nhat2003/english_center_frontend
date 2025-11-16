@@ -28,6 +28,11 @@ export class PaymentService {
     return this.http.get<any[]>(`${this.apiUrl}/history?studentId=${studentId}`);
   }
 
+  // Admin: Lấy tổng quan thanh toán theo lớp
+  getClassPaymentSummary(classRoomId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/admin/classes/${classRoomId}/summary`);
+  }
+
   // Lấy tổng quan thanh toán cho học sinh
   getStudentOverview(studentId: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/student/${studentId}/overview`);

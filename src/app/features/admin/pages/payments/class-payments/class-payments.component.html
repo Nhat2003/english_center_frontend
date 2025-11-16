@@ -1,0 +1,342 @@
+<div class="class-payments-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h2 class="page-title">
+        <i nz-icon nzType="dollar-circle" nzTheme="outline"></i>
+        Quản lý thanh toán theo lớp
+      </h2>
+      <p class="page-description">Theo dõi tình trạng đóng học phí của học sinh theo từng lớp</p>
+    </div>
+    <div class="header-actions">
+      <button nz-button nzType="default" (click)="refresh()" [nzLoading]="loadingSummary">
+        <i nz-icon nzType="reload" nzTheme="outline"></i>
+        Làm mới
+      </button>
+      <button nz-button nzType="primary" (click)="exportToExcel()">
+        <i nz-icon nzType="download" nzTheme="outline"></i>
+        Xuất Excel
+      </button>
+    </div>
+  </div>
+
+  <!-- Class Selection -->
+  <nz-card nzTitle="Chọn lớp học" [nzLoading]="loading" class="class-selection-card">
+    <nz-select
+      [(ngModel)]="selectedClassId"
+      nzShowSearch
+      nzPlaceHolder="Chọn lớp học"
+      class="class-select"
+      (ngModelChange)="loadPaymentSummary()">
+      <nz-option
+        *ngFor="let cls of classes"
+        [nzValue]="cls.id"
+        [nzLabel]="cls.name + (cls.courseName ? ' - ' + cls.courseName : '')">
+      </nz-option>
+    </nz-select>
+  </nz-card>
+
+  <!-- Payment Summary -->
+  <div *ngIf="paymentSummary && selectedClassId" class="summary-section">
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <nz-card class="stat-card total">
+        <nz-statistic
+          [nzValue]="paymentSummary.count"
+          [nzTitle]="'Tổng học sinh'"
+          [nzPrefix]="totalIcon">
+        </nz-statistic>
+        <ng-template #totalIcon>
+          <i nz-icon nzType="team" nzTheme="outline"></i>
+        </ng-template>
+      </nz-card>
+
+      <nz-card class="stat-card success">
+        <nz-statistic
+          [nzValue]="paymentSummary.countSuccess"
+          [nzTitle]="'Đã đóng đủ'"
+          [nzPrefix]="successIcon"
+          [nzValueStyle]="{ color: '#52c41a' }">
+        </nz-statistic>
+        <ng-template #successIcon>
+          <i nz-icon nzType="check-circle" nzTheme="fill"></i>
+        </ng-template>
+      </nz-card>
+
+      <nz-card class="stat-card pending">
+        <nz-statistic
+          [nzValue]="paymentSummary.countPending"
+          [nzTitle]="'Đang xử lý'"
+          [nzPrefix]="pendingIcon"
+          [nzValueStyle]="{ color: '#faad14' }">
+        </nz-statistic>
+        <ng-template #pendingIcon>
+          <i nz-icon nzType="clock-circle" nzTheme="fill"></i>
+        </ng-template>
+      </nz-card>
+
+      <nz-card class="stat-card failed">
+        <nz-statistic
+          [nzValue]="paymentSummary.count - paymentSummary.countSuccess"
+          [nzTitle]="'Chưa đóng / Thiếu'"
+          [nzPrefix]="failedIcon"
+          [nzValueStyle]="{ color: '#ff4d4f' }">
+        </nz-statistic>
+        <ng-template #failedIcon>
+          <i nz-icon nzType="close-circle" nzTheme="fill"></i>
+        </ng-template>
+      </nz-card>
+    </div>
+
+    <!-- Revenue Cards -->
+    <div class="revenue-grid">
+      <nz-card class="revenue-card total-revenue">
+        <div class="revenue-info">
+          <span class="revenue-label">Tổng học phí</span>
+          <span class="revenue-amount">{{ paymentSummary.total | number }} {{ paymentSummary.currency }}</span>
+        </div>
+      </nz-card>
+
+      <nz-card class="revenue-card success-revenue">
+        <div class="revenue-info">
+          <span class="revenue-label">Đã thu</span>
+          <span class="revenue-amount success">{{ paymentSummary.totalSuccess | number }} {{ paymentSummary.currency }}</span>
+        </div>
+      </nz-card>
+
+      <nz-card class="revenue-card pending-revenue">
+        <div class="revenue-info">
+          <span class="revenue-label">Còn thiếu</span>
+          <span class="revenue-amount pending">{{ (paymentSummary.total - paymentSummary.totalSuccess) | number }} {{ paymentSummary.currency }}</span>
+        </div>
+      </nz-card>
+    </div>
+
+    <!-- Student List -->
+    <nz-card nzTitle="Danh sách học sinh" [nzLoading]="loadingSummary" class="student-list-card">
+      <!-- Filters -->
+      <div class="filters-section">
+        <nz-input-group [nzPrefix]="searchIcon" class="search-input">
+          <input
+            nz-input
+            placeholder="Tìm kiếm theo tên hoặc mã học sinh..."
+            [(ngModel)]="searchText"
+          />
+        </nz-input-group>
+        <ng-template #searchIcon>
+          <i nz-icon nzType="search" nzTheme="outline"></i>
+        </ng-template>
+
+        <nz-select
+          [(ngModel)]="statusFilter"
+          class="status-filter"
+          nzPlaceHolder="Lọc theo trạng thái">
+          <nz-option nzValue="ALL" nzLabel="Tất cả"></nz-option>
+          <nz-option nzValue="PAID" nzLabel="Đã đóng đủ"></nz-option>
+          <nz-option nzValue="UNPAID" nzLabel="Chưa đóng"></nz-option>
+
+        </nz-select>
+      </div>
+
+      <!-- Table -->
+      <nz-table
+        #studentTable
+        [nzData]="filteredStudents"
+        [nzPageSize]="10"
+        [nzShowPagination]="true"
+        [nzFrontPagination]="true"
+        nzSize="middle">
+        <thead>
+          <tr>
+            <th>STT</th>
+            <th>Tên học sinh</th>
+            <th nzAlign="right">Học phí</th>
+            <th nzAlign="right">Đã đóng</th>
+            <th nzAlign="center">Tiến độ</th>
+            <th nzAlign="center">Trạng thái</th>
+            <th nzAlign="center">GD gần nhất</th>
+            <th nzAlign="center">Hành động</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let student of studentTable.data; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>
+              <strong>{{ student.studentName }}</strong>
+            </td>
+            <td nzAlign="right">
+              <span class="amount-text">{{ student.requiredAmount | number }}</span>
+            </td>
+            <td nzAlign="right">
+              <span class="amount-text" [class.paid]="student.paidAmount > 0">
+                {{ student.paidAmount | number }}
+              </span>
+            </td>
+            <td nzAlign="center">
+              <div class="progress-wrapper">
+                <nz-progress
+                  [nzPercent]="getPaymentProgress(student)"
+                  [nzStatus]="student.paymentStatus === 'PAID' ? 'success' : 'normal'"
+                  [nzStrokeWidth]="8"
+                  [nzShowInfo]="true">
+                </nz-progress>
+              </div>
+            </td>
+            <td nzAlign="center">
+              <nz-tag [nzColor]="getStatusColor(student.paymentStatus)">
+                {{ getStatusText(student.paymentStatus) }}
+              </nz-tag>
+            </td>
+            <td nzAlign="center">
+              <nz-tag
+                *ngIf="student.latestPaymentStatus"
+                [nzColor]="getStatusColor(student.latestPaymentStatus)">
+                {{ getStatusText(student.latestPaymentStatus) }}
+              </nz-tag>
+              <span *ngIf="!student.latestPaymentStatus" class="text-muted">-</span>
+            </td>
+            <td nzAlign="center">
+              <button
+                nz-button
+                nzType="link"
+                nzSize="small"
+                (click)="viewStudentPaymentDetail(student)">
+                <i nz-icon nzType="eye" nzTheme="outline"></i>
+                Chi tiết
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </nz-card>
+  </div>
+
+  <!-- Empty State -->
+  <nz-empty
+    *ngIf="!selectedClassId && !loading"
+    nzNotFoundContent="Vui lòng chọn lớp học để xem thông tin thanh toán"
+    [nzNotFoundImage]="'simple'">
+  </nz-empty>
+
+  <!-- Payment Detail Modal -->
+  <nz-modal
+    [(nzVisible)]="isDetailModalVisible"
+    [nzTitle]="detailModalTitle"
+    [nzWidth]="800"
+    [nzFooter]="modalFooter"
+    (nzOnCancel)="closeDetailModal()">
+
+    <ng-template #modalFooter>
+      <button nz-button nzType="default" (click)="closeDetailModal()">Đóng</button>
+    </ng-template>
+
+    <div *ngIf="selectedStudent" class="payment-detail-modal">
+        <!-- Student Info Card -->
+        <nz-card class="info-card" nzTitle="Thông tin học sinh">
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Mã học sinh:</span>
+              <span class="info-value">{{ selectedStudent.studentId }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Tên học sinh:</span>
+              <span class="info-value">{{ selectedStudent.studentName }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Trạng thái:</span>
+              <nz-tag [nzColor]="getStatusColor(selectedStudent.paymentStatus)">
+                {{ getStatusText(selectedStudent.paymentStatus) }}
+              </nz-tag>
+            </div>
+            <div class="info-item" *ngIf="selectedStudent.paidAt">
+              <span class="info-label">Ngày thanh toán:</span>
+              <span class="info-value">{{ selectedStudent.paidAt | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+          </div>
+        </nz-card>
+
+        <!-- Payment Summary Card -->
+        <nz-card class="summary-card" nzTitle="Tổng quan thanh toán">
+          <div class="summary-grid">
+            <div class="summary-item total">
+              <i nz-icon nzType="wallet" nzTheme="outline"></i>
+              <div class="summary-content">
+                <span class="summary-label">Tổng học phí</span>
+                <span class="summary-amount">{{ selectedStudent.requiredAmount | number }} VND</span>
+              </div>
+            </div>
+            <div class="summary-item paid">
+              <i nz-icon nzType="check-circle" nzTheme="fill"></i>
+              <div class="summary-content">
+                <span class="summary-label">Đã thanh toán</span>
+                <span class="summary-amount success">{{ selectedStudent.paidAmount | number }} VND</span>
+              </div>
+            </div>
+            <div class="summary-item remaining">
+              <i nz-icon nzType="clock-circle" nzTheme="fill"></i>
+              <div class="summary-content">
+                <span class="summary-label">Còn lại</span>
+                <span class="summary-amount pending">{{ (selectedStudent.requiredAmount - selectedStudent.paidAmount) | number }} VND</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="payment-progress">
+            <span class="progress-label">Tiến độ thanh toán</span>
+            <nz-progress
+              [nzPercent]="getPaymentProgress(selectedStudent)"
+              [nzStatus]="selectedStudent.paymentStatus === 'PAID' ? 'success' : 'normal'"
+              [nzStrokeWidth]="12"
+              [nzShowInfo]="true">
+            </nz-progress>
+          </div>
+        </nz-card>
+
+        <!-- Payment History Card -->
+        <nz-card class="history-card" nzTitle="Lịch sử giao dịch" [nzLoading]="loadingHistory">
+          <nz-table
+            *ngIf="paymentHistory && paymentHistory.length > 0"
+            [nzData]="paymentHistory"
+            [nzPageSize]="5"
+            [nzShowPagination]="true"
+            nzSize="small">
+            <thead>
+              <tr>
+                <th>Mã GD</th>
+                <th>Ngày GD</th>
+                <th nzAlign="right">Số tiền</th>
+                <th nzAlign="center">Trạng thái</th>
+                <th>Phương thức</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let payment of paymentHistory">
+                <td>
+                  <span class="transaction-code">{{ payment.transactionCode || payment.id }}</span>
+                </td>
+                <td>{{ payment.paymentDate | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td nzAlign="right">
+                  <span class="amount-text">{{ payment.amount | number }} VND</span>
+                </td>
+                <td nzAlign="center">
+                  <nz-tag [nzColor]="getStatusColor(payment.status)">
+                    {{ getStatusText(payment.status) }}
+                  </nz-tag>
+                </td>
+                <td>
+                  <nz-tag nzColor="blue">{{ payment.paymentMethod || 'VNPAY' }}</nz-tag>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+
+          <nz-empty
+            *ngIf="!paymentHistory || paymentHistory.length === 0"
+            nzNotFoundContent="Chưa có giao dịch nào"
+            [nzNotFoundImage]="'simple'">
+          </nz-empty>
+        </nz-card>
+    </div>
+  </nz-modal>
+</div>
