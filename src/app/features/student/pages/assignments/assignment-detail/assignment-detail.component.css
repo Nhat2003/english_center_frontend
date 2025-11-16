@@ -1,0 +1,589 @@
+/* ═══════════════════════════════════════════════════════════════
+   ASSIGNMENT DETAIL PAGE
+   ═══════════════════════════════════════════════════════════════ */
+
+:host {
+  --primary-color: #3bb273;
+  --primary-hover: #2d9960;
+  --success-color: #52c41a;
+  --warning-color: #faad14;
+  --error-color: #ff4d4f;
+  --text-primary: #262626;
+  --text-secondary: #595959;
+  --bg-light: #fafafa;
+  --border-color: #e8e8e8;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --radius-md: 12px;
+}
+
+.assignment-detail-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f0f5ff 0%, #fafafa 100%);
+  padding: 24px;
+}
+
+/* Loading */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+/* Header */
+.detail-header {
+  margin-bottom: 24px;
+}
+
+.back-btn {
+  font-size: 16px;
+  padding: 8px 16px;
+  margin-bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-main {
+  background: white;
+  padding: 24px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.title-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.status-tag {
+  font-size: 14px;
+  padding: 6px 16px;
+  border-radius: 20px;
+}
+
+/* Content Layout */
+.content-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  align-items: start;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Khi có form nộp bài (chưa submit), hiển thị 2 cột */
+.content-row.has-submit-form {
+  grid-template-columns: 1fr 450px;
+}
+
+.left-column,
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Sections */
+.info-section,
+.description-section,
+.file-section,
+.submitted-section,
+.grade-section,
+.submit-section {
+  background: white;
+  padding: 24px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.section-title {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title.success {
+  color: var(--success-color);
+}
+
+.section-title i {
+  font-size: 20px;
+}
+
+/* Info Grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+/* Khi ở chế độ full width (đã nộp), hiển thị 4 cột */
+.content-row:not(.has-submit-form) .info-grid {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.info-item {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-light);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.info-item:hover {
+  background: #f0f5ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 178, 115, 0.1);
+}
+
+.info-icon {
+  font-size: 24px;
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.info-content {
+  flex: 1;
+}
+
+.info-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.info-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+/* Description */
+.description-content {
+  background: var(--bg-light);
+  padding: 20px;
+  border-radius: 8px;
+  line-height: 1.8;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  font-size: 15px;
+  border-left: 4px solid var(--primary-color);
+}
+
+/* File Item */
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-light);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.file-item:hover {
+  background: #e6f7ff;
+  transform: translateX(4px);
+}
+
+.file-icon {
+  font-size: 24px;
+  color: var(--primary-color);
+}
+
+.file-name {
+  flex: 1;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.download-icon {
+  font-size: 18px;
+  color: var(--primary-color);
+}
+
+/* Submitted Section */
+.submitted-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+/* Khi full width, hiển thị 2 cột cho text và file */
+.content-row:not(.has-submit-form) .submitted-content {
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+}
+
+.submitted-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #f6ffed 0%, #e6f7ff 100%);
+  border-radius: 10px;
+  border-left: 4px solid var(--success-color);
+  font-weight: 600;
+  font-size: 15px;
+  color: #262626;
+  box-shadow: 0 2px 8px rgba(82, 196, 26, 0.15);
+}
+
+.subsection-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #262626;
+  margin: 0 0 12px 0;
+}
+
+.submission-text-section {
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+}
+
+.submission-text-content {
+  margin-top: 8px;
+}
+
+.text-content {
+  margin: 0;
+  padding: 16px;
+  background: white;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  color: #262626;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.submission-file-section {
+  padding: 16px;
+  background: #f0f9ff;
+  border-radius: 8px;
+  border: 1px solid #bae7ff;
+}
+
+.submitted-file-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: white;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submitted-file-item:hover {
+  border-color: #1890ff;
+  background: #f0f9ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
+}
+
+.submitted-file-item .file-icon {
+  font-size: 24px;
+  color: #1890ff;
+}
+
+.submitted-file-item .file-name {
+  flex: 1;
+  font-weight: 500;
+  color: #262626;
+}
+
+.submitted-file-item .download-icon {
+  font-size: 18px;
+  color: #1890ff;
+  transition: transform 0.3s ease;
+}
+
+.submitted-file-item:hover .download-icon {
+  transform: translateY(2px);
+}
+
+.submitted-content-text {
+  padding: 16px;
+  background: var(--bg-light);
+  border-radius: 8px;
+}
+
+.submitted-content-text p {
+  margin: 8px 0 0 0;
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+/* Grade Section */
+.grade-content {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 32px;
+  padding: 32px;
+  background: linear-gradient(135deg, #fff9e6 0%, #fffbe6 100%);
+  border-radius: var(--radius-md);
+  align-items: center;
+}
+
+/* Khi full width, giữ layout dọc */
+@media (max-width: 900px) {
+  .grade-content {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+}
+
+.grade-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(250, 173, 20, 0.2);
+}
+
+.grade-number {
+  font-size: 56px;
+  font-weight: 700;
+  color: #faad14;
+  line-height: 1;
+}
+
+.grade-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.grade-max {
+  font-size: 20px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.feedback-content {
+  flex: 1;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  border: 2px dashed #faad14;
+}
+
+.feedback-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.feedback-text {
+  margin: 0;
+  line-height: 1.8;
+  font-size: 15px;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+}
+
+/* Submit Section */
+.submit-section {
+  position: sticky;
+  top: 24px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.optional {
+  font-weight: 400;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.form-hint {
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* Upload Zone */
+.upload-zone {
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: var(--bg-light);
+}
+
+.upload-zone:hover,
+.upload-zone.dragover {
+  border-color: var(--primary-color);
+  background: #f0f5ff;
+}
+
+.upload-icon {
+  font-size: 48px;
+  color: var(--primary-color);
+  display: block;
+  margin-bottom: 16px;
+}
+
+.upload-zone h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.upload-zone p {
+  margin: 0 0 16px 0;
+  color: var(--text-secondary);
+}
+
+.link-text {
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+.file-types {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.file-limit {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+/* Selected File */
+.selected-file {
+  border: 2px solid var(--primary-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  background: white;
+}
+
+.file-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.file-preview .file-icon {
+  font-size: 32px;
+  color: var(--primary-color);
+}
+
+.file-info {
+  flex: 1;
+}
+
+.file-info .file-name {
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.file-info .file-size {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* Alert */
+.submit-alert {
+  margin-bottom: 20px;
+}
+
+/* Submit Button */
+.submit-btn {
+  height: 48px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 1400px) {
+  .content-row.has-submit-form {
+    grid-template-columns: 1fr 400px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .content-row,
+  .content-row.has-submit-form {
+    grid-template-columns: 1fr;
+  }
+
+  .submit-section {
+    position: static;
+  }
+
+  .info-grid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .assignment-detail-page {
+    padding: 16px;
+  }
+
+  .page-title {
+    font-size: 22px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .grade-number {
+    font-size: 36px;
+  }
+}

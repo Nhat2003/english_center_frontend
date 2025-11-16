@@ -1,0 +1,273 @@
+<!-- Modern Student Dashboard -->
+<div class="modern-dashboard">
+  <nz-spin [nzSpinning]="loading" nzTip="Đang tải dữ liệu...">
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+      <div class="hero-content">
+        <div class="greeting">
+          <h1>Xin chào, {{ currentUser?.fullName }}! 👋</h1>
+          <p>Chúc bạn có một ngày học tập hiệu quả</p>
+        </div>
+        <div class="stats-row">
+          <div class="stat-item">
+            <span nz-icon nzType="read" nzTheme="fill"></span>
+            <div class="stat-info">
+              <span class="value">{{ myClasses.length }}</span>
+              <span class="label">Lớp học</span>
+            </div>
+          </div>
+          <div class="stat-item">
+            <span nz-icon nzType="file-text" nzTheme="fill"></span>
+            <div class="stat-info">
+              <span class="value">{{ totalCompletedAssignments }}/{{ totalAssignments }}</span>
+              <span class="label">Bài tập hoàn thành</span>
+            </div>
+          </div>
+          <div class="stat-item">
+            <span nz-icon nzType="trophy" nzTheme="fill"></span>
+            <div class="stat-info">
+              <span class="value">{{ averageGrade > 0 ? averageGrade.toFixed(1) : '--' }}</span>
+              <span class="label">Điểm TB</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="dashboard-grid">
+
+      <!-- Left Column -->
+      <div class="left-col">
+
+        <!-- Next Class -->
+        <nz-card class="next-class-card" *ngIf="nextClass">
+          <span class="badge">Sắp diễn ra</span>
+          <div class="time-badge">
+            <span nz-icon nzType="clock-circle" nzTheme="fill"></span>
+            {{ nextClass.time }}
+          </div>
+          <h2>{{ nextClass.subject }}</h2>
+          <div class="info-list">
+            <div class="info-item">
+              <span nz-icon nzType="calendar"></span>
+              {{ nextClass.date }}
+            </div>
+            <div class="info-item">
+              <span nz-icon nzType="user"></span>
+              {{ nextClass.teacher }}
+            </div>
+            <div class="info-item">
+              <span nz-icon nzType="environment"></span>
+              {{ nextClass.room }}
+            </div>
+          </div>
+          <button nz-button nzType="primary" nzBlock nzSize="large" (click)="joinOnlineClass()">
+            <span nz-icon nzType="video-camera"></span>
+            Vào lớp ngay
+          </button>
+        </nz-card>
+
+        <!-- My Classes -->
+        <div class="section-title">
+          <h3><span nz-icon nzType="appstore"></span> Lớp học của tôi</h3>
+          <a routerLink="/student/classes">Xem tất cả <span nz-icon nzType="arrow-right"></span></a>
+        </div>
+        <div class="classes-grid" *ngIf="myClasses.length > 0">
+          <div class="class-card" *ngFor="let cls of myClasses.slice(0, 4)" (click)="navigateToClass(cls.id)">
+            <nz-tag [nzColor]="'blue'">{{ cls.courseName }}</nz-tag>
+            <h4>{{ cls.name }}</h4>
+            <div class="teacher-info">
+              <nz-avatar nzSize="small" [nzText]="cls.teacher?.fullName?.charAt(0) || 'T'"></nz-avatar>
+              <span>{{ cls.teacher?.fullName }}</span>
+            </div>
+            <div class="class-footer">
+              <span><span nz-icon nzType="calendar"></span> {{ cls.startDate | date:'dd/MM/yyyy' }}</span>
+              <span nz-icon nzType="arrow-right"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Assignments -->
+        <div class="section-title">
+          <h3><span nz-icon nzType="file-text"></span> Tiến độ bài tập</h3>
+        </div>
+        <nz-card class="assignments-card">
+          <div class="assignments-grid">
+            <div class="chart-wrapper">
+              <nz-progress
+                [nzPercent]="totalAssignments > 0 ? Math.round((totalCompletedAssignments / totalAssignments) * 100) : 0"
+                nzType="circle"
+                [nzWidth]="120"
+                [nzStrokeColor]="{ '0%': '#3bb273', '100%': '#52c41a' }">
+              </nz-progress>
+              <div class="chart-label">
+                <div>{{ totalCompletedAssignments }}/{{ totalAssignments }}</div>
+                <span>Hoàn thành</span>
+              </div>
+            </div>
+            <div class="stats-list">
+              <div class="stat-row">
+                <span><span nz-icon nzType="hourglass" nzTheme="fill"></span> Chờ nộp</span>
+                <strong>{{ pendingAssignments }}</strong>
+              </div>
+              <div class="stat-row" *ngIf="nearestDeadline">
+                <span><span nz-icon nzType="clock-circle" nzTheme="fill"></span> Hạn gần nhất</span>
+                <strong>{{ nearestDeadline }}</strong>
+              </div>
+              <button nz-button nzBlock routerLink="/student/classes">Xem chi tiết</button>
+            </div>
+          </div>
+        </nz-card>
+
+        <!-- Schedule -->
+        <div class="section-title">
+          <h3><span nz-icon nzType="calendar"></span> Lịch học tuần này</h3>
+          <a routerLink="/student/schedule">Xem đầy đủ <span nz-icon nzType="arrow-right"></span></a>
+        </div>
+        <nz-card class="schedule-card" *ngIf="weekSchedule.length > 0">
+          <div class="schedule-list">
+            <div class="schedule-item" *ngFor="let item of weekSchedule.slice(0, 5)">
+              <div class="date-box">
+                <div class="day">{{ item.day }}</div>
+                <div class="date">{{ item.date }}</div>
+              </div>
+              <div class="schedule-details">
+                <h4>{{ item.subject }}</h4>
+                <div class="meta-info">
+                  <span><span nz-icon nzType="clock-circle"></span> {{ item.time }}</span>
+                  <span><span nz-icon nzType="user"></span> {{ item.teacher }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </nz-card>
+
+      </div>
+
+      <!-- Right Column -->
+      <div class="right-col">
+
+        <!-- Payment -->
+        <nz-card class="payment-card" [ngClass]="{'has-debt': hasUnpaidFees}">
+          <div class="icon-badge" [ngClass]="{'success': !hasUnpaidFees, 'danger': hasUnpaidFees}">
+            <span nz-icon [nzType]="hasUnpaidFees ? 'exclamation-circle' : 'check-circle'" nzTheme="fill"></span>
+          </div>
+          <div class="card-body">
+            <h4>{{ hasUnpaidFees ? 'Cần thanh toán' : 'Đã thanh toán' }}</h4>
+            <p *ngIf="hasUnpaidFees" class="amount-text">{{ unpaidAmount | currency:'VND':'symbol':'1.0-0' }}</p>
+            <p *ngIf="!hasUnpaidFees" class="status-text">Không có khoản nợ</p>
+          </div>
+          <button
+            nz-button
+            nzType="primary"
+            nzBlock
+            [class.danger-btn]="hasUnpaidFees"
+            routerLink="/student/payments">
+            <span nz-icon [nzType]="hasUnpaidFees ? 'dollar' : 'eye'"></span>
+            {{ hasUnpaidFees ? 'Đóng học phí' : 'Xem chi tiết' }}
+          </button>
+        </nz-card>
+
+        <!-- Attendance -->
+        <nz-card class="attendance-card">
+          <h4><span nz-icon nzType="check-square" nzTheme="fill"></span> Điểm danh</h4>
+          <div class="attendance-body">
+            <nz-progress
+              [nzPercent]="attendanceSummary.attendanceRate"
+              nzType="circle"
+              [nzWidth]="100"
+              [nzStrokeColor]="{ '0%': '#3bb273', '100%': '#52c41a' }">
+            </nz-progress>
+            <div class="attendance-stats">
+              <div class="stat-line">
+                <nz-badge nzStatus="success"></nz-badge>
+                Có mặt
+                <strong>{{ attendanceSummary.presentCount }}</strong>
+              </div>
+              <div class="stat-line">
+                <nz-badge nzStatus="warning"></nz-badge>
+                Muộn
+                <strong>{{ attendanceSummary.lateCount }}</strong>
+              </div>
+              <div class="stat-line">
+                <nz-badge nzStatus="error"></nz-badge>
+                Vắng
+                <strong>{{ attendanceSummary.absentCount }}</strong>
+              </div>
+              <div class="stat-line total-line">
+                Tổng cộng
+                <strong>{{ attendanceSummary.totalSessions }}</strong>
+              </div>
+            </div>
+          </div>
+        </nz-card>
+
+        <!-- Recent Grades -->
+        <nz-card class="grades-card" *ngIf="recentGrades.length > 0">
+          <h4><span nz-icon nzType="trophy" nzTheme="fill"></span> Điểm gần đây</h4>
+          <div class="grades-list">
+            <div class="grade-row" *ngFor="let grade of recentGrades.slice(0, 5)">
+              <div class="grade-info">
+                <div class="assignment-name">{{ grade.assignmentTitle }}</div>
+                <div class="submit-date">{{ grade.submittedAt | date:'dd/MM HH:mm' }}</div>
+              </div>
+              <div class="grade-value" [ngClass]="getGradeClass(grade.grade)">
+                {{ grade.grade }}<span>/10</span>
+              </div>
+            </div>
+          </div>
+        </nz-card>
+
+        <!-- Announcements -->
+        <nz-card class="announcements-card" *ngIf="latestAnnouncements.length > 0">
+          <h4><span nz-icon nzType="sound" nzTheme="fill"></span> Thông báo mới</h4>
+          <div class="announcement-list">
+            <div class="announcement-row" *ngFor="let announcement of latestAnnouncements.slice(0, 3)">
+              <nz-badge nzDot [nzStatus]="isNewAnnouncement(announcement.createdAt) ? 'processing' : 'default'">
+                <div class="announcement-body">
+                  <div class="announcement-top">
+                    <span class="ann-title">{{ announcement.title }}</span>
+                    <nz-tag nzSize="small" [nzColor]="'blue'">{{ announcement.className }}</nz-tag>
+                  </div>
+                  <div class="ann-content">{{ announcement.content }}</div>
+                  <div class="ann-time">{{ formatAnnouncementTime(announcement.createdAt) }}</div>
+                </div>
+              </nz-badge>
+            </div>
+          </div>
+          <button nz-button nzType="link" nzBlock routerLink="/student/notifications">
+            Xem tất cả <span nz-icon nzType="arrow-right"></span>
+          </button>
+        </nz-card>
+
+        <!-- Quick Actions -->
+        <nz-card class="quick-card">
+          <h4><span nz-icon nzType="thunderbolt" nzTheme="fill"></span> Truy cập nhanh</h4>
+          <div class="quick-grid">
+            <button nz-button routerLink="/student/schedule">
+              <span nz-icon nzType="calendar" nzTheme="fill"></span>
+              Lịch học
+            </button>
+            <button nz-button routerLink="/student/classes">
+              <span nz-icon nzType="book" nzTheme="fill"></span>
+              Lớp học
+            </button>
+            <button nz-button routerLink="/student/payments">
+              <span nz-icon nzType="credit-card" nzTheme="fill"></span>
+              Học phí
+            </button>
+            <button nz-button routerLink="/student/notifications">
+              <span nz-icon nzType="bell" nzTheme="fill"></span>
+              Thông báo
+            </button>
+          </div>
+        </nz-card>
+
+      </div>
+
+    </div>
+
+  </nz-spin>
+</div>

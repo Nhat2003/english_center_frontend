@@ -1,0 +1,324 @@
+<div class="student-detail-container">
+  <nz-spin [nzSpinning]="loading" nzTip="Đang tải thông tin...">
+    <!-- Header with back button -->
+    <div class="detail-header">
+      <button nz-button nzType="link" (click)="goBack()" class="back-btn">
+        <span nz-icon nzType="arrow-left"></span>
+        Quay lại
+      </button>
+      <h2>
+        <span nz-icon nzType="user" class="header-icon"></span>
+        Hồ sơ học sinh
+      </h2>
+    </div>
+
+    <div *ngIf="studentDetail" class="detail-content">
+      <!-- Personal Information Card -->
+      <nz-card nzTitle="Thông tin cá nhân" class="info-card">
+        <div class="avatar-section">
+          <nz-avatar
+            [nzSize]="100"
+            nzIcon="user"
+            class="student-avatar">
+          </nz-avatar>
+          <div class="student-name-section">
+            <h3>{{ studentDetail.student.fullName }}</h3>
+            <nz-tag nzColor="blue">
+              <span nz-icon nzType="book"></span>
+              {{ studentDetail.student.className }}
+            </nz-tag>
+          </div>
+        </div>
+
+        <nz-divider></nz-divider>
+
+        <nz-descriptions nzBordered [nzColumn]="2">
+          <nz-descriptions-item nzTitle="Mã học sinh" [nzSpan]="1">
+            <strong>#{{ studentDetail.student.id }}</strong>
+          </nz-descriptions-item>
+          <nz-descriptions-item nzTitle="Email" [nzSpan]="1">
+            <span nz-icon nzType="mail"></span>
+            {{ studentDetail.student.email }}
+          </nz-descriptions-item>
+          <nz-descriptions-item nzTitle="Ngày sinh" [nzSpan]="1">
+            <span nz-icon nzType="calendar"></span>
+            {{ studentDetail.student.dob | date:'dd/MM/yyyy' }}
+            <nz-tag nzColor="blue" style="margin-left: 8px;">
+              {{ calculateAge(studentDetail.student.dob) }} tuổi
+            </nz-tag>
+          </nz-descriptions-item>
+          <nz-descriptions-item nzTitle="Giới tính" [nzSpan]="1">
+            <span nz-icon [nzType]="studentDetail.student.gender === 'Male' ? 'man' : 'woman'"></span>
+            {{ studentDetail.student.gender === 'Male' ? 'Nam' : 'Nữ' }}
+          </nz-descriptions-item>
+          <nz-descriptions-item nzTitle="Số điện thoại" [nzSpan]="1">
+            <span nz-icon nzType="phone"></span>
+            {{ studentDetail.student.phone }}
+          </nz-descriptions-item>
+          <nz-descriptions-item nzTitle="Ngày nhập học" [nzSpan]="1">
+            <span nz-icon nzType="login"></span>
+            {{ studentDetail.student.joinedAt | date:'dd/MM/yyyy' }}
+          </nz-descriptions-item>
+          <nz-descriptions-item nzTitle="Địa chỉ" [nzSpan]="2">
+            <span nz-icon nzType="home"></span>
+            {{ studentDetail.student.address }}
+          </nz-descriptions-item>
+        </nz-descriptions>
+      </nz-card>
+
+      <!-- Statistics Row -->
+      <div nz-row [nzGutter]="[16, 16]" class="stats-row">
+        <div nz-col nzXs="24" nzSm="12" nzMd="6">
+          <nz-card class="stat-card present-card">
+            <nz-statistic
+              nzTitle="Có mặt"
+              [nzValue]="studentDetail.attendanceSummary.present"
+              [nzValueStyle]="{ color: '#52c41a', fontSize: '32px', fontWeight: '600' }">
+              <ng-template #nzPrefix>
+                <span nz-icon nzType="check-circle" class="stat-icon"></span>
+              </ng-template>
+            </nz-statistic>
+          </nz-card>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="12" nzMd="6">
+          <nz-card class="stat-card late-card">
+            <nz-statistic
+              nzTitle="Đi muộn"
+              [nzValue]="studentDetail.attendanceSummary.late"
+              [nzValueStyle]="{ color: '#faad14', fontSize: '32px', fontWeight: '600' }">
+              <ng-template #nzPrefix>
+                <span nz-icon nzType="clock-circle" class="stat-icon"></span>
+              </ng-template>
+            </nz-statistic>
+          </nz-card>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="12" nzMd="6">
+          <nz-card class="stat-card absent-card">
+            <nz-statistic
+              nzTitle="Vắng mặt"
+              [nzValue]="studentDetail.attendanceSummary.absent"
+              [nzValueStyle]="{ color: '#ff4d4f', fontSize: '32px', fontWeight: '600' }">
+              <ng-template #nzPrefix>
+                <span nz-icon nzType="close-circle" class="stat-icon"></span>
+              </ng-template>
+            </nz-statistic>
+          </nz-card>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="12" nzMd="6">
+          <nz-card class="stat-card rate-card">
+            <nz-statistic
+              nzTitle="Tỷ lệ tham gia"
+              [nzValue]="getAttendanceRate()"
+              nzSuffix="%"
+              [nzValueStyle]="{ color: '#1890ff', fontSize: '32px', fontWeight: '600' }">
+              <ng-template #nzPrefix>
+                <span nz-icon nzType="percentage" class="stat-icon"></span>
+              </ng-template>
+            </nz-statistic>
+          </nz-card>
+        </div>
+      </div>
+
+      <!-- Tabs for Attendance and Submissions -->
+      <nz-card class="tabs-card">
+        <nz-tabset [nzTabBarGutter]="16">
+          <!-- Attendance Tab -->
+          <nz-tab [nzTitle]="attendanceTitle">
+            <ng-template #attendanceTitle>
+              <span nz-icon nzType="calendar"></span>
+              Lịch sử điểm danh ({{ studentDetail.attendance?.length || 0 }})
+            </ng-template>
+
+            <div *ngIf="studentDetail.attendance && studentDetail.attendance.length > 0; else noAttendance" style="padding: 16px;">
+              <nz-table
+                [nzData]="studentDetail.attendance"
+                [nzPageSize]="10"
+                [nzShowPagination]="studentDetail.attendance.length > 10">
+                <thead>
+                  <tr>
+                    <th nzWidth="60px">STT</th>
+                    <th>Ngày học</th>
+                    <th>Lớp học</th>
+                    <th nzWidth="120px">Trạng thái</th>
+                    <th>Ghi chú</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let record of studentDetail.attendance; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>
+                      <span nz-icon nzType="calendar"></span>
+                      {{ record.sessionDate | date:'dd/MM/yyyy' }}
+                    </td>
+                    <td>{{ record.className }}</td>
+                    <td>
+                      <nz-tag [nzColor]="getStatusColor(record.status)">
+                        {{ getStatusText(record.status) }}
+                      </nz-tag>
+                    </td>
+                    <td>{{ record.note || '-' }}</td>
+                  </tr>
+                </tbody>
+              </nz-table>
+            </div>
+
+            <ng-template #noAttendance>
+              <div style="padding: 40px;">
+                <nz-empty
+                  nzNotFoundContent="Chưa có dữ liệu điểm danh"
+                  [nzNotFoundImage]="'simple'">
+                </nz-empty>
+              </div>
+            </ng-template>
+          </nz-tab>
+
+          <!-- Grades Tab -->
+          <nz-tab [nzTitle]="gradesTitle">
+            <ng-template #gradesTitle>
+              <span nz-icon nzType="trophy"></span>
+              Lịch sử điểm ({{ submissions.length }})
+            </ng-template>
+
+            <nz-spin [nzSpinning]="loadingGrades" nzTip="Đang tải điểm...">
+              <!-- Statistics Cards -->
+              <div *ngIf="!loadingGrades && submissions.length > 0" style="padding: 16px;">
+                <nz-row [nzGutter]="[16, 16]" style="margin-bottom: 24px;">
+                  <nz-col [nzXs]="12" [nzSm]="12" [nzMd]="6">
+                    <nz-card class="grade-stat-card">
+                      <nz-statistic
+                        [nzValue]="statistics.totalGraded"
+                        nzTitle="Bài đã chấm"
+                        [nzValueStyle]="{ color: '#1890ff', fontSize: '24px', fontWeight: '600' }">
+                        <ng-template #nzPrefix>
+                          <span nz-icon nzType="file-done"></span>
+                        </ng-template>
+                      </nz-statistic>
+                    </nz-card>
+                  </nz-col>
+
+                  <nz-col [nzXs]="12" [nzSm]="12" [nzMd]="6">
+                    <nz-card class="grade-stat-card">
+                      <nz-statistic
+                        [nzValue]="statistics.averageGrade | number:'1.1-1'"
+                        nzTitle="Điểm trung bình"
+                        [nzValueStyle]="{ color: '#3bb273', fontSize: '24px', fontWeight: '600' }">
+                        <ng-template #nzPrefix>
+                          <span nz-icon nzType="bar-chart"></span>
+                        </ng-template>
+                        <ng-template #nzSuffix>
+                          <span style="font-size: 14px; color: #8c8c8c;">/10</span>
+                        </ng-template>
+                      </nz-statistic>
+                    </nz-card>
+                  </nz-col>
+
+                  <nz-col [nzXs]="12" [nzSm]="12" [nzMd]="6">
+                    <nz-card class="grade-stat-card">
+                      <nz-statistic
+                        [nzValue]="statistics.highestGrade | number:'1.1-1'"
+                        nzTitle="Điểm cao nhất"
+                        [nzValueStyle]="{ color: '#faad14', fontSize: '24px', fontWeight: '600' }">
+                        <ng-template #nzPrefix>
+                          <span nz-icon nzType="rise"></span>
+                        </ng-template>
+                        <ng-template #nzSuffix>
+                          <span style="font-size: 14px; color: #8c8c8c;">/10</span>
+                        </ng-template>
+                      </nz-statistic>
+                    </nz-card>
+                  </nz-col>
+
+                  <nz-col [nzXs]="12" [nzSm]="12" [nzMd]="6">
+                    <nz-card class="grade-stat-card">
+                      <nz-statistic
+                        [nzValue]="statistics.lowestGrade | number:'1.1-1'"
+                        nzTitle="Điểm thấp nhất"
+                        [nzValueStyle]="{ color: '#ff4d4f', fontSize: '24px', fontWeight: '600' }">
+                        <ng-template #nzPrefix>
+                          <span nz-icon nzType="fall"></span>
+                        </ng-template>
+                        <ng-template #nzSuffix>
+                          <span style="font-size: 14px; color: #8c8c8c;">/10</span>
+                        </ng-template>
+                      </nz-statistic>
+                    </nz-card>
+                  </nz-col>
+                </nz-row>
+
+                <!-- Grades Table -->
+                <nz-table
+                  #gradesTable
+                  [nzData]="submissions"
+                  [nzPageSize]="10"
+                  [nzShowPagination]="submissions.length > 10">
+                  <thead>
+                    <tr>
+                      <th nzWidth="50px">#</th>
+                      <th>Bài tập</th>
+                      <th nzWidth="150px">Ngày nộp</th>
+                      <th nzWidth="120px">Điểm</th>
+                      <th nzWidth="120px">Xếp loại</th>
+                      <th>Nhận xét</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let submission of gradesTable.data; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td>
+                        <div class="assignment-cell">
+                          <span nz-icon nzType="file-text" style="color: #1890ff; margin-right: 8px;"></span>
+                          <span style="font-weight: 500;">{{ submission.assignmentTitle || 'Bài tập #' + submission.assignmentId }}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <span style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: #8c8c8c;">
+                          <span nz-icon nzType="clock-circle"></span>
+                          {{ submission.submittedAt | date: 'dd/MM/yyyy HH:mm' }}
+                        </span>
+                      </td>
+                      <td>
+                        <div style="display: flex; align-items: center; justify-content: center;">
+                          <span class="grade-badge" [ngClass]="'grade-' + getGradeColor(submission.grade!)">
+                            {{ submission.grade }}/10
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        <nz-badge
+                          [nzStatus]="getGradeColor(submission.grade!) === 'success' ? 'success' : getGradeColor(submission.grade!) === 'processing' ? 'processing' : getGradeColor(submission.grade!) === 'warning' ? 'warning' : 'error'"
+                          [nzText]="getGradeLabel(submission.grade!)">
+                        </nz-badge>
+                      </td>
+                      <td>
+                        <div style="max-width: 300px;">
+                          <span *ngIf="submission.feedback" style="display: flex; align-items: flex-start; gap: 6px; color: #262626; line-height: 1.6;">
+                            <span nz-icon nzType="message" style="color: #1890ff; font-size: 14px; margin-top: 2px;"></span>
+                            {{ submission.feedback }}
+                          </span>
+                          <span *ngIf="!submission.feedback" style="color: #8c8c8c; font-style: italic; font-size: 13px;">
+                            Không có nhận xét
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </nz-table>
+              </div>
+
+              <!-- Empty State -->
+              <div *ngIf="!loadingGrades && submissions.length === 0" style="padding: 40px;">
+                <nz-empty
+                  nzNotFoundContent="Chưa có bài tập nào được chấm điểm"
+                  [nzNotFoundImage]="'simple'">
+                </nz-empty>
+              </div>
+            </nz-spin>
+          </nz-tab>
+        </nz-tabset>
+      </nz-card>
+    </div>
+  </nz-spin>
+</div>

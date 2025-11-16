@@ -1,0 +1,212 @@
+<div class="payment-management">
+  <!-- Summary Cards -->
+  <div class="summary-section" *ngIf="paymentSummary">
+    <nz-row [nzGutter]="16">
+      <nz-col [nzSpan]="6">
+        <nz-card>
+          <nz-statistic
+            nzTitle="Tổng doanh thu"
+            [nzValue]="paymentSummary.totalAmount"
+            [nzValueStyle]="{ color: '#3f8600' }"
+            nzSuffix="VND">
+          </nz-statistic>
+        </nz-card>
+      </nz-col>
+      <nz-col [nzSpan]="6">
+        <nz-card>
+          <nz-statistic
+            nzTitle="Tổng thanh toán"
+            [nzValue]="paymentSummary.totalPayments"
+            [nzValueStyle]="{ color: '#1890ff' }">
+          </nz-statistic>
+        </nz-card>
+      </nz-col>
+      <nz-col [nzSpan]="6">
+        <nz-card>
+          <nz-statistic
+            nzTitle="Chờ xử lý"
+            [nzValue]="paymentSummary.pendingAmount"
+            [nzValueStyle]="{ color: '#faad14' }"
+            nzSuffix="VND">
+          </nz-statistic>
+        </nz-card>
+      </nz-col>
+      <nz-col [nzSpan]="6">
+        <nz-card>
+          <nz-statistic
+            nzTitle="Đã hoàn thành"
+            [nzValue]="paymentSummary.completedAmount"
+            [nzValueStyle]="{ color: '#52c41a' }"
+            nzSuffix="VND">
+          </nz-statistic>
+        </nz-card>
+      </nz-col>
+    </nz-row>
+  </div>
+
+  <!-- Filters -->
+  <nz-card class="filter-card">
+    <div class="filters">
+      <nz-row [nzGutter]="16">
+        <nz-col [nzSpan]="6">
+          <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
+            <input
+              type="text"
+              nz-input
+              placeholder="Tìm kiếm học sinh, lớp..."
+              [(ngModel)]="searchValue"
+              (keyup.enter)="onSearch()">
+          </nz-input-group>
+          <ng-template #suffixIconButton>
+            <button nz-button nzType="primary" nzSearch (click)="onSearch()">
+              <i nz-icon nzType="search"></i>
+            </button>
+          </ng-template>
+        </nz-col>
+
+        <nz-col [nzSpan]="4">
+          <nz-select
+            [(ngModel)]="statusFilter"
+            (ngModelChange)="onFilterChange()"
+            nzPlaceHolder="Trạng thái"
+            style="width: 100%">
+            <nz-option
+              *ngFor="let status of statusOptions"
+              [nzLabel]="status.label"
+              [nzValue]="status.value">
+            </nz-option>
+          </nz-select>
+        </nz-col>
+
+        <nz-col [nzSpan]="4">
+          <nz-select
+            [(ngModel)]="paymentMethodFilter"
+            (ngModelChange)="onFilterChange()"
+            nzPlaceHolder="Phương thức"
+            style="width: 100%">
+            <nz-option
+              *ngFor="let method of paymentMethodOptions"
+              [nzLabel]="method.label"
+              [nzValue]="method.value">
+            </nz-option>
+          </nz-select>
+        </nz-col>
+
+        <nz-col [nzSpan]="6">
+          <nz-range-picker
+            [(ngModel)]="dateRange"
+            (ngModelChange)="onDateRangeChange()"
+            nzPlaceHolder="['Từ ngày', 'Đến ngày']"
+            style="width: 100%">
+          </nz-range-picker>
+        </nz-col>
+
+        <nz-col [nzSpan]="4">
+          <button nz-button (click)="resetFilters()" style="margin-right: 8px;">
+            <i nz-icon nzType="reload"></i>
+            Reset
+          </button>
+        </nz-col>
+      </nz-row>
+    </div>
+  </nz-card>
+
+  <!-- Actions -->
+  <div class="action-bar">
+    <div>
+      <button nz-button nzType="primary" routerLink="/admin/payments/add">
+        <i nz-icon nzType="plus"></i>
+        Thêm thanh toán
+      </button>
+    </div>
+
+    <div>
+      <nz-button-group>
+        <button nz-button (click)="exportPayments('excel')">
+          <i nz-icon nzType="file-excel"></i>
+          Xuất Excel
+        </button>
+        <button nz-button (click)="exportPayments('pdf')">
+          <i nz-icon nzType="file-pdf"></i>
+          Xuất PDF
+        </button>
+      </nz-button-group>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <nz-table
+    #basicTable
+    [nzData]="payments"
+    [nzLoading]="loading"
+    [nzTotal]="total"
+    [nzPageSize]="pageSize"
+    [nzPageIndex]="pageIndex"
+    [nzShowPagination]="true"
+    [nzShowSizeChanger]="true"
+    [nzPageSizeOptions]="[10, 20, 50, 100]"
+    (nzPageIndexChange)="onPageIndexChange($event)"
+    (nzPageSizeChange)="onPageSizeChange($event)"
+    nzShowTotal
+    [nzFrontPagination]="false">
+
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Học sinh</th>
+        <th>Lớp học</th>
+        <th>Số tiền</th>
+        <th>Phương thức</th>
+        <th>Trạng thái</th>
+        <th>Ngày thanh toán</th>
+        <th>Thao tác</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let payment of payments">
+        <td>{{ payment.id }}</td>
+        <td>{{ payment.studentName }}</td>
+        <td>{{ payment.className }}</td>
+        <td>{{ formatCurrency(payment.amount) }}</td>
+        <td>{{ getPaymentMethodText(payment.paymentMethod) }}</td>
+        <td>
+          <nz-tag [nzColor]="getStatusColor(payment.status)">
+            {{ getStatusText(payment.status) }}
+          </nz-tag>
+        </td>
+        <td>{{ payment.paymentDate | date:'dd/MM/yyyy HH:mm' }}</td>
+        <td>
+          <nz-dropdown nzTrigger="click" nzPlacement="bottomRight">
+            <button nz-button nzType="text" nz-dropdown>
+              <i nz-icon nzType="more"></i>
+            </button>
+            <ul nz-menu>
+              <li nz-menu-item [routerLink]="['/admin/payments/detail', payment.id]">
+                <i nz-icon nzType="eye"></i>
+                Xem chi tiết
+              </li>
+              <li nz-menu-item *ngIf="payment.status === 'PENDING'">
+                <i nz-icon nzType="check"></i>
+                <span (click)="updatePaymentStatus(payment, 'COMPLETED')">Đánh dấu hoàn thành</span>
+              </li>
+              <li nz-menu-item *ngIf="payment.status === 'PENDING'">
+                <i nz-icon nzType="close"></i>
+                <span (click)="updatePaymentStatus(payment, 'FAILED')">Đánh dấu thất bại</span>
+              </li>
+              <li nz-menu-item *ngIf="payment.status === 'COMPLETED'">
+                <i nz-icon nzType="rollback"></i>
+                <span (click)="updatePaymentStatus(payment, 'REFUNDED')">Hoàn tiền</span>
+              </li>
+              <li nz-menu-divider></li>
+              <li nz-menu-item (click)="deletePayment(payment)" class="danger-item">
+                <i nz-icon nzType="delete"></i>
+                Xóa
+              </li>
+            </ul>
+          </nz-dropdown>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</div>

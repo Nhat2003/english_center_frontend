@@ -1,0 +1,144 @@
+<div class="page-header">
+  <div class="page-title-section">
+    <h2 class="page-title">
+      <span nz-icon nzType="apartment" nzTheme="outline"></span> Quản lý lớp học
+    </h2>
+    <p class="page-subtitle">Quản lý thông tin lớp học và giáo viên phụ trách</p>
+  </div>
+  <div class="page-actions">
+    <span class="total">Tổng số: {{ total }}</span>
+    <button nz-button nzType="primary" class="btn-add" (click)="openAddClassModal()">
+      <span nz-icon nzType="plus"></span> Thêm lớp học
+    </button>
+  </div>
+</div>
+
+<!-- Search Bar -->
+<div class="search-bar">
+  <nz-input-group [nzPrefix]="prefixIconSearch" nzSize="large">
+    <input
+      nz-input
+      type="text"
+      placeholder="Tìm kiếm theo tên lớp, khóa học, giáo viên..."
+      [(ngModel)]="searchText"
+      (ngModelChange)="onSearch()"
+    />
+  </nz-input-group>
+</div>
+<ng-template #prefixIconSearch>
+  <span nz-icon nzType="search"></span>
+</ng-template>
+
+<div class="card">
+  <nz-table
+    [nzBordered]="false"
+    [nzData]="classes"
+    [nzShowPagination]="false"
+    [nzSize]="'middle'"
+    [nzLoading]="loading"
+  >
+    <thead>
+      <tr>
+        <th nzAlign="center">STT</th>
+        <th nzAlign="center">Tên lớp</th>
+        <th nzAlign="center">Khóa học</th>
+        <th nzAlign="center">Giáo viên</th>
+        <th nzAlign="center">Phòng học</th>
+        <th nzAlign="center">Lịch học</th>
+        <th nzAlign="center">Thời gian</th>
+        <th nzAlign="center">Số học viên</th>
+        <th nzAlign="center">Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let cl of classes; index as i">
+        <td nzAlign="center">{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+        <td nzAlign="center">
+          <div class="class-name">
+            <span nz-icon nzType="apartment" nzTheme="outline" class="class-icon"></span>
+            <strong>{{ cl.name }}</strong>
+          </div>
+        </td>
+        <td nzAlign="center">
+          <nz-tag nzColor="cyan">{{ cl.courseName }}</nz-tag>
+        </td>
+        <td nzAlign="center">{{ cl.teacherName }}</td>
+        <td nzAlign="center">
+          <nz-tag nzColor="purple">{{ cl.roomName }}</nz-tag>
+        </td>
+        <td nzAlign="center">
+          <nz-tag nzColor="blue" *ngIf="cl.fixedSchedule">
+            {{ cl.fixedSchedule.name }}
+          </nz-tag>
+          <nz-tag nzColor="red" *ngIf="!cl.fixedSchedule">
+            Chưa xếp lịch
+          </nz-tag>
+        </td>
+        <td nzAlign="center">
+          <div *ngIf="cl.fixedSchedule" style="font-size: 12px;">
+            <div>{{ formatScheduleDisplay(cl.fixedSchedule) }}</div>
+            <div style="color: #666; margin-top: 2px;">{{ formatDateRange(cl.startDate, cl.endDate) }}</div>
+          </div>
+          <span *ngIf="!cl.fixedSchedule" style="color: #999;">Chưa xác định</span>
+        </td>
+        <td nzAlign="center">
+          <nz-tag [nzColor]="cl.studentCount > 0 ? 'green' : 'orange'">
+            {{ cl.studentCount }} học viên
+          </nz-tag>
+        </td>
+        <td nzAlign="center">
+          <div class="action-buttons">
+            <button
+              nz-button
+              nzType="default"
+              nzShape="circle"
+              nzSize="small"
+              class="btn-view"
+              nz-tooltip="Xem chi tiết"
+              (click)="viewClass(cl)"
+            >
+              <span nz-icon nzType="eye" nzTheme="outline"></span>
+            </button>
+            <button
+              nz-button
+              nzType="primary"
+              nzShape="circle"
+              nzSize="small"
+              class="btn-edit"
+              nz-tooltip="Chỉnh sửa"
+              (click)="editClass(cl)"
+            >
+              <span nz-icon nzType="edit" nzTheme="outline"></span>
+            </button>
+            <button
+              nz-button
+              nzType="primary"
+              nzDanger
+              nzShape="circle"
+              nzSize="small"
+              class="btn-delete"
+              nz-tooltip="Xóa lớp học"
+              (click)="deleteClass(cl)"
+            >
+              <span nz-icon nzType="delete" nzTheme="outline"></span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+  <div class="table-pagination">
+    <nz-pagination
+      [nzPageIndex]="pageIndex"
+      [nzTotal]="total"
+      [nzPageSize]="pageSize"
+      [nzPageSizeOptions]="[10, 20, 50]"
+      (nzPageIndexChange)="onPageIndexChange($event)"
+      (nzPageSizeChange)="onPageSizeChange($event)"
+      [nzShowSizeChanger]="true"
+      [nzShowQuickJumper]="true"
+    ></nz-pagination>
+  </div>
+</div>
+
+

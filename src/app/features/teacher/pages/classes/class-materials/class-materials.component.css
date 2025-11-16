@@ -1,0 +1,273 @@
+:host {
+  --primary-color: #3bb273;
+}
+
+.class-materials {
+  padding: 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.header h2 {
+  margin: 0;
+  color: #262626;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.header button {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.header button:hover {
+  background-color: #2d9960;
+  border-color: #2d9960;
+}
+
+.empty-state {
+  padding: 48px 0;
+  text-align: center;
+}
+
+.empty-state button {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.empty-state button:hover {
+  background-color: #2d9960;
+  border-color: #2d9960;
+}
+
+/* Table styles */
+nz-table ::ng-deep .ant-table {
+  font-size: 13px;
+}
+
+nz-table ::ng-deep .ant-table-thead > tr > th {
+  background-color: #fafafa;
+  font-weight: 600;
+  padding: 10px 8px;
+  color: #262626;
+}
+
+nz-table ::ng-deep .ant-table-tbody > tr > td {
+  padding: 8px;
+}
+
+nz-table ::ng-deep .ant-table-tbody > tr:hover {
+  background-color: rgba(59, 178, 115, 0.03);
+}
+
+.file-icon-table {
+  margin-right: 8px;
+  font-size: 16px;
+  color: var(--primary-color);
+}
+
+.file-name-text {
+  color: #262626;
+  font-size: 13px;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+}
+
+.download-btn,
+.delete-btn {
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  min-width: auto;
+  border-radius: 4px;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+
+.download-btn {
+  color: var(--primary-color) !important;
+}
+
+.download-btn:hover {
+  background-color: rgba(59, 178, 115, 0.1) !important;
+  color: #2d9960 !important;
+}
+
+.delete-btn {
+  color: #ff4d4f !important;
+}
+
+.delete-btn:hover {
+  background-color: rgba(255, 77, 79, 0.1) !important;
+  color: #cf1322 !important;
+  border-color: transparent !important;
+}
+
+.download-btn span[nz-icon],
+.delete-btn span[nz-icon] {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Upload Modal */
+.upload-form {
+  padding: 20px 0;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #262626;
+  font-size: 14px;
+}
+
+.form-label.required::after {
+  content: " *";
+  color: #ff4d4f;
+}
+
+.select-file-btn {
+  height: 80px;
+  border: 2px dashed #d9d9d9;
+  background-color: #fafafa;
+  transition: all 0.3s;
+}
+
+.select-file-btn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.selected-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  border: 1px solid #d9d9d9;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.file-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.file-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.file-name {
+  font-weight: 500;
+  color: #262626;
+  font-size: 14px;
+}
+
+.file-size {
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+.upload-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px;
+  background-color: rgba(59, 178, 115, 0.08);
+  border-radius: 4px;
+  border: 1px solid rgba(59, 178, 115, 0.3);
+}
+
+.upload-note i[nz-icon] {
+  color: var(--primary-color);
+  font-size: 14px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.upload-note span {
+  font-size: 13px;
+  color: #595959;
+  line-height: 1.5;
+}
+
+/* Modal buttons */
+::ng-deep .ant-modal-footer .ant-btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+::ng-deep .ant-modal-footer .ant-btn-primary:hover {
+  background-color: #2d9960;
+  border-color: #2d9960;
+}
+
+::ng-deep .ant-modal-footer .ant-btn-primary:focus {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+/* Pagination */
+::ng-deep .ant-pagination {
+  margin-top: 16px;
+}
+
+::ng-deep .ant-pagination-item-active {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+::ng-deep .ant-pagination-item-active a {
+  color: #fff;
+}
+
+::ng-deep .ant-pagination-item:hover {
+  border-color: var(--primary-color);
+}
+
+::ng-deep .ant-pagination-item:hover a {
+  color: var(--primary-color);
+}
+
+::ng-deep .ant-pagination-prev:hover .ant-pagination-item-link,
+::ng-deep .ant-pagination-next:hover .ant-pagination-item-link {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+::ng-deep .ant-pagination-jump-prev:hover .ant-pagination-item-link-icon,
+::ng-deep .ant-pagination-jump-next:hover .ant-pagination-item-link-icon {
+  color: var(--primary-color);
+}

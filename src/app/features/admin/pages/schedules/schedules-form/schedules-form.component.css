@@ -1,0 +1,97 @@
+/* Schedules Form Container */
+.schedules-form-container {
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
+}
+
+/* Form Header */
+.form-header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.form-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #262626;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Form Content */
+.form-content {
+  margin-bottom: 24px;
+}
+
+/* Form Items */
+nz-form-item {
+  margin-bottom: 20px;
+}
+
+nz-form-label {
+  font-weight: 500;
+  color: #595959;
+}
+
+/* Error States */
+.error {
+  border-color: #ff4d4f !important;
+}
+
+/* Form Footer */
+.form-footer {
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-cancel,
+.btn-submit {
+  min-width: 100px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.btn-cancel {
+  color: #595959;
+  border-color: #d9d9d9;
+}
+
+.btn-cancel:hover {
+  color: #40a9ff;
+  border-color: #40a9ff;
+}
+
+.btn-submit {
+  background: #1890ff;
+  border-color: #1890ff;
+}
+
+/* Time Picker and Select */
+:host ::ng-deep .ant-time-picker,
+:host ::ng-deep .ant-select {
+  width: 100%;
+}
+
+/* Multiple Select Tags */
+:host ::ng-deep .ant-select-multiple .ant-select-selection-item {
+  background: #f6ffed;
+  border-color: #b7eb8f;
+  color: #389e0d;
+}

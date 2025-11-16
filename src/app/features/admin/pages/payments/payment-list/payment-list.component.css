@@ -1,0 +1,86 @@
+.payment-management {
+  padding: 0;
+}
+
+.summary-section {
+  margin-bottom: 24px;
+}
+
+.filter-card {
+  margin-bottom: 16px;
+}
+
+.filters {
+  padding: 8px 0;
+}
+
+.action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 16px 0;
+}
+
+.danger-item {
+  color: #ff4d4f !important;
+}
+
+.danger-item:hover {
+  background-color: #fff2f0 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .action-bar {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .filters nz-col {
+    margin-bottom: 8px;
+  }
+}
+
+/* Table customizations */
+nz-table {
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Statistic cards */
+nz-card {
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+nz-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Button groups */
+nz-button-group button {
+  margin-right: 0 !important;
+}
+
+/* Form controls */
+nz-select,
+nz-range-picker,
+nz-input-group {
+  width: 100%;
+}
+
+/* Status tags */
+nz-tag {
+  font-weight: 500;
+  border-radius: 4px;
+}
+
+/* Loading state */
+.ant-table-tbody > tr.ant-table-placeholder:hover > td {
+  background: white;
+}

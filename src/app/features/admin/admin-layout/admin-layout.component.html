@@ -1,0 +1,75 @@
+<nz-layout style="min-height: 100vh;">
+  <!-- Header -->
+  <nz-header style="position: fixed; width: 100%; z-index: 1000; background: #fff; border-bottom: 1px solid #f0f0f0; padding: 0 24px; display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center;">
+      <button nz-button nzType="text" nzSize="large" (click)="isCollapsed = !isCollapsed" style="margin-right: 16px;">
+        <span nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></span>
+      </button>
+      <span style="font-size: 18px; font-weight: 500;">TOEIC DOWNTOWN Admin</span>
+    </div>
+
+    <div style="display: flex; align-items: center;">
+      <nz-dropdown nzTrigger="click" nzPlacement="bottomRight">
+        <div nz-dropdown style="display: flex; align-items: center; cursor: pointer; padding: 8px;">
+          <nz-avatar nzIcon="user" [nzSize]="32" style="margin-right: 8px;"></nz-avatar>
+          <span style="margin-right: 8px;">{{ currentUser?.fullName || currentUser?.username || 'Admin' }}</span>
+          <span nz-icon nzType="down"></span>
+        </div>
+        <ul nz-menu nzSelectable="false">
+          <li nz-menu-item>
+            <span nz-icon nzType="user"></span>
+            Thông tin cá nhân
+          </li>
+          <li nz-menu-item>
+            <span nz-icon nzType="setting"></span>
+            Cài đặt
+          </li>
+          <li nz-menu-divider></li>
+          <li nz-menu-item (click)="logout()">
+            <span nz-icon nzType="logout"></span>
+            Đăng xuất
+          </li>
+        </ul>
+      </nz-dropdown>
+    </div>
+  </nz-header>
+
+  <!-- Sidebar -->
+  <nz-sider
+
+    [(nzCollapsed)]="isCollapsed"
+    [nzWidth]="220"
+    [nzCollapsedWidth]="64"
+    [nzTheme]="'light'"
+    style="position: fixed; left: 0; top: 64px; bottom: 0; border-right: 1px solid #f0f0f0;"
+  >
+    <!-- Logo -->
+    <div class="logo">
+      <span *ngIf="!isCollapsed">Admin <span class="children-logo">Panel</span></span>
+      <span *ngIf="isCollapsed">A</span>
+    </div>
+
+    <!-- Menu -->
+    <ul nz-menu nzTheme="light" nzMode="inline" style="border: none;">
+      <li
+        nz-menu-item
+        *ngFor="let item of menuItems"
+        [routerLink]="item.route"
+        routerLinkActive="ant-menu-item-selected"
+      >
+        <span [ngClass]="{'menu-icon-center': isCollapsed}">
+          <i nz-icon [nzType]="item.icon"></i>
+        </span>
+        <span *ngIf="!isCollapsed">{{ item.label }}</span>
+      </li>
+    </ul>
+  </nz-sider>
+
+  <!-- Nội dung -->
+  <nz-layout [style.margin-left.px]="isCollapsed ? 64 : 220" style="margin-top: 64px;">
+    <nz-content style="padding: 24px; background: #f5f5f5; min-height: calc(100vh - 64px);">
+      <app-breadcrumb></app-breadcrumb>
+      <router-outlet></router-outlet>
+    </nz-content>
+  </nz-layout>
+</nz-layout>

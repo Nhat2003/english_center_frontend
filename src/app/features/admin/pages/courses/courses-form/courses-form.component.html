@@ -1,0 +1,41 @@
+<div class="form-container">
+  <form nz-form [formGroup]="form" (ngSubmit)="onSubmit()" nzLayout="vertical">
+    <nz-form-item>
+      <nz-form-label [nzRequired]="true" nzFor="name">Tên khóa học</nz-form-label>
+      <nz-form-control>
+        <input nz-input formControlName="name" id="name" placeholder="Nhập tên khóa học" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label nzFor="description">Mô tả</nz-form-label>
+      <nz-form-control>
+        <textarea nz-input formControlName="description" id="description" placeholder="Nhập mô tả khóa học" rows="3"></textarea>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzRequired]="true" nzFor="duration">Thời lượng (buổi)</nz-form-label>
+      <nz-form-control>
+        <input nz-input type="number" formControlName="duration" id="duration" placeholder="Nhập thời lượng" min="1" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzRequired]="true" nzFor="fee">Học phí (VNĐ)</nz-form-label>
+      <nz-form-control>
+        <input nz-input type="number" formControlName="fee" id="fee" placeholder="Nhập học phí" min="0" />
+      </nz-form-control>
+    </nz-form-item>
+
+
+    <div class="form-footer">
+      <button nz-button nzType="default" (click)="onCancel()" type="button">
+        {{ isViewMode ? 'Đóng' : 'Huỷ' }}
+      </button>
+      <button *ngIf="!isViewMode" nz-button nzType="primary" [disabled]="form.invalid" [nzLoading]="loading">
+        {{ mode === 'edit' ? 'Cập nhật' : 'Lưu' }}
+      </button>
+    </div>
+  </form>
+</div>

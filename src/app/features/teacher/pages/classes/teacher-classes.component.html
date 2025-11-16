@@ -1,0 +1,49 @@
+<div class="teacher-classes-container">
+  <h2>Danh sách lớp của tôi</h2>
+  <nz-spin *ngIf="loadingClasses" nzTip="Đang tải lớp..."></nz-spin>
+  <nz-table *ngIf="!loadingClasses" [nzData]="classes" nzBordered>
+    <thead>
+      <tr>
+        <th>Tên lớp</th>
+        <th>Khóa học</th>
+        <th>Phòng học</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let classRoom of classes">
+        <td>{{ classRoom.name }}</td>
+        <td>{{ classRoom.courseName }}</td>
+        <td>{{ classRoom.roomName }}</td>
+        <td>
+          <button
+            nz-button
+            nzType="primary"
+            nzSize="small"
+            (click)="viewStudents(classRoom)"
+            style="margin-right: 8px;">
+            <span nz-icon nzType="team"></span>
+            Quản lí
+          </button>
+          <button
+            nz-button
+            nzType="default"
+            nzSize="small"
+            (click)="goToAttendance(classRoom)"
+            style="margin-right: 8px;">
+            <span nz-icon nzType="check-square"></span>
+            Điểm danh
+          </button>
+          <button
+            nz-button
+            nzType="default"
+            nzSize="small"
+            (click)="goToAnnouncements(classRoom)">
+            <span nz-icon nzType="sound"></span>
+            Thông báo
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</div>

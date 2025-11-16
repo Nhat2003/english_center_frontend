@@ -1,0 +1,82 @@
+<div class="login-container">
+  <nz-card class="login-card" [nzBordered]="false">
+    <div class="login-header">
+      <nz-spin [nzSpinning]="isLoading">
+        <div class="logo-section">
+          <div class="brand-logo-wrapper">
+            <div class="logo-circle">
+              <span nz-icon nzType="read" nzTheme="outline" class="logo-icon"></span>
+            </div>
+            <div class="brand-text">
+              <h1 class="brand-name">TOEIC DOWNTOWN</h1>
+              <p class="brand-slogan">Excellence in English Education</p>
+            </div>
+          </div>
+          <h2>Đăng nhập hệ thống</h2>
+          <p>Chào mừng bạn đến với TOEIC DOWNTOWN</p>
+        </div>
+      </nz-spin>
+    </div>
+
+    <form nz-form [formGroup]="form" (ngSubmit)="submitForm()" class="login-form">
+      <nz-form-item>
+        <nz-form-label nzRequired nzFor="username">Tên đăng nhập</nz-form-label>
+        <nz-form-control [nzErrorTip]="getUsernameErrorTip()">
+          <input
+            nz-input
+            id="username"
+            formControlName="username"
+            placeholder="Nhập tên đăng nhập (demo: admin, teacher, student)"
+            autocomplete="username"
+          />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzRequired nzFor="password">Mật khẩu</nz-form-label>
+        <nz-form-control [nzErrorTip]="getPasswordErrorTip()">
+          <nz-input-group [nzSuffix]="toggleTpl">
+            <input
+              nz-input
+              id="password"
+              [type]="passwordVisible ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="Nhập mật khẩu (demo: 123)"
+              autocomplete="current-password"
+            />
+          </nz-input-group>
+          <ng-template #toggleTpl>
+            <i
+              nz-icon
+              class="password-toggle"
+              [nzType]="passwordVisible ? 'eye-invisible' : 'eye'"
+              (click)="togglePasswordVisibility()"
+            ></i>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control>
+          <button
+            nz-button
+            nzType="primary"
+            nzSize="large"
+            [nzLoading]="isLoading"
+            [disabled]="form.invalid || form.disabled"
+            type="submit"
+            class="login-btn"
+          >
+            <span nz-icon nzType="login" nzTheme="outline"></span>
+            Đăng nhập
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+
+      <div class="login-links">
+        <span></span>
+        <a href="#" class="forgot-password">Quên mật khẩu?</a>
+      </div>
+    </form>
+  </nz-card>
+</div>

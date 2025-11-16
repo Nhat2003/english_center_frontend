@@ -1,0 +1,269 @@
+/* Import Students Modal Styles */
+.import-modal {
+  padding: 0;
+}
+
+.modal-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-header .anticon {
+  color: #1890ff;
+}
+
+.step-content {
+  padding: 24px;
+  min-height: 400px;
+}
+
+/* Step 1: File Upload */
+.upload-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.upload-info {
+  margin-bottom: 16px;
+}
+
+.file-upload {
+  display: flex;
+  justify-content: center;
+}
+
+.upload-dragger {
+  width: 100%;
+  max-width: 400px;
+  height: 200px;
+  border: 2px dashed #d9d9d9;
+  border-radius: 8px;
+  background: #fafafa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.upload-dragger:hover {
+  border-color: #1890ff;
+  background: #f0f9ff;
+}
+
+.upload-dragger .ant-upload-drag-icon {
+  margin-bottom: 16px;
+}
+
+.upload-dragger .ant-upload-drag-icon .anticon {
+  font-size: 48px;
+  color: #d9d9d9;
+}
+
+.upload-dragger:hover .ant-upload-drag-icon .anticon {
+  color: #1890ff;
+}
+
+.ant-upload-text {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: #262626;
+  font-weight: 500;
+}
+
+.ant-upload-hint {
+  margin: 0;
+  font-size: 14px;
+  color: #8c8c8c;
+}
+
+.file-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+}
+
+.sample-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Step 2: Preview */
+.preview-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.preview-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.stats {
+  display: flex;
+  gap: 8px;
+}
+
+.errors-section {
+  margin-bottom: 16px;
+}
+
+.error-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.error-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  color: #f5222d;
+  font-size: 14px;
+}
+
+.error-item .anticon {
+  color: #f5222d;
+  flex-shrink: 0;
+}
+
+.preview-table {
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.preview-actions {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* Step 3: Processing */
+.processing-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.loading-content {
+  text-align: center;
+}
+
+.loading-text h4 {
+  margin: 16px 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.loading-text p {
+  margin: 0;
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+/* Footer */
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #f0f0f0;
+  background: #fafafa;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .step-content {
+    padding: 16px;
+  }
+
+  .upload-dragger {
+    height: 150px;
+  }
+
+  .preview-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .preview-actions button {
+    width: 100%;
+  }
+}
+
+/* Table customization */
+:host ::ng-deep .preview-table .ant-table-thead > tr > th {
+  background: #fafafa;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 8px 12px;
+}
+
+:host ::ng-deep .preview-table .ant-table-tbody > tr > td {
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+:host ::ng-deep .preview-table .ant-table-placeholder {
+  padding: 40px 20px;
+}
+
+/* Alert customization */
+:host ::ng-deep .upload-info .ant-alert {
+  border-radius: 8px;
+}
+
+/* Collapse customization */
+:host ::ng-deep .errors-section .ant-collapse {
+  border: 1px solid #ffccc7;
+  border-radius: 8px;
+  background: #fff2f0;
+}
+
+:host ::ng-deep .errors-section .ant-collapse-header {
+  color: #f5222d;
+  font-weight: 500;
+}
+
+/* Spin customization */
+:host ::ng-deep .processing-section .ant-spin-dot {
+  font-size: 24px;
+}

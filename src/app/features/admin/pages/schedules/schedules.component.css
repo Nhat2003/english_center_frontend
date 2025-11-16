@@ -1,0 +1,68 @@
+/* Schedule Table Styles - Simple approach like other pages */
+:host ::ng-deep thead th {
+  background: #f0f2f5 !important;
+  font-weight: 600;
+  text-align: center;
+}
+
+:host ::ng-deep tbody td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.schedule-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.schedule-icon {
+  color: #1890ff;
+  font-size: 14px;
+}
+
+.days-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  align-items: center;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Button styles */
+.action-buttons .ant-btn {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 2px !important;
+  padding: 0 !important;
+}
+
+.btn-view {
+  color: #52c41a;
+  border-color: #52c41a;
+}
+
+.btn-view:hover {
+  background: #52c41a;
+  color: #fff;
+}
+
+/* Tags */
+:host ::ng-deep .ant-tag {
+  border-radius: 4px;
+  font-size: 12px;
+  padding: 2px 8px;
+  margin: 2px;
+}

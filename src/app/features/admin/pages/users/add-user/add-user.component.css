@@ -1,0 +1,9 @@
+/* Style nút đóng modal chỉ xanh khi hover */
+.ant-modal-close, .ant-modal-close .ant-modal-close-x {
+	color: #888 !important;
+	background: transparent !important;
+	transition: color 0.2s;
+}
+.ant-modal-close:hover, .ant-modal-close:hover .ant-modal-close-x {
+	color: #52c41a !important;
+}

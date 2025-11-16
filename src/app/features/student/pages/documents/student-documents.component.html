@@ -1,0 +1,65 @@
+<div class="student-documents">
+  <div class="header">
+    <h2>
+      <span nz-icon nzType="folder-open" class="header-icon"></span>
+      Tài liệu học tập
+    </h2>
+  </div>
+
+  <nz-spin *ngIf="loading" nzTip="Đang tải tài liệu..."></nz-spin>
+
+  <nz-table
+    *ngIf="!loading && documents.length > 0"
+    [nzData]="documents"
+    [nzSize]="'small'"
+    [nzBordered]="true"
+    [nzPageSize]="10">
+    <thead>
+      <tr>
+        <th nzWidth="50px" nzAlign="center">#</th>
+        <th>Tên tài liệu</th>
+        <th nzWidth="100px" nzAlign="center">Loại</th>
+        <th nzWidth="100px" nzAlign="center">Kích thước</th>
+        <th nzWidth="140px" nzAlign="center">Ngày tải lên</th>
+        <th nzWidth="80px" nzAlign="center">Thao tác</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let document of documents; let i = index">
+        <td nzAlign="center">{{ i + 1 }}</td>
+        <td>
+          <span nz-icon [nzType]="getFileIcon(document.fileName)" class="file-icon-table"></span>
+          <span class="file-name-text">{{ document.fileName }}</span>
+        </td>
+        <td nzAlign="center">
+          <nz-tag [nzColor]="'blue'" class="file-type-tag">{{ getFileType(document) }}</nz-tag>
+        </td>
+        <td nzAlign="center">{{ formatFileSize(document.fileSize) }}</td>
+        <td nzAlign="center">{{ document.uploadedAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+        <td nzAlign="center">
+          <button
+            nz-button
+            nzType="text"
+            nzSize="small"
+            class="download-btn"
+            (click)="downloadDocument(document)"
+            nz-tooltip="Tải xuống">
+            <span nz-icon nzType="download"></span>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+
+  <div *ngIf="!loading && documents.length === 0" class="empty-state">
+    <nz-empty
+      nzNotFoundImage="simple"
+      nzNotFoundContent="Chưa có tài liệu nào">
+      <p class="empty-description">
+        <span nz-icon nzType="info-circle" nzTheme="outline"></span>
+        Giáo viên chưa tải lên tài liệu cho lớp học này.<br>
+        Vui lòng quay lại sau.
+      </p>
+    </nz-empty>
+  </div>
+</div>

@@ -1,0 +1,188 @@
+<nz-layout class="student-layout">
+  <!-- Header -->
+  <nz-header class="header">
+    <div class="logo">
+      <button
+        nz-button
+        nzType="text"
+        nzSize="large"
+        (click)="isCollapsed = !isCollapsed"
+        class="trigger"
+        [nz-tooltip]="isCollapsed ? 'Mở rộng menu' : 'Thu gọn menu'"
+        nzTooltipPlacement="right"
+        [title]="isCollapsed ? 'Mở rộng menu' : 'Thu gọn menu'">
+        <span nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></span>
+      </button>
+      <div class="logo-wrapper">
+        <div class="logo-icon">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- Graduation Cap -->
+            <path d="M50 20 L10 35 L50 50 L90 35 L50 20 Z" fill="#3bb273"/>
+            <path d="M50 50 L90 35 L90 55 L50 70 L10 55 L10 35 L50 50 Z" fill="#2d9960" opacity="0.8"/>
+            <!-- Tassel -->
+            <circle cx="50" cy="20" r="3" fill="#faad14"/>
+            <line x1="50" y1="20" x2="50" y2="12" stroke="#faad14" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <div class="brand-name">TOEIC DOWNTOWN</div>
+          <div class="brand-subtitle">Student Portal</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <nz-dropdown nzTrigger="click" [nzPlacement]="'bottomRight'">
+        <div class="user-info" nz-dropdown>
+          <nz-avatar nzIcon="user" [nzSize]="32"></nz-avatar>
+          <span class="username">{{ currentUser?.fullName  }}</span>
+          <span nz-icon nzType="down"></span>
+        </div>
+        <ul nz-menu nzSelectable="false">
+          <li nz-menu-item>
+            <span nz-icon nzType="user"></span>
+            Thông tin cá nhân
+          </li>
+          <li nz-menu-item>
+            <span nz-icon nzType="setting"></span>
+            Cài đặt
+          </li>
+          <li nz-menu-divider></li>
+          <li nz-menu-item (click)="logout()">
+            <span nz-icon nzType="logout"></span>
+            Đăng xuất
+          </li>
+        </ul>
+      </nz-dropdown>
+
+
+    </div>
+  </nz-header>
+
+  <nz-layout>
+    <!-- Sidebar - Main Menu -->
+    <nz-sider
+      *ngIf="!isClassManagementMode"
+      class="sidebar"
+      nzCollapsible
+      [(nzCollapsed)]="isCollapsed"
+      [nzTrigger]="null"
+      nzWidth="250px">
+      <ul nz-menu nzMode="inline" [nzInlineCollapsed]="isCollapsed" class="sidebar-menu">
+
+        <!-- Trang chủ - Dashboard tổng quan -->
+        <li nz-menu-item routerLink="/student/dashboard" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="home"></span>
+          <span>Trang chủ</span>
+        </li>
+
+        <!-- Lịch học -->
+        <li nz-menu-item routerLink="/student/schedule" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="calendar"></span>
+          <span>Lịch học</span>
+        </li>
+
+        <!-- Lớp học -->
+        <li nz-menu-item routerLink="/student/classes" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="read"></span>
+          <span>Lớp học</span>
+        </li>
+
+        <!-- Học phí & Thanh toán -->
+        <li nz-menu-item routerLink="/student/payments" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="credit-card"></span>
+          <span>Học phí & Thanh toán</span>
+        </li>
+
+
+        <!-- <li nz-menu-item routerLink="" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="calendar"></span>
+          <span>Tin nhắn</span>
+        </li> -->
+
+        <!-- Thông báo -->
+        <li nz-menu-item routerLink="/student/notifications" routerLinkActive="ant-menu-item-selected">
+          <nz-badge [nzCount]="newNotifications" [nzShowZero]="false" nzSize="small">
+            <span nz-icon nzType="bell"></span>
+          </nz-badge>
+          <span>Thông báo</span>
+        </li>
+
+      </ul>
+    </nz-sider>
+
+    <!-- Sidebar - Class Management Menu -->
+    <nz-sider
+      *ngIf="isClassManagementMode"
+      class="sidebar"
+      nzCollapsible
+      [(nzCollapsed)]="isCollapsed"
+      [nzTrigger]="null"
+      nzWidth="250px">
+
+      <!-- Class Header -->
+      <div class="class-sidebar-header" *ngIf="!isCollapsed">
+        <h3 class="class-name">{{ currentClassInfo?.name || 'Quản lý lớp' }}</h3>
+        <button nz-button nzType="text" nzSize="small" (click)="backToClasses()" class="back-button">
+          <span nz-icon nzType="arrow-left"></span>
+          Quay lại
+        </button>
+      </div>
+      <div class="class-sidebar-header-collapsed" *ngIf="isCollapsed">
+        <button nz-button nzType="text" nzSize="small" (click)="backToClasses()" class="back-button-collapsed" nz-tooltip="Quay lại danh sách lớp" nzTooltipPlacement="right" title="Quay lại danh sách lớp">
+          <span nz-icon nzType="arrow-left"></span>
+        </button>
+      </div>
+
+      <ul nz-menu nzMode="inline" [nzInlineCollapsed]="isCollapsed" class="sidebar-menu">
+        <!-- Tổng quan -->
+        <li nz-menu-item [routerLink]="['/student/classes', currentClassId, 'overview']" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="dashboard" class="menu-icon"></span>
+          <span>Tổng quan</span>
+        </li>
+
+        <!-- Bài tập -->
+        <li nz-menu-item [routerLink]="['/student/classes', currentClassId, 'assignments']" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="file-text" class="menu-icon"></span>
+          <span>Bài tập</span>
+        </li>
+
+        <!-- Điểm -->
+        <li nz-menu-item [routerLink]="['/student/classes', currentClassId, 'grades']" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="trophy" class="menu-icon"></span>
+          <span>Điểm</span>
+        </li>
+
+        <!-- Tài liệu -->
+        <li nz-menu-item [routerLink]="['/student/classes', currentClassId, 'materials']" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="book" class="menu-icon"></span>
+          <span>Tài liệu</span>
+        </li>
+
+        <!-- Thông báo -->
+        <li nz-menu-item [routerLink]="['/student/classes', currentClassId, 'announcements']" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="notification" class="menu-icon"></span>
+          <span>Thông báo</span>
+        </li>
+
+        <!-- Điểm danh của tôi -->
+        <li nz-menu-item [routerLink]="['/student/classes', currentClassId, 'attendance']" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="check-circle" class="menu-icon"></span>
+          <span>Điểm danh của tôi</span>
+        </li>
+      </ul>
+    </nz-sider>
+
+    <!-- Content -->
+    <nz-layout class="inner-layout">
+      <nz-content class="content">
+        <div class="content-wrapper">
+          <router-outlet></router-outlet>
+        </div>
+      </nz-content>
+    </nz-layout>
+  </nz-layout>
+</nz-layout>
+
+<!-- Chatbox -->
+<app-chatbox></app-chatbox>

@@ -1,0 +1,169 @@
+<div class="notifications-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>
+        <span nz-icon nzType="bell" nzTheme="fill"></span>
+        Tất cả thông báo
+      </h1>
+      <p class="subtitle">Xem tất cả thông báo từ các lớp học của bạn</p>
+    </div>
+    <div class="header-stats" *ngIf="!loading">
+      <nz-statistic
+        [nzValue]="announcements.length"
+        nzTitle="Tổng thông báo"
+        [nzValueStyle]="{ color: '#3bb273' }">
+      </nz-statistic>
+      <nz-statistic
+        [nzValue]="unreadCount"
+        nzTitle="Mới trong 24h"
+        [nzValueStyle]="{ color: '#faad14' }">
+      </nz-statistic>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <nz-card class="filter-card" *ngIf="myClasses.length > 0">
+    <div class="filters">
+      <div class="filter-item">
+        <label>
+          <span nz-icon nzType="filter" nzTheme="outline"></span>
+          Lọc theo lớp:
+        </label>
+        <nz-select
+          [(ngModel)]="selectedClassId"
+          nzPlaceHolder="Tất cả các lớp"
+          nzAllowClear
+          style="width: 250px;">
+          <nz-option [nzValue]="null" nzLabel="Tất cả các lớp"></nz-option>
+          <nz-option
+            *ngFor="let cls of myClasses"
+            [nzValue]="cls.id"
+            [nzLabel]="cls.name">
+          </nz-option>
+        </nz-select>
+      </div>
+
+      <div class="filter-item">
+        <label>
+          <span nz-icon nzType="search" nzTheme="outline"></span>
+          Tìm kiếm:
+        </label>
+        <nz-input-group [nzPrefix]="prefixTemplate" style="width: 300px;">
+          <input
+            type="text"
+            nz-input
+            [(ngModel)]="searchText"
+            placeholder="Tìm theo tiêu đề, nội dung..." />
+        </nz-input-group>
+        <ng-template #prefixTemplate>
+          <span nz-icon nzType="search"></span>
+        </ng-template>
+      </div>
+
+      <button
+        nz-button
+        nzType="default"
+        (click)="clearFilter()"
+        *ngIf="selectedClassId !== null || searchText">
+        <span nz-icon nzType="close-circle" nzTheme="outline"></span>
+        Xóa bộ lọc
+      </button>
+    </div>
+  </nz-card>
+
+  <!-- Announcements List -->
+  <div class="announcements-content">
+    <nz-spin [nzSpinning]="loading" nzTip="Đang tải thông báo...">
+
+      <!-- Empty State -->
+      <nz-empty
+        *ngIf="!loading && announcements.length === 0"
+        nzNotFoundContent="Chưa có thông báo nào"
+        [nzNotFoundImage]="'simple'"
+        class="empty-state">
+        <p nz-typography>Bạn chưa có lớp học nào hoặc giáo viên chưa gửi thông báo.</p>
+      </nz-empty>
+
+      <!-- No Results -->
+      <nz-empty
+        *ngIf="!loading && announcements.length > 0 && filteredAnnouncements.length === 0"
+        nzNotFoundContent="Không tìm thấy thông báo phù hợp"
+        [nzNotFoundImage]="'simple'"
+        class="empty-state">
+        <button nz-button nzType="primary" (click)="clearFilter()">
+          Xóa bộ lọc
+        </button>
+      </nz-empty>
+
+      <!-- Announcements -->
+      <div class="announcements-list" *ngIf="filteredAnnouncements.length > 0">
+        <div
+          class="announcement-card"
+          *ngFor="let announcement of filteredAnnouncements; let i = index"
+          [class.new-announcement]="isNew(announcement.createdAt)"
+          (click)="goToClass(announcement.classId)">
+
+          <!-- New Badge -->
+          <div class="announcement-badge" *ngIf="isNew(announcement.createdAt)">
+            <nz-badge nzStatus="success" nzText="Mới"></nz-badge>
+          </div>
+
+          <!-- Header -->
+          <div class="announcement-header">
+            <div class="header-left-content">
+              <div class="announcement-icon">
+                <span nz-icon nzType="sound" nzTheme="fill"></span>
+              </div>
+              <div class="announcement-title-section">
+                <h3 class="announcement-title">{{ announcement.title }}</h3>
+                <div class="announcement-meta">
+                  <nz-tag [nzColor]="'blue'" class="class-tag">
+                    <span nz-icon nzType="read" nzTheme="outline"></span>
+                    {{ announcement.className }}
+                  </nz-tag>
+                  <span class="meta-item">
+                    <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
+                    {{ formatDate(announcement.createdAt) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <button
+              nz-button
+              nzType="text"
+              class="view-detail-btn"
+              nz-tooltip="Xem chi tiết lớp học"
+              (click)="goToClass(announcement.classId); $event.stopPropagation()">
+              <span nz-icon nzType="arrow-right" nzTheme="outline"></span>
+            </button>
+          </div>
+
+          <!-- Body -->
+          <div class="announcement-body">
+            <p class="announcement-content">{{ announcement.content }}</p>
+          </div>
+
+          <!-- Footer -->
+          <div class="announcement-footer">
+            <div class="footer-left">
+              <span class="announcement-number">#{{ filteredAnnouncements.length - i }}</span>
+            </div>
+            <div class="footer-right">
+              <nz-tag [nzColor]="'green'">
+                <span nz-icon nzType="user" nzTheme="outline"></span>
+                Từ giáo viên
+              </nz-tag>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-wrapper" *ngIf="filteredAnnouncements.length > 10">
+        <!-- You can add pagination here if needed -->
+      </div>
+
+    </nz-spin>
+  </div>
+</div>

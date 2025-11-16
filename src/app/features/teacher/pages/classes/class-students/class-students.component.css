@@ -1,0 +1,13 @@
+.class-students {
+  padding: 0;
+}
+
+.class-students h2 {
+  margin-bottom: 24px;
+  color: #262626;
+}
+
+.empty-state {
+  padding: 48px 0;
+  text-align: center;
+}

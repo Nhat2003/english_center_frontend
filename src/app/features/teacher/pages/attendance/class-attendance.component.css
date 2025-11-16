@@ -1,0 +1,393 @@
+.attendance-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.date-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.date-picker-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.date-picker-section label {
+  font-weight: 500;
+  margin-bottom: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.summary-section {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+}
+
+.attendance-table-card {
+  margin-top: 24px;
+}
+
+.status-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.status-btn {
+  flex: 0 0 auto;
+  min-width: 95px;
+  height: 36px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+}
+
+.status-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.status-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Present button - Green theme */
+.present-btn[nz-button-type="primary"] {
+  background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%) !important;
+  border-color: #52c41a !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(82, 196, 26, 0.35) !important;
+}
+
+.present-btn[nz-button-type="primary"]:hover {
+  background: linear-gradient(135deg, #73d13d 0%, #95de64 100%) !important;
+  border-color: #73d13d !important;
+  box-shadow: 0 6px 16px rgba(82, 196, 26, 0.45) !important;
+}
+
+.present-btn[nz-button-type="default"] {
+  color: #52c41a;
+  border-color: #b7eb8f;
+  background-color: #f6ffed;
+}
+
+.present-btn[nz-button-type="default"]:hover {
+  color: #73d13d;
+  border-color: #52c41a;
+  background-color: #d9f7be;
+}
+
+/* Late button - Orange/Warning theme */
+.late-btn[nz-button-type="primary"] {
+  background: linear-gradient(135deg, #faad14 0%, #ffc53d 100%) !important;
+  border-color: #faad14 !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(250, 173, 20, 0.35) !important;
+}
+
+.late-btn[nz-button-type="primary"]:hover {
+  background: linear-gradient(135deg, #ffc53d 0%, #ffd666 100%) !important;
+  border-color: #ffc53d !important;
+  box-shadow: 0 6px 16px rgba(250, 173, 20, 0.45) !important;
+}
+
+.late-btn[nz-button-type="default"] {
+  color: #faad14;
+  border-color: #ffe58f;
+  background-color: #fffbe6;
+}
+
+.late-btn[nz-button-type="default"]:hover {
+  color: #ffc53d;
+  border-color: #faad14;
+  background-color: #fff1b8;
+}
+
+/* Absent button - Red theme */
+.absent-btn[nz-button-type="primary"] {
+  background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%) !important;
+  border-color: #ff4d4f !important;
+  color: white !important;
+  font-weight: 500 !important;
+  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.35) !important;
+}
+
+.absent-btn[nz-button-type="primary"]:hover {
+  background: linear-gradient(135deg, #ff7875 0%, #ffa39e 100%) !important;
+  border-color: #ff7875 !important;
+  color: white !important;
+  box-shadow: 0 6px 16px rgba(255, 77, 79, 0.45) !important;
+}
+
+.absent-btn[nz-button-type="default"] {
+  color: #cf1322 !important;
+  font-weight: 500 !important;
+  border-color: #ffccc7;
+  background-color: #fff2f0;
+}
+
+.absent-btn[nz-button-type="default"]:hover {
+  color: #a8071a !important;
+  border-color: #ff4d4f;
+  background-color: #ffe7e7;
+}
+
+/* Icon styling inside buttons */
+.status-btn [nz-icon] {
+  margin-right: 6px;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.status-btn[nz-button-type="primary"] [nz-icon] {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+nz-radio-group {
+  display: flex;
+  gap: 12px;
+}
+
+nz-radio-group label {
+  margin-bottom: 0;
+}
+
+.empty-state {
+  padding: 48px 0;
+  text-align: center;
+}
+
+/* Student name styling */
+.student-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.student-info strong {
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.status-tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  line-height: 18px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.status-buttons + td input {
+  width: 100%;
+}
+
+tbody tr td strong {
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 14px;
+}
+
+tbody tr td:nth-child(3) {
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 13px;
+}
+
+/* STT column styling */
+tbody tr td:first-child {
+  text-align: center;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.45);
+  background-color: #fafafa;
+  font-size: 13px;
+}
+
+/* Note input styling */
+tbody tr td input[nz-input] {
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+tbody tr td input[nz-input]:focus {
+  box-shadow: 0 0 0 2px rgba(59, 178, 115, 0.1);
+  border-color: var(--primary-color, #3bb273);
+}
+
+tbody tr td input[nz-input]:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.bottom-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 16px 24px;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* Ensure main content has bottom padding to not be hidden by fixed bar */
+.attendance-container {
+  padding-bottom: 80px;
+}
+
+/* Override ng-zorro styles for better attendance UX */
+::ng-deep .ant-table-tbody > tr > td {
+  vertical-align: middle;
+  padding: 12px;
+}
+
+::ng-deep .ant-table-thead > tr > th {
+  background: linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%);
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+  padding: 14px 12px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+/* Highlight row on hover with smooth transition */
+::ng-deep .ant-table-tbody > tr {
+  transition: all 0.3s ease;
+}
+
+::ng-deep .ant-table-tbody > tr:hover {
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Add subtle border to cells */
+::ng-deep .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #f5f5f5;
+}
+
+::ng-deep .ant-statistic-title {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+::ng-deep .ant-statistic-content {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .date-summary-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .summary-section {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .bottom-actions {
+    flex-direction: column;
+  }
+
+  .bottom-actions button {
+    width: 100%;
+  }
+
+  /* Stack buttons vertically on small screens */
+  .status-buttons {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+
+  .status-btn {
+    min-width: 80px;
+    font-size: 12px;
+    height: 32px;
+  }
+
+  .status-btn [nz-icon] {
+    margin-right: 4px;
+    font-size: 12px;
+  }
+
+  ::ng-deep .ant-table-tbody > tr > td {
+    padding: 8px 6px;
+  }
+}
+
+/* Medium screens */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .status-btn {
+    min-width: 90px;
+  }
+}
+
+/* Primary color theme */
+::ng-deep .ant-btn-primary {
+  background-color: var(--primary-color, #3bb273);
+  border-color: var(--primary-color, #3bb273);
+}
+
+::ng-deep .ant-btn-primary:hover,
+::ng-deep .ant-btn-primary:focus {
+  background-color: #2d8a5a;
+  border-color: #2d8a5a;
+}
+
+::ng-deep .ant-radio-checked .ant-radio-inner {
+  border-color: var(--primary-color, #3bb273);
+  background-color: var(--primary-color, #3bb273);
+}
+
+::ng-deep .ant-radio-wrapper:hover .ant-radio,
+::ng-deep .ant-radio:hover .ant-radio-inner,
+::ng-deep .ant-radio-input:focus + .ant-radio-inner {
+  border-color: var(--primary-color, #3bb273);
+}
+
+::ng-deep .ant-tag-blue {
+  color: var(--primary-color, #3bb273);
+  background: #f0fdf4;
+  border-color: #86efac;
+}

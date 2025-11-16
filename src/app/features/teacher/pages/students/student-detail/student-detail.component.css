@@ -1,0 +1,471 @@
+.student-detail-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* Header */
+.detail-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  background: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.back-btn {
+  font-size: 16px;
+  color: var(--primary-color, #3bb273);
+  padding: 0;
+  margin-right: 16px;
+}
+
+.back-btn:hover {
+  color: #2d8a5a;
+}
+
+.detail-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-icon {
+  font-size: 28px;
+  color: var(--primary-color, #3bb273);
+}
+
+/* Info Card */
+.info-card {
+  margin-bottom: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.info-card:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.avatar-section {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 0;
+}
+
+.student-avatar {
+  background: linear-gradient(135deg, var(--primary-color, #3bb273) 0%, #52c41a 100%);
+  font-size: 40px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(59, 178, 115, 0.3);
+}
+
+.student-name-section h3 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+/* Descriptions */
+::ng-deep .ant-descriptions-bordered .ant-descriptions-item-label {
+  background-color: #fafafa;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+::ng-deep .ant-descriptions-item-content {
+  color: rgba(0, 0, 0, 0.65);
+}
+
+::ng-deep .ant-descriptions-item-content [nz-icon] {
+  margin-right: 6px;
+  color: var(--primary-color, #3bb273);
+}
+
+/* Stats Row */
+.stats-row {
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  overflow: hidden;
+  position: relative;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, rgba(0,0,0,0.1) 0%, transparent 100%);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.present-card::before {
+  background: linear-gradient(90deg, #52c41a 0%, #73d13d 100%);
+}
+
+.late-card::before {
+  background: linear-gradient(90deg, #faad14 0%, #ffc53d 100%);
+}
+
+.absent-card::before {
+  background: linear-gradient(90deg, #ff4d4f 0%, #ff7875 100%);
+}
+
+.rate-card::before {
+  background: linear-gradient(90deg, #1890ff 0%, #40a9ff 100%);
+}
+
+.stat-icon {
+  font-size: 24px;
+  margin-right: 8px;
+}
+
+::ng-deep .ant-statistic-title {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.65);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+::ng-deep .ant-statistic-content {
+  font-size: 32px;
+  font-weight: 600;
+}
+
+/* Tabs Card */
+.tabs-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+::ng-deep .ant-tabs-tab {
+  font-size: 15px;
+  font-weight: 500;
+  padding: 12px 16px;
+}
+
+::ng-deep .ant-tabs-tab [nz-icon] {
+  margin-right: 6px;
+}
+
+::ng-deep .ant-tabs-tab.ant-tabs-tab-active {
+  color: var(--primary-color, #3bb273);
+}
+
+::ng-deep .ant-tabs-ink-bar {
+  background-color: var(--primary-color, #3bb273);
+}
+
+/* Table Styles */
+::ng-deep .ant-table-thead > tr > th {
+  background: linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%);
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+  border-bottom: 2px solid #f0f0f0;
+}
+
+::ng-deep .ant-table-tbody > tr {
+  transition: all 0.3s ease;
+}
+
+::ng-deep .ant-table-tbody > tr:hover {
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Submissions Grid */
+.submissions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.submission-card {
+  border-radius: 12px;
+  border: 1px solid #f0f0f0;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.submission-card:hover {
+  border-color: var(--primary-color, #3bb273);
+  box-shadow: 0 6px 16px rgba(59, 178, 115, 0.15);
+}
+
+.submission-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.submission-icon {
+  font-size: 24px;
+  color: var(--primary-color, #3bb273);
+}
+
+.submission-info {
+  flex: 1;
+}
+
+.submission-date {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.submission-date [nz-icon] {
+  margin-right: 4px;
+}
+
+.grade-tag {
+  font-size: 16px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 8px;
+}
+
+.submission-content {
+  margin-top: 12px;
+}
+
+.submission-field {
+  margin-bottom: 16px;
+}
+
+.submission-field strong {
+  display: block;
+  margin-bottom: 4px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.submission-field p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.submission-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Empty State */
+::ng-deep .ant-empty {
+  padding: 40px 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .student-detail-container {
+    padding: 16px;
+  }
+
+  .detail-header {
+    padding: 12px 16px;
+  }
+
+  .detail-header h2 {
+    font-size: 20px;
+  }
+
+  .avatar-section {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .student-name-section h3 {
+    font-size: 22px;
+  }
+
+  .submissions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  ::ng-deep .ant-descriptions-bordered .ant-descriptions-item {
+    display: block;
+  }
+
+  ::ng-deep .ant-descriptions-bordered .ant-descriptions-item-label,
+  ::ng-deep .ant-descriptions-bordered .ant-descriptions-item-content {
+    display: block;
+    width: 100%;
+  }
+}
+
+/* Primary Color Theme */
+::ng-deep .ant-btn-primary {
+  background-color: var(--primary-color, #3bb273);
+  border-color: var(--primary-color, #3bb273);
+}
+
+::ng-deep .ant-btn-primary:hover,
+::ng-deep .ant-btn-primary:focus {
+  background-color: #2d8a5a;
+  border-color: #2d8a5a;
+}
+
+::ng-deep .ant-tag-blue {
+  color: var(--primary-color, #3bb273);
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+/* Loading State */
+::ng-deep .ant-spin-nested-loading {
+  min-height: 400px;
+}
+
+/* Smooth Animations */
+.detail-content {
+  animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tags in table */
+::ng-deep .ant-tag {
+  border-radius: 6px;
+  padding: 2px 10px;
+  font-weight: 500;
+}
+
+/* Grade Statistics Cards */
+.grade-stat-card {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  overflow: hidden;
+  position: relative;
+  background: white;
+}
+
+.grade-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, rgba(0,0,0,0.1) 0%, transparent 100%);
+}
+
+.grade-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Grade Badge Styles */
+.grade-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  min-width: 70px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.grade-badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.grade-badge.grade-success {
+  background: linear-gradient(135deg, #3bb273 0%, #2e8b57 100%);
+  color: white;
+}
+
+.grade-badge.grade-processing {
+  background: linear-gradient(135deg, #2e8b57 0%, #1e6f47 100%);
+  color: white;
+}
+
+.grade-badge.grade-warning {
+  background: linear-gradient(135deg, #faad14 0%, #fa8c16 100%);
+  color: white;
+}
+
+.grade-badge.grade-error {
+  background: linear-gradient(135deg, #ff4d4f 0%, #f5222d 100%);
+  color: white;
+}
+
+/* Assignment Cell */
+.assignment-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Grades Table Specific Styles */
+::ng-deep .ant-table-tbody > tr > td {
+  vertical-align: middle;
+}
+
+::ng-deep .ant-badge-status-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Responsive adjustments for grades */
+@media (max-width: 768px) {
+  .grade-stat-card {
+    margin-bottom: 12px;
+  }
+
+  .grade-badge {
+    font-size: 13px;
+    padding: 4px 12px;
+    min-width: 60px;
+  }
+
+  .assignment-cell {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 576px) {
+  ::ng-deep .ant-statistic-content {
+    font-size: 24px !important;
+  }
+
+  ::ng-deep .ant-table {
+    font-size: 12px;
+  }
+}

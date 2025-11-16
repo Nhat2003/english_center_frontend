@@ -1,0 +1,113 @@
+.add-payment-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.ant-card {
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.ant-form-item {
+  margin-bottom: 24px;
+}
+
+.ant-form-item-label > label {
+  font-weight: 500;
+}
+
+.ant-input-number {
+  width: 100%;
+}
+
+.ant-select {
+  width: 100%;
+}
+
+.ant-btn-primary {
+  background-color: #1890ff;
+  border-color: #1890ff;
+}
+
+.ant-btn-primary:hover {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
+}
+
+.ant-form-item-explain-error {
+  color: #ff4d4f;
+  font-size: 12px;
+}
+
+/* Required field asterisk */
+.ant-form-item-required::before {
+  color: #ff4d4f;
+}
+
+/* Form validation styles */
+.ant-form-item-has-error .ant-input,
+.ant-form-item-has-error .ant-select-selector,
+.ant-form-item-has-error .ant-input-number {
+  border-color: #ff4d4f;
+}
+
+.ant-form-item-has-error .ant-input:focus,
+.ant-form-item-has-error .ant-select-focused .ant-select-selector,
+.ant-form-item-has-error .ant-input-number-focused {
+  border-color: #ff4d4f;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .add-payment-container {
+    max-width: 100%;
+    padding: 0 16px;
+  }
+
+  .ant-form-item-label {
+    text-align: left !important;
+  }
+
+  .ant-col-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .ant-col-18 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .ant-col-3 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .ant-col-21 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+/* Button styles */
+.ant-btn-lg {
+  height: 40px;
+  padding: 6px 15px;
+  font-size: 16px;
+  border-radius: 6px;
+}
+
+/* Input styles */
+.ant-input,
+.ant-select-selector,
+.ant-input-number-input {
+  border-radius: 6px;
+}
+
+.ant-input:focus,
+.ant-select-focused .ant-select-selector,
+.ant-input-number-focused {
+  border-color: #40a9ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}

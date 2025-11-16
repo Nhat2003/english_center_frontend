@@ -1,0 +1,27 @@
+<div class="class-tabs-container">
+  <!-- Header -->
+  <div class="class-header">
+    <button nz-button nzType="text" (click)="goBack()" class="back-btn">
+      <i nz-icon nzType="arrow-left"></i>
+      Quay lại
+    </button>
+    <h2 class="class-name">
+      <i nz-icon nzType="read"></i>
+      {{ className }}
+    </h2>
+  </div>
+
+  <!-- Tabs -->
+  <nz-tabset
+    [(nzSelectedIndex)]="selectedIndex"
+    (nzSelectedIndexChange)="onTabChange($event)"
+    nzType="card"
+    class="class-tabs">
+    <nz-tab *ngFor="let tab of tabs" [nzTitle]="tabTitle">
+      <ng-template #tabTitle>
+        <i nz-icon [nzType]="tab.icon"></i>
+        {{ tab.label }}
+      </ng-template>
+    </nz-tab>
+  </nz-tabset>
+</div>

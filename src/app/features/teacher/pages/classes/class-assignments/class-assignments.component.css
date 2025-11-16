@@ -1,0 +1,459 @@
+/* Variables */
+:host {
+  --primary-color: #3bb273;
+}
+
+.class-assignments {
+  padding: 0;
+}
+
+/* Page Header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.page-header h2 {
+  margin: 0;
+  color: #262626;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.page-header button {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  box-shadow: 0 2px 4px rgba(59, 178, 115, 0.2);
+}
+
+.page-header button:hover {
+  background-color: #2d9960;
+  border-color: #2d9960;
+  box-shadow: 0 4px 8px rgba(59, 178, 115, 0.3);
+}
+
+/* Table Styles */
+.assignments-table {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.assignments-table ::ng-deep .ant-table {
+  font-size: 14px;
+}
+
+.assignments-table ::ng-deep .ant-table-container {
+  overflow-x: auto;
+}
+
+.assignments-table ::ng-deep .ant-table-content {
+  overflow-x: auto;
+}
+
+.assignments-table ::ng-deep .ant-table-thead > tr > th {
+  background-color: #fafafa;
+  color: #262626;
+  font-weight: 600;
+  border-bottom: 2px solid #f0f0f0;
+  padding: 12px 8px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.assignments-table ::ng-deep .ant-table-tbody > tr {
+  transition: all 0.3s;
+}
+
+.assignments-table ::ng-deep .ant-table-tbody > tr:hover {
+  background-color: rgba(59, 178, 115, 0.03);
+}
+
+/* Table cell padding and alignment */
+.assignments-table ::ng-deep .ant-table-tbody > tr > td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #f5f5f5;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* Assignment Title */
+.assignment-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.title-text {
+  font-weight: 500;
+  color: #262626;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.detail-link {
+  color: #1890ff;
+  padding: 0;
+  height: auto;
+  font-size: 12px;
+}
+
+.detail-link:hover {
+  color: #40a9ff;
+}
+
+/* Completion Rate */
+.completion-rate {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  color: #595959;
+  font-weight: 500;
+  font-size: 13px;
+  min-width: 50px;
+  text-align: center;
+}
+
+.completion-rate.high {
+  background-color: rgba(59, 178, 115, 0.1);
+  color: var(--primary-color);
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: inline-flex;
+  gap: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-btn,
+.delete-btn {
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  min-width: auto;
+  border-radius: 4px;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+
+.edit-btn {
+  color: var(--primary-color);
+}
+
+.edit-btn:hover {
+  background-color: rgba(59, 178, 115, 0.1);
+  color: #2d9960;
+}
+
+.delete-btn {
+  color: #ff4d4f !important;
+}
+
+.delete-btn:hover {
+  background-color: rgba(255, 77, 79, 0.1) !important;
+  color: #cf1322 !important;
+  border-color: transparent !important;
+}
+
+.edit-btn span[nz-icon],
+.delete-btn span[nz-icon] {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Due Date */
+.due-date {
+  color: #595959;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Pagination */
+.assignments-table ::ng-deep .ant-pagination {
+  margin: 16px 0;
+}
+
+.assignments-table ::ng-deep .ant-pagination-item-active {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.assignments-table ::ng-deep .ant-pagination-item-active a {
+  color: #fff;
+}
+
+.assignments-table ::ng-deep .ant-pagination-item:hover {
+  border-color: var(--primary-color);
+}
+
+.assignments-table ::ng-deep .ant-pagination-item:hover a {
+  color: var(--primary-color);
+}
+
+/* Empty State */
+.empty-state {
+  padding: 48px 0;
+  text-align: center;
+}
+
+.empty-state button {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.empty-state button:hover {
+  background-color: #2d9960;
+  border-color: #2d9960;
+}
+
+/* Tags */
+.assignments-table ::ng-deep nz-tag {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* Checkbox */
+.assignments-table ::ng-deep .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.assignments-table ::ng-deep .ant-checkbox-wrapper:hover .ant-checkbox-inner,
+.assignments-table ::ng-deep .ant-checkbox:hover .ant-checkbox-inner {
+  border-color: var(--primary-color);
+}
+
+/* Responsive Design - Horizontal Scroll for all screen sizes */
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .page-header button {
+    width: 100%;
+  }
+
+  /* Enable horizontal scroll */
+  .assignments-table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .assignments-table ::ng-deep .ant-table {
+    font-size: 13px;
+    min-width: 900px; /* Force horizontal scroll */
+  }
+
+  .assignments-table ::ng-deep .ant-table-thead > tr > th,
+  .assignments-table ::ng-deep .ant-table-tbody > tr > td {
+    padding: 10px 6px;
+  }
+
+  /* Adjust action buttons */
+  .edit-btn,
+  .delete-btn {
+    width: 26px;
+    height: 26px;
+  }
+
+  .edit-btn span[nz-icon],
+  .delete-btn span[nz-icon] {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 576px) {
+  .class-assignments {
+    padding: 0;
+  }
+
+  .page-header h2 {
+    font-size: 18px;
+  }
+
+  /* Smaller font but keep horizontal scroll */
+  .assignments-table ::ng-deep .ant-table {
+    font-size: 12px;
+    min-width: 800px; /* Smaller min-width for very small screens */
+  }
+
+  .assignments-table ::ng-deep .ant-table-thead > tr > th,
+  .assignments-table ::ng-deep .ant-table-tbody > tr > td {
+    padding: 8px 4px;
+  }
+
+  /* Smaller buttons on very small screens */
+  .page-header button {
+    font-size: 13px;
+    padding: 4px 8px;
+    height: 36px;
+  }
+
+  .edit-btn,
+  .delete-btn {
+    width: 24px;
+    height: 24px;
+  }
+
+  .edit-btn span[nz-icon],
+  .delete-btn span[nz-icon] {
+    font-size: 12px;
+  }
+}
+
+/* Tablet landscape */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .assignments-table ::ng-deep .ant-table {
+    font-size: 13px;
+  }
+
+  .assignments-table ::ng-deep .ant-table-thead > tr > th,
+  .assignments-table ::ng-deep .ant-table-tbody > tr > td {
+    padding: 10px 6px;
+  }
+}
+
+/* Create Assignment Modal */
+.create-assignment-form {
+  padding: 24px 0;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #262626;
+  font-size: 14px;
+}
+
+.form-label.required::after {
+  content: " *";
+  color: #ff4d4f;
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+}
+
+.form-textarea {
+  resize: vertical;
+}
+
+/* Upload Section */
+.upload-section {
+  width: 100%;
+}
+
+.upload-btn {
+  width: 100%;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 2px dashed #d9d9d9;
+  background-color: #fafafa;
+  transition: all 0.3s;
+}
+
+.upload-btn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.uploaded-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  border: 1px solid #d9d9d9;
+}
+
+.uploaded-file-compact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  border: 1px solid #d9d9d9;
+  font-size: 12px;
+}
+
+.uploaded-file-compact .file-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.uploaded-file-compact .file-icon {
+  font-size: 14px;
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.uploaded-file-compact .file-name {
+  font-weight: 500;
+  color: #262626;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.file-icon {
+  font-size: 20px;
+  color: var(--primary-color);
+}
+
+.file-name {
+  font-weight: 500;
+  color: #262626;
+}
+
+.file-size {
+  font-size: 12px;
+  color: #8c8c8c;
+}

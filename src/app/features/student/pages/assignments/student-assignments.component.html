@@ -1,0 +1,117 @@
+<div class="student-assignments">
+  <!-- Page Header v?i Stats -->
+  <div class="page-header">
+    <div class="header-top">
+      <div class="header-content">
+        <div class="title-section">
+          <h2> Bài tập</h2>
+          <p class="subtitle"></p>
+        </div>
+      </div>
+
+      <!-- Statistics Cards - Horizontal Layout -->
+      <div class="stats-row">
+        <div class="stat-card total">
+          <div class="stat-icon">
+            <span nz-icon nzType="book" nzTheme="outline"></span>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ totalAssignments }}</div>
+            <div class="stat-label">Tổng bài tập</div>
+          </div>
+        </div>
+
+        <div class="stat-card pending">
+          <div class="stat-icon">
+            <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ pendingAssignments }}</div>
+            <div class="stat-label">Chưa nộp</div>
+          </div>
+        </div>
+
+        <div class="stat-card submitted">
+          <div class="stat-icon">
+            <span nz-icon nzType="check-circle" nzTheme="outline"></span>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ submittedAssignments }}</div>
+            <div class="stat-label">Đã nộp</div>
+          </div>
+        </div>
+
+        <div class="stat-card graded">
+          <div class="stat-icon">
+            <span nz-icon nzType="star" nzTheme="outline"></span>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ gradedAssignments }}</div>
+            <div class="stat-label">Đã chấm</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <nz-spin nzTip="Đang tải danh sách bài tập..."></nz-spin>
+  </div>
+
+  <!-- Assignments Grid -->
+  <div class="assignments-grid" *ngIf="!loading && filteredAssignments.length > 0">
+    <div
+      *ngFor="let assignment of filteredAssignments; let i = index"
+      class="assignment-card-wrapper"
+      [style.animation-delay.ms]="i * 50"
+      (click)="viewDetail(assignment)">
+
+      <div
+        class="assignment-card-simple"
+        [class.submitted]="assignment.submitted"
+        [class.graded]="assignment.submitted && assignment.grade !== undefined"
+        [class.overdue]="!assignment.submitted && isOverdue(assignment.dueDate)">
+
+        <!-- Status Badge -->
+        <nz-tag [nzColor]="getStatusColor(assignment)" class="status-badge">
+          {{ getStatusText(assignment) }}
+        </nz-tag>
+
+        <!-- Title -->
+        <h3 class="assignment-title">{{ assignment.title }}</h3>
+
+        <!-- Due Date -->
+        <div class="assignment-meta">
+          <span nz-icon nzType="calendar" nzTheme="outline"></span>
+          <span class="due-date">
+            Hạn nộp: {{ assignment.dueDate | date: 'dd/MM/yyyy HH:mm' }}
+          </span>
+        </div>
+
+        <!-- Days Left Indicator -->
+        <div class="days-indicator" *ngIf="!assignment.submitted && !isOverdue(assignment.dueDate)">
+          <span class="days-number">{{ getDaysLeft(assignment.dueDate) }}</span>
+          <span class="days-label">ngày còn lại</span>
+        </div>
+
+        <!-- Grade Display for Submitted -->
+        <div class="grade-badge" *ngIf="assignment.grade !== undefined">
+          <span class="grade-value">{{ assignment.grade }}/10</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && filteredAssignments.length === 0 && assignments.length === 0" class="empty-state">
+    <div class="empty-icon">
+      <span nz-icon nzType="book" nzTheme="outline"></span>
+    </div>
+    <h3>Chưa có bài tập nào</h3>
+    <p class="empty-description">
+      Giáo viên chưa giao bài tập cho lớp học.<br>
+      Vui lòng quay lại sau hoặc liên hệ giáo viên để biết thêm thông tin.
+    </p>
+  </div>
+</div>

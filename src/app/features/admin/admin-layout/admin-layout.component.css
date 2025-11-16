@@ -1,0 +1,73 @@
+/* :host ::ng-deep .ant-menu-item.ant-menu-item-selected {
+  padding-left: 0 !important;
+} */
+/* Căn giữa icon khi sidebar thu gọn */
+.menu-icon-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+/* Logo */
+
+.logo {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 30px;
+  color: #3bb273; /* primary */
+  border-bottom: 1px solid #f0f0f0;
+  background: white;
+  transition: all 0.3s;
+}
+
+.logo span {
+  transition: font-size 0.5s, padding 0.3s;
+}
+
+.logo span[ng-reflect-ng-if="true"] {
+  font-size: 18px;
+  padding: 0 8px;
+}
+.logo span[ng-reflect-ng-if="false"] {
+  font-size: 28px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.children-logo {
+  color: #2e8b57; /* secondary */
+}
+
+/* Menu item */
+:host ::ng-deep .ant-menu-item {
+  border-radius: 6px;
+  margin: 4px 8px;
+  transition: all 0.3s;
+}
+
+/* Hover */
+:host ::ng-deep .ant-menu-item:hover {
+  background: #e6f7ef !important; /* xanh lá nhạt khi hover */
+  color: #3bb273 !important; /* chữ màu primary */
+}
+
+/* Selected */
+:host ::ng-deep .ant-menu-item.ant-menu-item-selected {
+  background: #c5ecd8 !important; /* nền xanh dịu hơn */
+  color: #2e8b57 !important; /* chữ secondary */
+  border-right: 3px solid #3bb273 !important;
+}
+:host ::ng-deep .ant-menu-item.ant-menu-item-selected::after {
+  border-right: 3px solid #3bb273 !important; /* primary */
+  transition: 0.1s ease;
+}
+/* Selected menu item */
+:host ::ng-deep .ant-menu-item.ant-menu-item-selected {
+  background: #c5ecd8 !important; /* nền xanh dịu */
+  color: #2e8b57 !important; /* chữ secondary */
+}

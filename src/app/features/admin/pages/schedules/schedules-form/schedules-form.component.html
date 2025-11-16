@@ -1,0 +1,117 @@
+<div class="schedules-form-container">
+  <form nz-form [formGroup]="scheduleForm" (ngSubmit)="onSubmit()">
+    <div class="form-header">
+      <h3>
+        <span nz-icon nzType="calendar" nzTheme="outline"></span>
+        {{ isEditMode ? 'Cập nhật lịch học' : 'Thêm lịch học mới' }}
+      </h3>
+    </div>
+
+    <div class="form-content">
+      <!-- Tên lịch học -->
+      <nz-form-item>
+        <nz-form-label nzRequired nzFor="name">Tên lịch học</nz-form-label>
+        <nz-form-control nzErrorTip="Vui lòng nhập tên lịch học">
+          <input
+            nz-input
+            id="name"
+            formControlName="name"
+            placeholder="VD: Thứ 2, 4, 6 - Sáng"
+            [class.error]="scheduleForm.get('name')?.invalid && scheduleForm.get('name')?.touched"
+          />
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Mô tả -->
+      <nz-form-item>
+        <nz-form-label nzFor="description">Mô tả</nz-form-label>
+        <nz-form-control>
+          <textarea
+            nz-input
+            id="description"
+            formControlName="description"
+            placeholder="Nhập mô tả lịch học"
+            [nzAutosize]="{ minRows: 2, maxRows: 4 }"
+          ></textarea>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Thời gian bắt đầu -->
+      <nz-form-item>
+        <nz-form-label nzFor="startTime">Thời gian bắt đầu</nz-form-label>
+        <nz-form-control>
+          <nz-time-picker
+            id="startTime"
+            formControlName="startTime"
+            nzPlaceHolder="Chọn giờ bắt đầu"
+            nzFormat="HH:mm"
+            style="width: 100%"
+          ></nz-time-picker>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Thời gian kết thúc -->
+      <nz-form-item>
+        <nz-form-label nzFor="endTime">Thời gian kết thúc</nz-form-label>
+        <nz-form-control>
+          <nz-time-picker
+            id="endTime"
+            formControlName="endTime"
+            nzPlaceHolder="Chọn giờ kết thúc"
+            nzFormat="HH:mm"
+            style="width: 100%"
+          ></nz-time-picker>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Ngày trong tuần -->
+      <nz-form-item>
+        <nz-form-label nzFor="dayOfWeek">Ngày trong tuần</nz-form-label>
+        <nz-form-control>
+          <nz-select
+            id="dayOfWeek"
+            formControlName="dayOfWeek"
+            nzPlaceHolder="Chọn ngày trong tuần"
+            nzMode="multiple"
+            nzAllowClear
+          >
+            <nz-option nzValue="Thứ 2" nzLabel="Thứ 2"></nz-option>
+            <nz-option nzValue="Thứ 3" nzLabel="Thứ 3"></nz-option>
+            <nz-option nzValue="Thứ 4" nzLabel="Thứ 4"></nz-option>
+            <nz-option nzValue="Thứ 5" nzLabel="Thứ 5"></nz-option>
+            <nz-option nzValue="Thứ 6" nzLabel="Thứ 6"></nz-option>
+            <nz-option nzValue="Thứ 7" nzLabel="Thứ 7"></nz-option>
+            <nz-option nzValue="Chủ nhật" nzLabel="Chủ nhật"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div class="form-footer">
+      <div class="form-actions">
+        <button
+          nz-button
+          nzType="default"
+          type="button"
+          (click)="onCancel()"
+          class="btn-cancel"
+        >
+          <span nz-icon nzType="close" nzTheme="outline"></span>
+          Hủy
+        </button>
+        <button
+          nz-button
+          nzType="primary"
+          type="submit"
+          [nzLoading]="isLoading"
+          [disabled]="scheduleForm.invalid"
+          class="btn-submit"
+          *ngIf="mode !== 'view'"
+        >
+          <span nz-icon [nzType]="isEditMode ? 'edit' : 'plus'" nzTheme="outline"></span>
+          {{ isEditMode ? 'Cập nhật' : 'Thêm mới' }}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

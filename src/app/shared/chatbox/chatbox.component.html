@@ -1,0 +1,187 @@
+<!-- Chat Button (Floating Icon) -->
+<div class="chat-button messenger-btn" (click)="toggleChatbox()" *ngIf="!isOpen" title="Nhắn tin">
+  <nz-badge [nzCount]="getTotalUnreadCount()" [nzOffset]="[-5, 5]">
+    <span nz-icon nzType="message" nzTheme="outline" class="chat-icon"></span>
+  </nz-badge>
+</div>
+
+<!-- Chat Window -->
+<div class="chat-window" [hidden]="!isOpen" [class.minimized]="isMinimized">
+  <!-- Chat Header -->
+  <div class="chat-header">
+    <div class="chat-header-left" (click)="handleHeaderClick()">
+      <span nz-icon nzType="arrow-left" *ngIf="!showConversationList || showClassMembers" class="back-icon"></span>
+      <span nz-icon nzType="message" nzTheme="outline" class="header-icon" *ngIf="showConversationList && !showClassMembers"></span>
+      <div class="chat-title">
+        <div class="title-text">
+          {{ getHeaderTitle() }}
+        </div>
+        <div class="subtitle-text" *ngIf="showConversationList && !showClassView && !showClassMembers">
+          {{ conversations.length }} cuộc hội thoại
+        </div>
+        <div class="subtitle-text" *ngIf="showClassView && !showClassMembers">
+          {{ myClasses.length }} lớp học
+        </div>
+        <div class="subtitle-text" *ngIf="showClassMembers && selectedClass">
+          {{ selectedClass.students.length }} thành viên
+        </div>
+      </div>
+    </div>
+    <div class="chat-header-actions">
+      <button class="header-btn" (click)="toggleMinimize()">
+        <span nz-icon [nzType]="isMinimized ? 'plus' : 'minus'"></span>
+      </button>
+      <button class="header-btn close-btn" (click)="toggleChatbox()">
+        <span nz-icon nzType="close"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Chat Body -->
+  <div class="chat-body" *ngIf="!isMinimized">
+    <!-- Conversation List -->
+    <div class="conversation-list" *ngIf="showConversationList">
+      <!-- Tab switcher -->
+      <!-- Search Box -->
+      <div class="search-box">
+        <nz-input-group [nzPrefix]="prefixSearch">
+          <input
+            nz-input
+            type="text"
+            placeholder="Tìm kiếm người dùng cùng lớp..."
+            [(ngModel)]="searchText"
+            (ngModelChange)="onSearchChange()"
+          />
+        </nz-input-group>
+        <ng-template #prefixSearch>
+          <span nz-icon nzType="search"></span>
+        </ng-template>
+      </div>
+
+      <!-- Conversation View -->
+      <div class="conversations">
+        <!-- User search results -->
+        <div
+          class="user-item"
+          *ngFor="let user of searchResults"
+          (click)="startConversationWithUser(user)"
+        >
+          <nz-avatar
+            [nzText]="getInitial(user.fullName)"
+            [nzSize]="48"
+            [nzSrc]="user.avatar"
+            [ngStyle]="{'background': '#' + (user.id % 6 === 0 ? '1890ff' : user.id % 6 === 1 ? '52c41a' : user.id % 6 === 2 ? 'faad14' : user.id % 6 === 3 ? 'f5222d' : user.id % 6 === 4 ? '722ed1' : '13c2c2')}"
+          ></nz-avatar>
+          <div class="conversation-content">
+            <div class="conversation-header">
+              <span class="conversation-name">{{ user.fullName }}</span>
+              <span class="user-role-badge">{{ user.role === 'TEACHER' ? 'Giáo viên' : user.role === 'STUDENT' ? 'Học sinh' : 'User' }}</span>
+            </div>
+            <div class="conversation-message">
+              <span class="last-message">Nhấn để bắt đầu hội thoại</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- No search results -->
+        <div class="empty-state" *ngIf="searchText.trim() && searchResults.length === 0 && allUsers.length > 0">
+          <span nz-icon nzType="user-delete" nzTheme="outline" class="empty-icon"></span>
+          <p>Không tìm thấy người dùng</p>
+          <small class="text-muted">Tìm kiếm trong danh sách người dùng cùng lớp</small>
+        </div>
+
+        <!-- Loading classmates -->
+        <div class="empty-state" *ngIf="searchText.trim() && allUsers.length === 0">
+          <span nz-icon nzType="loading" nzTheme="outline" class="empty-icon spinning"></span>
+          <p>Đang tải danh sách...</p>
+        </div>
+
+        <!-- Existing conversations (only show when not searching) -->
+        <ng-container *ngIf="!searchText.trim()">
+          <div
+            class="conversation-item"
+            *ngFor="let conv of conversations"
+            (click)="selectConversation(conv)"
+            [class.unread]="conv.unreadCount > 0"
+          >
+            <div class="conversation-avatar">
+              <nz-badge [nzCount]="conv.unreadCount" [nzOffset]="[-8, 8]">
+                <nz-avatar
+                  [nzText]="getInitial(conv.otherUserFullName || conv.otherUserName || 'U')"
+                  [nzSize]="48"
+                  [nzSrc]="conv.otherUserAvatar"
+                  [ngStyle]="{'background': '#' + (conv.otherUserId % 6 === 0 ? '1890ff' : conv.otherUserId % 6 === 1 ? '52c41a' : conv.otherUserId % 6 === 2 ? 'faad14' : conv.otherUserId % 6 === 3 ? 'f5222d' : conv.otherUserId % 6 === 4 ? '722ed1' : '13c2c2')}"
+                ></nz-avatar>
+              </nz-badge>
+            </div>
+            <div class="conversation-content">
+              <div class="conversation-header">
+                <span class="conversation-name">{{ conv.otherUserFullName || conv.otherUserName || 'Unknown User' }}</span>
+                <span class="conversation-time">{{ getTimeAgo((conv.lastMessage?.sentAt || conv.lastAt) || '') }}</span>
+              </div>
+              <div class="conversation-message">
+                <span class="last-message">{{ getLastMessageContent(conv.lastMessage) || 'Chưa có tin nhắn' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-state" *ngIf="conversations.length === 0">
+            <span nz-icon nzType="inbox" nzTheme="outline" class="empty-icon"></span>
+            <p>Chưa có cuộc hội thoại nào</p>
+            <small class="text-muted">Tìm kiếm để bắt đầu nhắn tin với bạn cùng lớp</small>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="chat-content" *ngIf="!showConversationList && currentConversation">
+      <div class="chat-messages">
+        <div
+          class="message-wrapper"
+          *ngFor="let msg of messages"
+          [class.own]="msg.isOwn"
+        >
+          <div class="message-avatar" *ngIf="!msg.isOwn">
+            <nz-avatar
+              [nzText]="getInitial(currentConversation.otherUserFullName)"
+              [nzSize]="32"
+              [nzSrc]="currentConversation.otherUserAvatar"
+            ></nz-avatar>
+          </div>
+          <div class="message-bubble">
+            <div class="message-sender" *ngIf="!msg.isOwn">{{ currentConversation.otherUserFullName }}</div>
+            <div class="message-text">{{ msg.content }}</div>
+            <div class="message-time">{{ getMessageTime(msg.sentAt || '') }}</div>
+          </div>
+        </div>
+
+        <div class="empty-messages" *ngIf="messages.length === 0">
+          <span nz-icon nzType="message" nzTheme="outline" class="empty-icon"></span>
+          <p>Bắt đầu cuộc hội thoại</p>
+        </div>
+      </div>
+
+      <div class="chat-input">
+        <nz-input-group [nzSuffix]="suffixSend" class="message-input-group">
+          <input
+            nz-input
+            type="text"
+            placeholder="Nhập tin nhắn..."
+            [(ngModel)]="messageText"
+            (keyup.enter)="sendMessage()"
+          />
+        </nz-input-group>
+        <ng-template #suffixSend>
+          <button
+            class="send-btn"
+            (click)="sendMessage()"
+            [disabled]="!messageText.trim()"
+          >
+            <span nz-icon nzType="send" nzTheme="outline"></span>
+          </button>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

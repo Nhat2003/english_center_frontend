@@ -1,0 +1,39 @@
+<div class="class-students">
+  <h2>Danh sách học sinh</h2>
+
+  <nz-spin *ngIf="loading" nzTip="Đang tải học sinh..."></nz-spin>
+
+  <nz-table *ngIf="!loading && students.length > 0" [nzData]="students" nzBordered>
+    <thead>
+      <tr>
+        <th>STT</th>
+        <th>Họ tên</th>
+        <th>Email</th>
+        <th>Ngày sinh</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let student of students; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ student.fullName || student.name || student.ten }}</td>
+        <td>{{ student.email }}</td>
+        <td>{{ student.dob | date: 'dd/MM/yyyy' }}</td>
+        <td>
+          <button
+            nz-button
+            nzType="primary"
+            nzSize="small"
+            [routerLink]="['/teacher/students', student.id, 'detail']">
+            <span nz-icon nzType="eye"></span>
+            Xem chi tiết
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+
+  <div *ngIf="!loading && students.length === 0" class="empty-state">
+    <nz-empty nzNotFoundContent="Không có học sinh nào trong lớp này"></nz-empty>
+  </div>
+</div>

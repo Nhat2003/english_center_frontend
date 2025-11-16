@@ -1,0 +1,522 @@
+<div class="classes-form-container">
+  <form nz-form [formGroup]="classForm" (ngSubmit)="onSubmit()">
+    <div class="form-header">
+      <h3>
+        <span nz-icon nzType="apartment" nzTheme="outline"></span>
+        {{ isEditMode ? 'Cập nhật lớp học' : 'Thêm lớp học mới' }}
+      </h3>
+    </div>
+
+    <div class="form-content">
+      <!-- Tên lớp -->
+      <nz-form-item>
+        <nz-form-label nzRequired nzFor="name">Tên lớp học</nz-form-label>
+        <nz-form-control nzErrorTip="Vui lòng nhập tên lớp học">
+          <input
+            nz-input
+            id="name"
+            formControlName="name"
+            placeholder="Nhập tên lớp học"
+            [class.error]="classForm.get('name')?.invalid && classForm.get('name')?.touched"
+          />
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Mô tả -->
+      <nz-form-item>
+        <nz-form-label nzFor="description">Mô tả</nz-form-label>
+        <nz-form-control>
+          <textarea
+            nz-input
+            id="description"
+            formControlName="description"
+            placeholder="Nhập mô tả lớp học"
+            [nzAutosize]="{ minRows: 3, maxRows: 5 }"
+          ></textarea>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Chọn lịch học -->
+      <nz-form-item>
+        <nz-form-label nzRequired nzFor="fixedScheduleId">Lịch học</nz-form-label>
+        <nz-form-control nzErrorTip="Vui lòng chọn lịch học">
+          <nz-select
+            id="fixedScheduleId"
+            formControlName="fixedScheduleId"
+            nzPlaceHolder="Chọn lịch học"
+            nzShowSearch
+            nzAllowClear
+            [nzLoading]="isLoadingSchedules"
+            [class.error]="classForm.get('fixedScheduleId')?.invalid && classForm.get('fixedScheduleId')?.touched"
+          >
+            <nz-option
+              *ngFor="let schedule of schedules"
+              [nzValue]="schedule.id"
+              [nzLabel]="getScheduleDisplayText(schedule)"
+            >
+              <div class="schedule-option">
+                <span nz-icon nzType="calendar" nzTheme="outline"></span>
+                <span class="schedule-name">{{ getScheduleDisplayText(schedule) }}</span>
+              </div>
+            </nz-option>
+            <nz-option
+              *ngIf="schedules.length === 0 && !isLoadingSchedules"
+              nzDisabled
+              [nzValue]="null"
+              nzLabel="Không có lịch học nào"
+            ></nz-option>
+          </nz-select>
+          <small *ngIf="schedules.length === 0 && !isLoadingSchedules" style="color: #ff4d4f;">
+            Chưa có lịch học nào trong hệ thống. Vui lòng tạo lịch học trước.
+          </small>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Chọn giáo viên -->
+      <nz-form-item>
+        <nz-form-label nzRequired nzFor="teacherId">Giáo viên phụ trách</nz-form-label>
+        <nz-form-control nzErrorTip="Vui lòng chọn giáo viên">
+          <nz-select
+            id="teacherId"
+            formControlName="teacherId"
+            nzPlaceHolder="Chọn giáo viên"
+            nzShowSearch
+            nzAllowClear
+            [nzLoading]="isLoadingTeachers"
+            [class.error]="classForm.get('teacherId')?.invalid && classForm.get('teacherId')?.touched"
+          >
+            <nz-option
+              *ngFor="let teacher of teachers"
+              [nzValue]="teacher.id"
+              [nzLabel]="teacher.name"
+            >
+              <div class="teacher-option">
+                <span nz-icon nzType="user" nzTheme="outline"></span>
+                <span class="teacher-name">{{ teacher.name }}</span>
+                <span class="teacher-email">{{ teacher.email }}</span>
+              </div>
+            </nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Chọn khóa học -->
+      <nz-form-item>
+        <nz-form-label nzRequired nzFor="courseId">Khóa học</nz-form-label>
+        <nz-form-control nzErrorTip="Vui lòng chọn khóa học">
+          <nz-select
+            id="courseId"
+            formControlName="courseId"
+            nzPlaceHolder="Chọn khóa học"
+            nzShowSearch
+            nzAllowClear
+            [nzLoading]="isLoadingCourses"
+            [class.error]="classForm.get('courseId')?.invalid && classForm.get('courseId')?.touched"
+          >
+            <nz-option
+              *ngFor="let course of courses"
+              [nzValue]="course.id"
+              [nzLabel]="course.name"
+            >
+              <div class="course-option">
+                <span nz-icon nzType="book" nzTheme="outline"></span>
+                <span class="course-name">{{ course.name }}</span>
+                <nz-tag [nzColor]="getLevelColor(course.level)">{{ course.level }}</nz-tag>
+              </div>
+            </nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Chọn phòng học -->
+      <nz-form-item>
+        <nz-form-label nzFor="roomId">Phòng học</nz-form-label>
+        <nz-form-control>
+          <nz-select
+            id="roomId"
+            formControlName="roomId"
+            nzPlaceHolder="Chọn phòng học"
+            nzShowSearch
+            nzAllowClear
+            [nzLoading]="isLoadingRooms"
+          >
+            <nz-option
+              *ngFor="let room of rooms"
+              [nzValue]="room.id"
+              [nzLabel]="room.name"
+            >
+              <div class="room-option">
+                <span nz-icon nzType="home" nzTheme="outline"></span>
+                <span class="room-name">{{ room.name }}</span>
+                <span class="room-info" *ngIf="room.capacity">
+                  ({{ room.capacity }} chỗ)
+                </span>
+                <span class="room-location" *ngIf="room.location">
+                  - {{ room.location }}
+                </span>
+              </div>
+            </nz-option>
+            <nz-option
+              *ngIf="rooms.length === 0 && !isLoadingRooms"
+              nzDisabled
+              [nzValue]="null"
+              nzLabel="Không có phòng học nào"
+            ></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Ngày bắt đầu và kết thúc -->
+      <div class="date-range-row">
+        <nz-form-item class="half-width">
+          <nz-form-label nzRequired nzFor="startDate">Ngày bắt đầu</nz-form-label>
+          <nz-form-control nzErrorTip="Vui lòng chọn ngày bắt đầu">
+            <nz-date-picker
+              id="startDate"
+              formControlName="startDate"
+              nzPlaceHolder="Chọn ngày bắt đầu"
+              nzFormat="yyyy-MM-dd"
+              [class.error]="classForm.get('startDate')?.invalid && classForm.get('startDate')?.touched"
+              style="width: 100%;"
+            ></nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item class="half-width">
+          <nz-form-label nzFor="endDate">
+            Ngày kết thúc
+            <span class="auto-label" *ngIf="classForm.get('endDate')?.value">
+              (tự động)
+            </span>
+          </nz-form-label>
+          <nz-form-control>
+            <nz-date-picker
+              id="endDate"
+              formControlName="endDate"
+              nzPlaceHolder="Tự động tính theo khóa học"
+              nzFormat="yyyy-MM-dd"
+              [nzDisabled]="true"
+              style="width: 100%;"
+            ></nz-date-picker>
+            <small class="help-text" *ngIf="!classForm.get('courseId')?.value">
+              <span nz-icon nzType="info-circle" nzTheme="outline"></span>
+              Chọn khóa học để tự động tính ngày kết thúc
+            </small>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <!-- Chọn học viên -->
+      <nz-form-item>
+        <nz-form-label nzFor="studentIds">
+          Học viên
+        </nz-form-label>
+        <nz-form-control>
+          <div class="student-selection-area">
+            <div class="selected-students-display">
+              <div class="student-tags" *ngIf="selectedStudentIds.length > 0">
+                <nz-tag
+                  *ngFor="let studentId of selectedStudentIds.slice(0, 5)"
+                  nzColor="blue"
+                  [nzMode]="mode !== 'view' ? 'closeable' : 'default'"
+                  (nzOnClose)="removeStudent(studentId)"
+                >
+                  {{ getStudentName(studentId) }}
+                </nz-tag>
+                <nz-tag *ngIf="selectedStudentIds.length > 5" nzColor="default">
+                  +{{ selectedStudentIds.length - 5 }} khác
+                </nz-tag>
+              </div>
+              <div class="no-students" *ngIf="selectedStudentIds.length === 0">
+                <span nz-icon nzType="team" nzTheme="outline"></span>
+                <span>Chưa có học viên nào được chọn</span>
+              </div>
+            </div>
+
+            <div class="student-actions">
+              <button
+                nz-button
+                nzType="default"
+                type="button"
+                (click)="openStudentSelectionModal()"
+                [disabled]="mode === 'view'"
+              >
+                <span nz-icon nzType="user-add" nzTheme="outline"></span>
+                Danh sách học sinh
+              </button>
+
+              <button
+                nz-button
+                nzType="link"
+                nzSize="small"
+                type="button"
+                (click)="openBulkAddStudents()"
+                nzTooltip="Thêm nhiều học sinh bằng file Excel/CSV"
+                [disabled]="mode === 'view'"
+              >
+                <span nz-icon nzType="upload" nzTheme="outline"></span>
+                Import
+              </button>
+            </div>
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Số lượng tối đa -->
+      <nz-form-item>
+        <nz-form-label nzFor="maxStudents">Số lượng học viên tối đa</nz-form-label>
+        <nz-form-control>
+          <input
+            nz-input
+            id="maxStudents"
+            formControlName="maxStudents"
+            type="number"
+            min="1"
+            max="50"
+            placeholder="Nhập số lượng tối đa"
+          />
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Trạng thái -->
+      <nz-form-item *ngIf="isEditMode">
+        <nz-form-label nzFor="status">Trạng thái</nz-form-label>
+        <nz-form-control>
+          <nz-select
+            id="status"
+            formControlName="status"
+            nzPlaceHolder="Chọn trạng thái"
+          >
+            <nz-option nzValue="active" nzLabel="Đang hoạt động">
+              <div class="status-option">
+                <span nz-icon nzType="check-circle" nzTheme="outline" style="color: #52c41a;"></span>
+                <span>Đang hoạt động</span>
+              </div>
+            </nz-option>
+            <nz-option nzValue="inactive" nzLabel="Tạm dừng">
+              <div class="status-option">
+                <span nz-icon nzType="pause-circle" nzTheme="outline" style="color: #faad14;"></span>
+                <span>Tạm dừng</span>
+              </div>
+            </nz-option>
+            <nz-option nzValue="completed" nzLabel="Hoàn thành">
+              <div class="status-option">
+                <span nz-icon nzType="check-circle" nzTheme="fill" style="color: #1890ff;"></span>
+                <span>Hoàn thành</span>
+              </div>
+            </nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div class="form-footer">
+      <div class="form-actions">
+        <button
+          nz-button
+          nzType="default"
+          type="button"
+          (click)="onCancel()"
+          class="btn-cancel"
+        >
+          <span nz-icon nzType="close" nzTheme="outline"></span>
+          Hủy
+        </button>
+        <button
+          nz-button
+          nzType="primary"
+          type="submit"
+          [nzLoading]="isLoading"
+          [disabled]="classForm.invalid"
+          class="btn-submit"
+        >
+          <span nz-icon [nzType]="isEditMode ? 'edit' : 'plus'" nzTheme="outline"></span>
+          {{ isEditMode ? 'Cập nhật' : 'Thêm mới' }}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Bulk Import Students Modal -->
+<nz-modal
+  [(nzVisible)]="showBulkAddStudents"
+  nzTitle="Thêm học sinh từ file Excel/CSV"
+  [nzFooter]="null"
+  (nzOnCancel)="closeBulkAddStudents()"
+  nzWidth="700px"
+>
+  <div class="bulk-import-container">
+    <!-- File Upload Section -->
+    <div class="upload-section">
+      <h4>
+        <span nz-icon nzType="upload" nzTheme="outline"></span>
+        Tải lên file danh sách học sinh
+      </h4>
+      <div class="upload-area">
+        <input
+          type="file"
+          accept=".csv,.xlsx,.xls"
+          (change)="onFileUpload($event)"
+          style="display: none;"
+          #fileInput
+        >
+        <button
+          nz-button
+          nzType="dashed"
+          nzSize="large"
+          (click)="fileInput.click()"
+          class="upload-btn"
+        >
+          <span nz-icon nzType="inbox" nzTheme="outline"></span>
+          <div>Chọn file Excel/CSV</div>
+        </button>
+      </div>
+
+      <div class="template-section">
+        <p>Chưa có file mẫu?
+          <a (click)="downloadTemplate()" class="download-link">
+            <span nz-icon nzType="download" nzTheme="outline"></span>
+            Tải file mẫu
+          </a>
+        </p>
+        <div class="file-format-info">
+          <span nz-icon nzType="info-circle" nzTheme="outline" style="color: #1890ff;"></span>
+          <strong>Định dạng file:</strong> File CSV phải có các cột: Họ tên, Email, Số điện thoại, Ngày sinh (yyyy-mm-dd), Giới tính, Địa chỉ
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview Section -->
+    <div class="preview-section" *ngIf="bulkStudentData.length > 0">
+      <h4>
+        <span nz-icon nzType="eye" nzTheme="outline"></span>
+        Xem trước dữ liệu ({{ bulkStudentData.length }} học sinh)
+      </h4>
+      <nz-table
+        #basicTable
+        [nzData]="bulkStudentData"
+        nzSize="small"
+        [nzPageSize]="5"
+        [nzScroll]="{ y: '300px' }"
+      >
+        <thead>
+          <tr>
+            <th>Họ tên</th>
+            <th>Email</th>
+            <th>Số điện thoại</th>
+            <th>Ngày sinh</th>
+            <th>Giới tính</th>
+            <th>Địa chỉ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let student of basicTable.data">
+            <td>{{ student.fullName }}</td>
+            <td>{{ student.email }}</td>
+            <td>{{ student.phone }}</td>
+            <td>{{ student.dob }}</td>
+            <td>{{ student.gender }}</td>
+            <td>{{ student.address }}</td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="modal-actions">
+      <button
+        nz-button
+        nzType="default"
+        (click)="closeBulkAddStudents()"
+      >
+        <span nz-icon nzType="close" nzTheme="outline"></span>
+        Hủy
+      </button>
+      <button
+        nz-button
+        nzType="primary"
+        (click)="processBulkAddStudents()"
+        [nzLoading]="isProcessingBulk"
+        [disabled]="bulkStudentData.length === 0"
+      >
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+        Thêm {{ bulkStudentData.length }} học sinh
+      </button>
+    </div>
+  </div>
+</nz-modal>
+
+<!-- Student Selection Modal -->
+<nz-modal
+  [(nzVisible)]="isStudentSelectionModalVisible"
+  nzTitle="Chọn học viên cho lớp học"
+  (nzOnCancel)="handleStudentSelectionCancel()"
+  (nzOnOk)="handleStudentSelectionOk()"
+  [nzWidth]="600"
+  nzOkText="Xác nhận"
+  nzCancelText="Huỷ"
+>
+  <!-- Remove *nzModalContent directive - put content directly -->
+  <div class="student-selection-modal">
+    <!-- Search box -->
+    <nz-input-group [nzPrefix]="prefixIconSearch" style="margin-bottom: 16px;">
+      <input
+        nz-input
+        type="text"
+        placeholder="Tìm kiếm học viên theo tên hoặc email..."
+        [(ngModel)]="studentSearchText"
+        [ngModelOptions]="{standalone: true}"
+        (ngModelChange)="filterStudents()"
+      />
+    </nz-input-group>
+    <ng-template #prefixIconSearch>
+      <span nz-icon nzType="search"></span>
+    </ng-template>
+
+    <!-- Student list with checkboxes -->
+    <div class="student-checkbox-list-modal">
+      <div
+        *ngIf="filteredStudents.length === 0"
+        style="padding: 40px; text-align: center; color: #8c8c8c;"
+      >
+        <span nz-icon nzType="inbox" nzTheme="outline" style="font-size: 48px; margin-bottom: 8px; display: block;"></span>
+        <p>Không tìm thấy học viên</p>
+      </div>
+
+      <div class="student-list-actions" *ngIf="filteredStudents.length > 0">
+        <label
+          nz-checkbox
+          [(ngModel)]="selectAllStudents"
+          [ngModelOptions]="{standalone: true}"
+          [nzIndeterminate]="isIndeterminate"
+          (ngModelChange)="onSelectAllStudents($event)"
+        >
+          <strong>Chọn tất cả</strong>
+        </label>
+        <span class="student-count-modal">
+          {{ selectedStudentIds.length }}/{{ filteredStudents.length }} học viên
+        </span>
+      </div>
+
+      <div class="student-items">
+        <label
+          nz-checkbox
+          *ngFor="let student of filteredStudents"
+          [(ngModel)]="student.checked"
+          [ngModelOptions]="{standalone: true}"
+          (ngModelChange)="onStudentCheckChange()"
+          class="student-checkbox-item"
+        >
+          <div class="student-info">
+            <span nz-icon nzType="user" nzTheme="outline" class="student-icon"></span>
+            <div class="student-details">
+              <div class="student-name">{{ student.fullName }}</div>
+              <div class="student-email">{{ student.email }}</div>
+            </div>
+          </div>
+        </label>
+      </div>
+    </div>
+  </div>
+</nz-modal>

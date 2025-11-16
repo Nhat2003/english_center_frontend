@@ -1,0 +1,331 @@
+/* Grades Page Styles */
+:host {
+  --primary-color: #3bb273;
+  --primary-hover: #2e8b57;
+  --success-color: #3bb273;
+  --warning-color: #faad14;
+  --error-color: #ff4d4f;
+  --text-primary: #262626;
+  --text-secondary: #8c8c8c;
+  --bg-light: #fafafa;
+  --border-color: #e8e8e8;
+}
+
+.grades-page {
+  padding: 24px;
+  background: linear-gradient(180deg, #f0f5ff 0%, #fafafa 100%);
+  min-height: calc(100vh - 64px);
+}
+
+/* Header */
+.page-header {
+  margin-bottom: 32px;
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-title i {
+  color: var(--warning-color);
+  font-size: 36px;
+}
+
+.page-description {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Statistics Section */
+.statistics-section {
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.stat-card ::ng-deep .ant-card-body {
+  padding: 20px;
+}
+
+.stat-card ::ng-deep .ant-statistic-title {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.stat-card ::ng-deep .ant-statistic-content {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.stat-card ::ng-deep .ant-statistic-content-prefix {
+  margin-right: 8px;
+  font-size: 24px;
+}
+
+.suffix {
+  font-size: 16px;
+  color: var(--text-secondary);
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+/* Loading */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 100px 0;
+}
+
+/* Table Card */
+.grades-table-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: white;
+}
+
+.grades-table-card ::ng-deep .ant-card-body {
+  padding: 0;
+}
+
+.grades-table-card ::ng-deep .ant-table {
+  font-size: 14px;
+  background: transparent;
+}
+
+.grades-table-card ::ng-deep .ant-table-thead > tr > th {
+  background: #fafafa;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--border-color);
+  padding: 16px;
+}
+
+.grades-table-card ::ng-deep .ant-table-tbody > tr > td {
+  padding: 16px;
+  background: white;
+}
+
+.grades-table-card ::ng-deep .ant-table-tbody > tr:hover > td {
+  background: #f5f5f5 !important;
+}
+
+/* Table Cells */
+.assignment-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.assignment-icon {
+  font-size: 18px;
+  color: #1890ff;
+}
+
+.assignment-title {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.date-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.date-text i {
+  font-size: 14px;
+}
+
+.grade-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grade-badge {
+  display: inline-block;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 8px;
+  min-width: 70px;
+  text-align: center;
+  line-height: 1.5;
+  border: none;
+}
+
+/* Màu cho các loại điểm */
+.grade-badge.grade-success {
+  background: #3bb273;
+  color: #ffffff;
+}
+
+.grade-badge.grade-processing {
+  background: #2e8b57;
+  color: #ffffff;
+}
+
+.grade-badge.grade-warning {
+  background: #faad14;
+  color: #ffffff;
+}
+
+.grade-badge.grade-error {
+  background: #3bb273;
+  color: #ffffff;
+}
+
+/* Legacy styles for nz-tag (backup) */
+.grade-cell nz-tag {
+  font-size: 15px;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 8px;
+  min-width: 70px;
+  text-align: center;
+  display: inline-block;
+}
+
+.grade-cell ::ng-deep .ant-tag {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  padding: 6px 16px !important;
+  border-radius: 8px !important;
+  min-width: 70px !important;
+  text-align: center !important;
+  border: none !important;
+  line-height: 1.5 !important;
+}
+
+/* Màu cho các loại điểm - Màu đậm, dễ nhìn */
+.grade-cell ::ng-deep .ant-tag-success {
+  background: #3bb273 !important;
+  border-color: #3bb273 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+.grade-cell ::ng-deep .ant-tag-processing {
+  background: #2e8b57 !important;
+  border-color: #2e8b57 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+.grade-cell ::ng-deep .ant-tag-warning {
+  background: #faad14 !important;
+  border-color: #faad14 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+.grade-cell ::ng-deep .ant-tag-error {
+  background: #ff4d4f !important;
+  border-color: #ff4d4f !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+/* Badge styles */
+::ng-deep .ant-badge-status-text {
+  color: var(--text-primary) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  margin-left: 8px !important;
+}
+
+::ng-deep .ant-badge-status-dot {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+::ng-deep .ant-badge-status-success .ant-badge-status-dot {
+  background-color: #3bb273 !important;
+}
+
+::ng-deep .ant-badge-status-processing .ant-badge-status-dot {
+  background-color: #2e8b57 !important;
+}
+
+::ng-deep .ant-badge-status-warning .ant-badge-status-dot {
+  background-color: #faad14 !important;
+}
+
+::ng-deep .ant-badge-status-error .ant-badge-status-dot {
+  background-color: #ff4d4f !important;
+}
+
+.feedback-cell {
+  max-width: 300px;
+}
+
+.feedback-text {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.feedback-text i {
+  color: #1890ff;
+  font-size: 14px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.no-feedback {
+  color: var(--text-secondary);
+  font-style: italic;
+  font-size: 13px;
+}
+
+/* Empty State */
+::ng-deep .ant-empty {
+  padding: 100px 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .grades-page {
+    padding: 16px;
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+
+  .page-title i {
+    font-size: 28px;
+  }
+
+  .stat-card ::ng-deep .ant-statistic-content {
+    font-size: 24px;
+  }
+
+  .feedback-cell {
+    max-width: 200px;
+  }
+}

@@ -1,0 +1,29 @@
+/* Courses Form Styles */
+.form-container {
+  padding: 20px;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.form-footer button {
+  min-width: 80px;
+}
+
+/* Form field styles */
+nz-form-item {
+  margin-bottom: 16px;
+}
+
+nz-form-label {
+  font-weight: 500;
+}
+
+/* Level select styles */
+nz-select {
+  width: 100%;
+}

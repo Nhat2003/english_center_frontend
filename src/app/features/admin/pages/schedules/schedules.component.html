@@ -1,0 +1,71 @@
+<div class="page-header">
+  <div class="page-title-section">
+    <h2 class="page-title">
+      <span nz-icon nzType="calendar" nzTheme="outline"></span> Quản lý lịch học
+    </h2>
+    <p class="page-subtitle">Quản lý thông tin lịch học và thời khóa biểu</p>
+  </div>
+  <div class="page-actions">
+    <span class="total">Tổng số: {{ fixedSchedules.length }}</span>
+    <nz-button-group>
+      <button nz-button (click)="fetchFixedSchedules()" [nzLoading]="isLoadingFixed">
+        <i nz-icon nzType="reload"></i> Tải lại
+      </button>
+    </nz-button-group>
+  </div>
+</div>
+
+<div class="card">
+
+  <nz-table
+    [nzBordered]="false"
+    [nzData]="fixedSchedules"
+    [nzShowPagination]="false"
+    [nzSize]="'middle'"
+    [nzLoading]="isLoadingFixed"
+  >
+    <thead>
+      <tr>
+        <th nzAlign="center">ID</th>
+        <th nzAlign="center">Tên ca học</th>
+        <th nzAlign="center">Ngày trong tuần</th>
+        <th nzAlign="center">Thời gian</th>
+        <th nzAlign="center">Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let schedule of fixedSchedules; let i = index">
+        <td nzAlign="center">{{ schedule.id }}</td>
+        <td nzAlign="center">{{ schedule.name }}</td>
+        <td nzAlign="center">
+          <nz-tag nzColor="blue">
+            {{ formatDaysOfWeekDisplay(schedule.daysOfWeek) }}
+          </nz-tag>
+        </td>
+        <td nzAlign="center">
+          <nz-tag nzColor="green" *ngIf="schedule.startTime && schedule.endTime">
+            {{ formatTimeRange(schedule.startTime, schedule.endTime) }}
+          </nz-tag>
+          <nz-tag nzColor="red" *ngIf="!schedule.startTime || !schedule.endTime">
+            Chưa xác định
+          </nz-tag>
+        </td>
+        <td nzAlign="center">
+          <nz-button-group nzSize="small">
+            <button
+              nz-button
+              nzType="primary"
+              nzSize="small"
+              (click)="viewFixedSchedule(schedule)"
+              nz-tooltip="Xem chi tiết"
+            >
+              <i nz-icon nzType="eye"></i>
+            </button>
+          </nz-button-group>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</div>
+
+

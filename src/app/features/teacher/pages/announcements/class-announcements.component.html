@@ -1,0 +1,178 @@
+<div class="announcements-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <button nz-button nzType="text" (click)="goBack()" class="back-btn" nz-tooltip="Quay lại" nzTooltipPlacement="right" title="Quay lại">
+        <span nz-icon nzType="arrow-left"></span>
+      </button>
+      <div class="header-info">
+        <h2>📢 Thông báo lớp học</h2>
+        <p *ngIf="classInfo" class="class-name">
+          <span nz-icon nzType="read" nzTheme="outline"></span>
+          {{ classInfo.name }}
+        </p>
+      </div>
+    </div>
+    <button nz-button nzType="primary" (click)="showCreateModal()" class="create-btn">
+      <span nz-icon nzType="plus-circle" nzTheme="outline"></span>
+      Tạo thông báo mới
+    </button>
+  </div>
+
+  <!-- Info Banner -->
+  <nz-alert
+    nzType="info"
+    nzMessage="Thông tin"
+    nzDescription="Khi bạn tạo thông báo mới, tất cả học sinh trong lớp sẽ nhận được thông báo ngay lập tức."
+    nzShowIcon
+    [nzCloseable]="true"
+    class="info-banner"
+  ></nz-alert>
+
+  <!-- Announcements List -->
+  <div class="announcements-content">
+    <nz-spin [nzSpinning]="loading" nzTip="Đang tải thông báo...">
+      <nz-empty
+        *ngIf="!loading && announcements.length === 0"
+        nzNotFoundContent="Chưa có thông báo nào cho lớp này"
+        [nzNotFoundImage]="'simple'"
+        class="empty-state"
+      >
+        <p nz-typography>Hãy tạo thông báo đầu tiên để chia sẻ thông tin quan trọng với học sinh!</p>
+        <button nz-button nzType="primary" (click)="showCreateModal()">
+          <span nz-icon nzType="plus"></span>
+          Tạo thông báo ngay
+        </button>
+      </nz-empty>
+
+      <div class="announcements-list" *ngIf="announcements.length > 0">
+        <div class="announcement-card" *ngFor="let announcement of announcements; let i = index">
+          <div class="announcement-badge">
+            <nz-badge [nzCount]="announcements.length - i" [nzStyle]="{ backgroundColor: '#3bb273' }"></nz-badge>
+          </div>
+
+          <div class="announcement-header">
+            <div class="header-left-content">
+              <div class="announcement-icon">
+                <span nz-icon nzType="sound" nzTheme="fill"></span>
+              </div>
+              <div class="announcement-title-section">
+                <h3 class="announcement-title">{{ announcement.title }}</h3>
+                <div class="announcement-meta">
+                  <span class="meta-item">
+                    <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
+                    {{ formatDate(announcement.createdAt) }}
+                  </span>
+                  <span class="meta-divider">•</span>
+                  <span class="meta-item">
+                    <span nz-icon nzType="user" nzTheme="outline"></span>
+                    Giáo viên
+                  </span>
+                </div>
+              </div>
+            </div>
+            <button
+              nz-button
+              nzType="text"
+              nzDanger
+              nz-tooltip="Xóa thông báo"
+              nzTooltipPlacement="left"
+              (click)="deleteAnnouncement(announcement)"
+              class="delete-btn"
+              title="Xóa thông báo"
+            >
+              <span nz-icon nzType="delete" nzTheme="outline"></span>
+            </button>
+          </div>
+
+          <div class="announcement-body">
+            <p class="announcement-content">{{ announcement.content }}</p>
+          </div>
+
+          <div class="announcement-footer">
+            <nz-tag [nzColor]="'green'">
+              <span nz-icon nzType="check-circle" nzTheme="outline"></span>
+              Đã gửi đến tất cả học sinh
+            </nz-tag>
+          </div>
+        </div>
+      </div>
+    </nz-spin>
+  </div>
+</div>
+
+<!-- Modal tạo thông báo -->
+<nz-modal
+  [(nzVisible)]="isCreateModalVisible"
+  nzTitle="Tạo thông báo mới cho lớp học"
+  (nzOnCancel)="handleCreateCancel()"
+  (nzOnOk)="handleCreateOk()"
+  [nzOkLoading]="isCreating"
+  nzOkText="Gửi thông báo"
+  nzCancelText="Hủy"
+  [nzWidth]="700"
+>
+  <!-- Alert -->
+  <div style="padding: 12px; background: #fff7e6; border: 1px solid #ffd591; border-radius: 4px; margin-bottom: 24px;">
+    <p style="margin: 0; color: #d46b08;">
+      <strong>⚠️ Lưu ý:</strong> Thông báo sẽ được gửi đến tất cả học sinh trong lớp ngay sau khi bạn nhấn 'Gửi thông báo'.
+    </p>
+  </div>
+
+  <!-- Form -->
+  <div>
+    <!-- Tiêu đề -->
+    <div style="margin-bottom: 20px;">
+      <label style="display: block; margin-bottom: 8px; font-weight: 600;">
+        Tiêu đề thông báo <span style="color: red;">*</span>
+      </label>
+      <input
+        nz-input
+        [(ngModel)]="announcementForm.title"
+        placeholder="VD: Thông báo buổi học, Thay đổi lịch học, Bài kiểm tra..."
+        [maxLength]="100"
+        style="width: 100%;"
+      />
+      <small style="color: #8c8c8c; display: block; margin-top: 4px;">
+        {{ announcementForm.title.length }}/100 ký tự
+      </small>
+    </div>
+
+    <!-- Nội dung -->
+    <div style="margin-bottom: 20px;">
+      <label style="display: block; margin-bottom: 8px; font-weight: 600;">
+        Nội dung chi tiết <span style="color: red;">*</span>
+      </label>
+      <textarea
+        nz-input
+        [(ngModel)]="announcementForm.content"
+        placeholder="Nhập nội dung chi tiết thông báo mà bạn muốn gửi đến học sinh..."
+        [nzAutosize]="{ minRows: 5, maxRows: 10 }"
+        [maxLength]="500"
+        style="width: 100%;"
+      ></textarea>
+      <small style="color: #8c8c8c; display: block; margin-top: 4px;">
+        {{ announcementForm.content.length }}/500 ký tự
+      </small>
+    </div>
+
+    <!-- Xem trước -->
+    <div style="border-top: 1px solid #e8e8e8; padding-top: 20px; margin-top: 20px;">
+      <label style="display: block; margin-bottom: 12px; font-weight: 600;">
+        👁️ Xem trước
+      </label>
+      <div style="background: #fafafa; border: 2px dashed #d9d9d9; border-radius: 8px; padding: 16px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #e8e8e8;">
+          <span style="font-size: 18px;">📢</span>
+          <strong>{{ announcementForm.title || 'Tiêu đề thông báo' }}</strong>
+        </div>
+        <div style="color: #595959; margin-bottom: 10px; white-space: pre-wrap;">
+          {{ announcementForm.content || 'Nội dung thông báo sẽ hiển thị ở đây...' }}
+        </div>
+        <div style="border-top: 1px solid #e8e8e8; padding-top: 10px;">
+          <small style="color: #8c8c8c;">🕐 Vừa xong</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</nz-modal>

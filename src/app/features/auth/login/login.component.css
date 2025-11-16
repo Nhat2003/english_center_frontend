@@ -1,0 +1,178 @@
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Green brand gradient */
+  background: linear-gradient(135deg, #3bb273 0%, #4cc084 100%);
+  padding: 20px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 12px;
+  overflow: hidden;
+  /* Glass-like translucent background */
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.60);
+  /* Elevated shadow to make the form pop (glass effect) */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.50),
+    0 24px 48px rgba(17, 67, 45, 0.28),
+    0 10px 20px rgba(17, 67, 45, 0.14);
+}
+
+.login-header {
+  text-align: center;
+  padding: 24px 0;
+  background: linear-gradient(135deg, #3bb273 0%, #4cc084 100%);
+  color: white;
+  margin: -24px -24px 30px -24px;
+}
+
+.logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand-logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.logo-circle {
+  width: 70px;
+  height: 70px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.logo-circle:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+.logo-icon {
+  font-size: 36px;
+  color: #3bb273;
+}
+
+.brand-text {
+  text-align: left;
+}
+
+.brand-name {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  line-height: 1.2;
+}
+
+.brand-slogan {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  font-style: italic;
+}
+
+.brand-logo {
+  width: 88px;
+  height: 88px;
+  display: block;
+  border-radius: 50%;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
+}
+
+/* Subtle decorative overlay so the background feels alive (lightweight) */
+.login-container::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient( circle at 20% 20%, rgba(255,255,255,0.14), transparent 40%),
+    radial-gradient( circle at 80% 25%, rgba(255,255,255,0.12), transparent 42%),
+    radial-gradient( circle at 30% 80%, rgba(255,255,255,0.10), transparent 38%);
+}
+
+.login-header h2 {
+  margin: 0;
+  font-size: 1.8em;
+  font-weight: 600;
+  color: white;
+}
+
+.login-header p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 0.95em;
+}
+
+.login-form {
+  padding: 0 24px 24px;
+}
+
+.login-btn {
+  width: 100%;
+  height: 45px;
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+.login-links {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.login-links a {
+  color: #3bb273;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s;
+}
+
+.login-links a:hover {
+  color: #2ea56b;
+  text-decoration: underline;
+}
+
+/* Eye icon for show/hide password */
+.password-toggle {
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.35);
+  transition: color 0.2s ease;
+}
+.password-toggle:hover {
+  color: #3bb273;
+}
+
+/* Logo hover flair */
+.brand-logo {
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+.brand-logo:hover {
+  transform: translateY(-2px) scale(1.03);
+  filter: drop-shadow(0 8px 18px rgba(17, 67, 45, 0.25));
+}
