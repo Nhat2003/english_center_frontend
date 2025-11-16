@@ -9,9 +9,45 @@ import { Payment, PaymentRequest, PaymentSummary } from '../models/payment.model
   providedIn: 'root'
 })
 export class PaymentService {
-  private apiUrl = `${environment.apiUrl}/payments`;
 
+  private apiUrl = `${environment.apiUrl}/payments`;
   constructor(private http: HttpClient) {}
+
+  // Lấy trạng thái thanh toán của học sinh cho một lớp
+  getPaymentStatusByStudentAndClass(studentId: number, classRoomId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/student/${studentId}/class/${classRoomId}/status`);
+  }
+
+  // Lấy lịch sử giao dịch của học sinh
+  getStudentHistory(studentId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/student/${studentId}/history`);
+  }
+
+  // Lấy lịch sử thanh toán của học sinh
+  getPaymentHistory(studentId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/history?studentId=${studentId}`);
+  }
+
+  // Lấy tổng quan thanh toán cho học sinh
+  getStudentOverview(studentId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/student/${studentId}/overview`);
+  }
+
+  // Lấy danh sách lớp và số tiền cần nạp cho học sinh
+  getDueForStudent(studentId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/due-for-student?studentId=${studentId}`);
+  }
+
+  // Tạo URL VNPAY cho học sinh theo studentId (và classRoomId nếu có)
+  createUrlByStudent(studentId: number, classRoomId?: number): Observable<any> {
+    let url = `${this.apiUrl}/create-url-by-student?studentId=${studentId}`;
+    if (classRoomId) {
+      url += `&classRoomId=${classRoomId}`;
+    }
+    return this.http.get<any>(url);
+  }
+
+  // ...existing code...
 
   // Lấy danh sách thanh toán với phân trang và lọc
   getPayments(

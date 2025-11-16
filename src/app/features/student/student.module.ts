@@ -57,6 +57,10 @@ import { ClassTabsComponent } from '../../shared/class-tabs/class-tabs.component
 
 // Services
 import { StudentScheduleService } from '../../core/services/student-schedule.service';
+// Payment Component
+
+import { StudentPaymentComponent } from './pages/payment/student-payment.component';
+import { PaymentSuccessComponent } from './pages/payment-success/payment-success.component';
 
 // Routes
 import { STUDENT_ROUTES } from './student.routes';
@@ -77,7 +81,9 @@ import { SharedModule } from '../../shared/shared.module';
     ClassAttendanceComponent,
     StudentClassAnnouncementsComponent,
     StudentNotificationsComponent,
-    ClassTabsComponent
+    ClassTabsComponent,
+    StudentPaymentComponent,
+    PaymentSuccessComponent
   ],
   imports: [
     CommonModule,

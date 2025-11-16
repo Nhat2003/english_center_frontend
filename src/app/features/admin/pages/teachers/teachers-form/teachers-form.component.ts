@@ -17,7 +17,8 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 
 @Component({
   selector: 'app-teachers-form',
-  templateUrl: './teachers-form.component.html'
+  templateUrl: './teachers-form.component.html',
+  styleUrls: ['./teachers-form.component.css']
 })
 export class TeachersFormComponent implements OnInit {
   @Input() teacher: Partial<Teacher> | null = null;

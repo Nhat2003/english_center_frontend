@@ -158,13 +158,14 @@ export class StudentDashboardComponent implements OnInit {
       schedule: this.scheduleService.getStudentSchedule(this.studentId),
       assignments: this.assignmentService.getMyAssignments(),
       submissions: this.assignmentService.getMySubmissionHistory(),
-      payments: this.paymentService.getPayments(1, 100)
+      paymentsDue: this.paymentService.getDueForStudent(this.studentId),
+      paymentsHistory: this.paymentService.getPaymentHistory(this.studentId)
     }).subscribe({
       next: (data) => {
         this.processClassesData(data.classes);
         this.processScheduleData(data.schedule);
         this.processAssignmentsDataFromOverview(data.assignments, data.submissions, overview);
-        this.processPaymentData(data.payments.data);
+        this.processPaymentDataNew(data.paymentsDue, data.paymentsHistory);
         this.loadAnnouncements();
         this.loading = false;
       },
@@ -188,14 +189,15 @@ export class StudentDashboardComponent implements OnInit {
       assignments: this.assignmentService.getMyAssignments(),
       submissions: this.assignmentService.getMySubmissionHistory(),
       attendance: this.attendanceService.getByStudent(this.studentId),
-      payments: this.paymentService.getPayments(1, 100)
+      paymentsDue: this.paymentService.getDueForStudent(this.studentId),
+      paymentsHistory: this.paymentService.getPaymentHistory(this.studentId)
     }).subscribe({
       next: (data) => {
         this.processClassesData(data.classes);
         this.processScheduleData(data.schedule);
         this.processAssignmentsData(data.assignments, data.submissions);
         this.processAttendanceData(data.attendance);
-        this.processPaymentData(data.payments.data);
+        this.processPaymentDataNew(data.paymentsDue, data.paymentsHistory);
         this.loadAnnouncements();
         this.loading = false;
       },
@@ -357,6 +359,26 @@ export class StudentDashboardComponent implements OnInit {
       this.latestPayment = myPayments.sort((a, b) =>
         new Date(b.paymentDate || b.createdAt).getTime() -
         new Date(a.paymentDate || a.createdAt).getTime()
+      )[0];
+    }
+  }
+
+  /**
+   * Process payment data using new APIs:
+   * - /payments/due-for-student?studentId=... (unpaid classes)
+   * - /payments/history?studentId=... (payment history)
+   */
+  processPaymentDataNew(paymentsDue: any[], paymentsHistory: any[]) {
+    // Calculate unpaid amount from due payments
+    const unpaidClasses = paymentsDue.filter((p: any) => !p.isPaid);
+    this.hasUnpaidFees = unpaidClasses.length > 0;
+    this.unpaidAmount = unpaidClasses.reduce((sum: number, p: any) => sum + (p.amount - p.paidAmount), 0);
+
+    // Get latest successful payment from history
+    const successfulPayments = paymentsHistory.filter((p: any) => p.status === 'SUCCESS');
+    if (successfulPayments.length > 0) {
+      this.latestPayment = successfulPayments.sort((a: any, b: any) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       )[0];
     }
   }

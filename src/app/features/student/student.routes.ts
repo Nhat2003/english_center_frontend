@@ -1,3 +1,4 @@
+import { StudentNotificationsComponent } from './pages/notifications/notifications.component';
 import { Routes } from '@angular/router';
 import { StudentLayoutComponent } from './student-layout/student-layout.component';
 import { StudentDashboardComponent } from './pages/dashboard/dashboard.component';
@@ -11,7 +12,10 @@ import { GradesComponent } from './pages/grades/grades.component';
 import { AttendanceHistoryComponent } from './pages/attendance-history/attendance-history.component';
 import { ClassAttendanceComponent } from './pages/classes/class-attendance/class-attendance.component';
 import { StudentClassAnnouncementsComponent } from './pages/classes/class-announcements/class-announcements.component';
-import { StudentNotificationsComponent } from './pages/notifications/notifications.component';
+
+
+import { StudentPaymentComponent } from './pages/payment/student-payment.component';
+import { PaymentSuccessComponent } from './pages/payment-success/payment-success.component';
 
 export const STUDENT_ROUTES: Routes = [
   {
@@ -31,7 +35,8 @@ export const STUDENT_ROUTES: Routes = [
       { path: 'assignments', component: StudentAssignmentsComponent },
       { path: 'assignments/:id', component: AssignmentDetailComponent },
       { path: 'attendance-history', component: AttendanceHistoryComponent },
-      { path: 'payments', component: StudentDashboardComponent },
+      { path: 'payments', component: StudentPaymentComponent },
+      { path: 'payment-success', component: PaymentSuccessComponent },
       { path: 'online-classes', component: StudentDashboardComponent },
       { path: 'documents', component: StudentDocumentsComponent },
       { path: 'notifications', component: StudentNotificationsComponent }

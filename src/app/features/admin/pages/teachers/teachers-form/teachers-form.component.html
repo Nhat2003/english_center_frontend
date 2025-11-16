@@ -13,35 +13,35 @@
         <nz-form-item>
           <nz-form-label [nzRequired]="true" nzFor="userId">Chọn người dùng</nz-form-label>
           <nz-form-control>
-            <div class="user-selection-wrapper">
-              <!-- Display selected user or placeholder -->
-              <div class="user-display-text" *ngIf="!form.get('userId')?.value">
-                <span nz-icon nzType="user" nzTheme="outline"></span>
-                <span>Chưa chọn người dùng</span>
+            <div class="user-selection-area">
+              <div class="selected-user-display">
+                <div class="user-tag" *ngIf="form.get('userId')?.value">
+                  <nz-tag
+                    nzColor="blue"
+                    [nzMode]="!isViewMode ? 'closeable' : 'default'"
+                    (nzOnClose)="form.patchValue({ userId: null })"
+                  >
+                    {{ getSelectedUserName() }}
+                  </nz-tag>
+                </div>
+                <div class="no-user-selected" *ngIf="!form.get('userId')?.value">
+                  <span nz-icon nzType="user" nzTheme="outline"></span>
+                  <span>Chưa chọn người dùng</span>
+                </div>
               </div>
 
-              <div class="selected-user-tag" *ngIf="form.get('userId')?.value">
-                <nz-tag
-                  nzColor="blue"
-                  [nzMode]="!isViewMode ? 'closeable' : 'default'"
-                  (nzOnClose)="form.patchValue({ userId: null })"
+              <div class="user-actions">
+                <button
+                  nz-button
+                  nzType="default"
+                  type="button"
+                  (click)="openUserSelectionModal()"
+                  [disabled]="isViewMode"
                 >
-                  {{ getSelectedUserName() }}
-                </nz-tag>
+                  <span nz-icon nzType="user-add" nzTheme="outline"></span>
+                  Chọn người dùng
+                </button>
               </div>
-
-              <!-- Button to open modal -->
-              <button
-                nz-button
-                nzType="default"
-                type="button"
-                (click)="openUserSelectionModal()"
-                [disabled]="isViewMode"
-                class="select-user-btn"
-              >
-                <span nz-icon nzType="user-add" nzTheme="outline"></span>
-                Chọn người dùng
-              </button>
             </div>
           </nz-form-control>
         </nz-form-item>
@@ -172,7 +172,7 @@
   nzOkText="Xác nhận"
   nzCancelText="Huỷ"
 >
-  <div class="user-selection-modal">
+  <div  class="user-selection-modal">
     <!-- Search box -->
     <nz-input-group [nzPrefix]="prefixIconSearch" style="margin-bottom: 16px;">
       <input

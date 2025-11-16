@@ -84,38 +84,7 @@
 .text-danger { color: #ff4d4f; }
 .me-2 { margin-right: 8px; }
 
-/* User Selection Wrapper */
-.user-selection-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.user-display-text {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #8c8c8c;
-  font-size: 14px;
-  padding: 4px 0;
-}
-
-.user-display-text [nz-icon] {
-  font-size: 16px;
-}
-
-.selected-user-tag {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 4px 0;
-}
-
-.select-user-btn {
-  align-self: flex-start;
-}
-
-/* User Selection Area - OLD STYLES (keeping for modal) */
+/* User Selection Area */
 .user-selection-area {
   display: flex;
   flex-direction: column;
@@ -205,6 +174,11 @@
 
 .user-checkbox-item:hover {
   background: #f5f5f5;
+}
+
+.user-checkbox-item.selected {
+  background: #e6f7ff;
+  border-left: 3px solid #1890ff;
 }
 
 .user-info {
