@@ -99,7 +99,7 @@ export class StatsComponent implements OnInit {
     }).subscribe({
       next: (results) => {
         console.log('Dashboard data loaded:', results);
-        
+
         // Process students - now returns paginated response
         const studentsData = (results.students as any);
         const students = studentsData?.content || studentsData || [];
@@ -161,7 +161,7 @@ export class StatsComponent implements OnInit {
     }
 
     console.log('Loading payment stats for', classes.length, 'classes');
-    
+
     // Get payment summary for all classes (limit to first 20 to avoid too many requests)
     const paymentRequests = classes.slice(0, 20).map(cls =>
       this.paymentService.getClassPaymentSummary(cls.id)
