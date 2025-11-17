@@ -3,12 +3,43 @@ import { StudentService } from '../../../../core/services/student.service';
 import { TeacherService } from '../../../../core/services/teacher.service';
 import { CourseService } from '../../../../core/services/course.service';
 import { ClassService } from '../../../../core/services/class.service';
+import { PaymentService } from '../../../../core/services/payment.service';
+import { forkJoin } from 'rxjs';
 
-interface Activity {
-  id: string;
-  type: 'student' | 'teacher' | 'course' | 'class';
-  description: string;
-  timestamp: Date;
+interface DashboardStats {
+  totalStudents: number;
+  totalTeachers: number;
+  totalCourses: number;
+  totalClasses: number;
+  activeClasses: number;
+  totalRevenue: number;
+  paidRevenue: number;
+  unpaidRevenue: number;
+  paymentRate: number;
+}
+
+interface CourseStats {
+  id: number;
+  name: string;
+  studentCount: number;
+  classCount: number;
+  percentage: number;
+}
+
+interface TeacherStats {
+  id: number;
+  name: string;
+  classCount: number;
+  studentCount: number;
+}
+
+interface UpcomingClass {
+  id: number;
+  name: string;
+  teacherName: string;
+  schedule: string;
+  studentCount: number;
+  startDate: string;
 }
 
 @Component({
@@ -17,190 +48,310 @@ interface Activity {
   styleUrls: ['./stats.component.css', './chart-styles.css']
 })
 export class StatsComponent implements OnInit {
+  loading = false;
 
-  // Date filter
-  dateRange: Date[] = [];
+  // Main statistics
+  stats: DashboardStats = {
+    totalStudents: 0,
+    totalTeachers: 0,
+    totalCourses: 0,
+    totalClasses: 0,
+    activeClasses: 0,
+    totalRevenue: 0,
+    paidRevenue: 0,
+    unpaidRevenue: 0,
+    paymentRate: 0
+  };
 
-  // Overview stats
-  totalStudents = 0;
-  totalTeachers = 0;
-  totalCourses = 0;
-  totalClasses = 0;
+  // Course statistics
+  topCourses: CourseStats[] = [];
 
-  // Growth percentages
-  studentGrowth = 0;
-  teacherGrowth = 0;
-  courseGrowth = 0;
-  classGrowth = 0;
+  // Teacher statistics
+  topTeachers: TeacherStats[] = [];
 
-  // Chart data
-  enrollmentPeriod = '6months';
-  enrollmentData = [
-    { label: 'Tháng 4', value: 12, percentage: 60 },
-    { label: 'Tháng 5', value: 19, percentage: 95 },
-    { label: 'Tháng 6', value: 8, percentage: 40 },
-    { label: 'Tháng 7', value: 15, percentage: 75 },
-    { label: 'Tháng 8', value: 23, percentage: 100 },
-    { label: 'Tháng 9', value: 18, percentage: 90 }
-  ];
+  // Upcoming classes
+  upcomingClasses: UpcomingClass[] = [];
 
-  popularCourses = [
-    { name: 'Tiếng Anh Giao tiếp', percentage: 35, color: '#1890ff' },
-    { name: 'IELTS/TOEFL', percentage: 25, color: '#52c41a' },
-    { name: 'Tiếng Anh Trẻ em', percentage: 20, color: '#faad14' },
-    { name: 'Tiếng Anh Doanh nghiệp', percentage: 20, color: '#f5222d' }
-  ];
-
-  // Recent activities
-  recentActivities: Activity[] = [];
-
-  // Quick stats
-  activeStudents = 0;
-  ongoingClasses = 0;
-  monthlyRevenue = 0;
-  completionRate = 0;
+  // Chart data for enrollment trend
+  enrollmentMonths: string[] = [];
+  enrollmentValues: number[] = [];
 
   constructor(
     private studentService: StudentService,
     private teacherService: TeacherService,
     private courseService: CourseService,
-    private classService: ClassService
-  ) {
-    // Set default date range (last 30 days)
-    const today = new Date();
-    const lastMonth = new Date();
-    lastMonth.setDate(today.getDate() - 30);
-    this.dateRange = [lastMonth, today];
-  }
+    private classService: ClassService,
+    private paymentService: PaymentService
+  ) {}
 
   ngOnInit(): void {
-    this.loadAllData();
-    this.generateMockActivities();
+    this.loadDashboardData();
   }
 
-  loadAllData(): void {
-    // Load students
-    this.studentService.getStudents().subscribe({
-      next: (students) => {
-        this.totalStudents = students.length;
-        this.activeStudents = students.length; // All students are considered active
-        this.studentGrowth = this.calculateGrowth(students.length, students.length - 5); // Mock growth
+  loadDashboardData(): void {
+    this.loading = true;
+
+    forkJoin({
+      students: this.studentService.getStudents(0, 1000),
+      teachers: this.teacherService.getTeachers(),
+      courses: this.courseService.getCourses(0, 1000),
+      classes: this.classService.getClasses(0, 1000)
+    }).subscribe({
+      next: (results) => {
+        console.log('Dashboard data loaded:', results);
+        
+        // Process students - now returns paginated response
+        const studentsData = (results.students as any);
+        const students = studentsData?.content || studentsData || [];
+        console.log('Students:', students.length);
+        this.stats.totalStudents = studentsData?.totalElements || students.length;
+
+        // Process teachers
+        const teachers = Array.isArray(results.teachers)
+          ? results.teachers
+          : (results.teachers as any)?.content || [];
+        console.log('Teachers:', teachers.length);
+        this.stats.totalTeachers = teachers.length;
+
+        // Process courses
+        const courses = (results.courses as any)?.content || results.courses || [];
+        console.log('Courses:', courses.length);
+        this.stats.totalCourses = courses.length;
+
+        // Process classes
+        const classes = (results.classes as any)?.content || results.classes || [];
+        console.log('Classes:', classes.length);
+        this.stats.totalClasses = classes.length;
+        this.stats.activeClasses = classes.filter((c: any) =>
+          c.status === 'ACTIVE' || c.status === 'active' || c.status === 'ONGOING'
+        ).length;
+
+        // Calculate course statistics
+        this.calculateCourseStats(classes, courses);
+
+        // Calculate teacher statistics
+        this.calculateTeacherStats(classes, teachers);
+
+        // Get upcoming classes
+        this.getUpcomingClasses(classes);
+
+        // Calculate enrollment trend (mock data based on student IDs)
+        this.calculateEnrollmentTrend(students);
+
+        // Load payment statistics
+        this.loadPaymentStats(classes);
+
+        this.loading = false;
       },
-      error: (err) => console.error('Error loading students:', err)
-    });
-
-    // Load teachers
-    this.teacherService.getTeachers().subscribe({
-      next: (teachers) => {
-        this.totalTeachers = teachers.length;
-        this.teacherGrowth = this.calculateGrowth(teachers.length, teachers.length - 2);
-      },
-      error: (err) => console.error('Error loading teachers:', err)
-    });
-
-    // Load courses
-    this.courseService.getCourses().subscribe({
-      next: (courses) => {
-        this.totalCourses = courses.length;
-        this.courseGrowth = this.calculateGrowth(courses.length, courses.length - 3);
-      },
-      error: (err) => console.error('Error loading courses:', err)
-    });
-
-    // Load classes
-    this.classService.getClasses().subscribe({
-      next: (classes) => {
-        this.totalClasses = classes.length;
-        this.ongoingClasses = classes.filter(c => c.status === 'ongoing').length;
-        this.classGrowth = this.calculateGrowth(classes.length, classes.length - 1);
-      },
-      error: (err) => console.error('Error loading classes:', err)
-    });
-
-    // Mock additional data
-    this.monthlyRevenue = 125000000; // 125 million VND
-    this.completionRate = 89;
-  }
-
-  calculateGrowth(current: number, previous: number): number {
-    if (previous === 0) return 0;
-    return Math.round(((current - previous) / previous) * 100);
-  }
-
-
-
-  generateMockActivities(): void {
-    this.recentActivities = [
-      {
-        id: '1',
-        type: 'student',
-        description: 'Nguyễn Văn A đã đăng ký khóa học IELTS',
-        timestamp: new Date(Date.now() - 5 * 60 * 1000) // 5 minutes ago
-      },
-      {
-        id: '2',
-        type: 'class',
-        description: 'Lớp Tiếng Anh Giao tiếp A1 đã bắt đầu',
-        timestamp: new Date(Date.now() - 30 * 60 * 1000) // 30 minutes ago
-      },
-      {
-        id: '3',
-        type: 'teacher',
-        description: 'Cô Minh đã cập nhật lịch dạy',
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
-      },
-      {
-        id: '4',
-        type: 'course',
-        description: 'Khóa học mới "Tiếng Anh cho Du lịch" đã được thêm',
-        timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000) // 4 hours ago
+      error: (error) => {
+        console.error('Error loading dashboard data:', error);
+        this.loading = false;
       }
-    ];
+    });
   }
 
-  onDateRangeChange(dates: Date[]): void {
-    this.dateRange = dates;
-    // Reload data based on date range
-    this.refreshData();
+  loadPaymentStats(classes: any[]): void {
+    if (classes.length === 0) {
+      console.log('No classes found for payment stats');
+      this.stats.totalRevenue = 0;
+      this.stats.paidRevenue = 0;
+      this.stats.unpaidRevenue = 0;
+      this.stats.paymentRate = 0;
+      return;
+    }
+
+    console.log('Loading payment stats for', classes.length, 'classes');
+    
+    // Get payment summary for all classes (limit to first 20 to avoid too many requests)
+    const paymentRequests = classes.slice(0, 20).map(cls =>
+      this.paymentService.getClassPaymentSummary(cls.id)
+    );
+
+    forkJoin(paymentRequests).subscribe({
+      next: (summaries) => {
+        console.log('Payment summaries received:', summaries);
+        let totalRequired = 0;
+        let totalPaid = 0;
+
+        summaries.forEach((summary: any) => {
+          if (summary && summary.students) {
+            summary.students.forEach((student: any) => {
+              totalRequired += student.requiredAmount || 0;
+              totalPaid += student.paidAmount || 0;
+            });
+          }
+        });
+
+        console.log('Payment stats calculated:', { totalRequired, totalPaid });
+        this.stats.totalRevenue = totalRequired;
+        this.stats.paidRevenue = totalPaid;
+        this.stats.unpaidRevenue = totalRequired - totalPaid;
+        this.stats.paymentRate = totalRequired > 0
+          ? Math.round((totalPaid / totalRequired) * 100)
+          : 0;
+      },
+      error: (error) => {
+        console.error('Error loading payment stats:', error);
+      }
+    });
+  }
+
+  calculateCourseStats(classes: any[], courses: any[]): void {
+    const courseMap = new Map<number, { name: string; classCount: number; studentCount: number }>();
+
+    classes.forEach((cls: any) => {
+      const courseId = cls.courseId || cls.course?.id;
+      const courseName = cls.courseName || cls.course?.name || 'Unknown';
+      const studentCount = cls.students?.length || cls.studentCount || 0;
+
+      if (courseId) {
+        if (!courseMap.has(courseId)) {
+          courseMap.set(courseId, {
+            name: courseName,
+            classCount: 0,
+            studentCount: 0
+          });
+        }
+        const stats = courseMap.get(courseId)!;
+        stats.classCount++;
+        stats.studentCount += studentCount;
+      }
+    });
+
+    const totalStudents = Array.from(courseMap.values())
+      .reduce((sum, c) => sum + c.studentCount, 0);
+
+    this.topCourses = Array.from(courseMap.entries())
+      .map(([id, stats]) => ({
+        id,
+        name: stats.name,
+        studentCount: stats.studentCount,
+        classCount: stats.classCount,
+        percentage: totalStudents > 0 ? (stats.studentCount / totalStudents) * 100 : 0
+      }))
+      .sort((a, b) => b.studentCount - a.studentCount)
+      .slice(0, 5);
+  }
+
+  calculateTeacherStats(classes: any[], teachers: any[]): void {
+    const teacherMap = new Map<number, { name: string; classCount: number; studentCount: number }>();
+
+    classes.forEach((cls: any) => {
+      const teacherId = cls.teacherId || cls.teacher?.id;
+      const teacherName = cls.teacherName || cls.teacher?.fullName || 'Unknown';
+      const studentCount = cls.students?.length || cls.studentCount || 0;
+
+      if (teacherId) {
+        if (!teacherMap.has(teacherId)) {
+          teacherMap.set(teacherId, {
+            name: teacherName,
+            classCount: 0,
+            studentCount: 0
+          });
+        }
+        const stats = teacherMap.get(teacherId)!;
+        stats.classCount++;
+        stats.studentCount += studentCount;
+      }
+    });
+
+    this.topTeachers = Array.from(teacherMap.entries())
+      .map(([id, stats]) => ({
+        id,
+        name: stats.name,
+        classCount: stats.classCount,
+        studentCount: stats.studentCount
+      }))
+      .sort((a, b) => b.studentCount - a.studentCount)
+      .slice(0, 5);
+  }
+
+  getUpcomingClasses(classes: any[]): void {
+    const now = new Date();
+
+    this.upcomingClasses = classes
+      .filter((cls: any) => {
+        const startDate = new Date(cls.startDate);
+        return startDate >= now;
+      })
+      .sort((a: any, b: any) => {
+        return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+      })
+      .slice(0, 5)
+      .map((cls: any) => ({
+        id: cls.id,
+        name: cls.name,
+        teacherName: cls.teacherName || cls.teacher?.fullName || 'Chưa có',
+        schedule: this.formatSchedule(cls),
+        studentCount: cls.students?.length || cls.studentCount || 0,
+        startDate: cls.startDate
+      }));
+  }
+
+  formatSchedule(cls: any): string {
+    if (cls.fixedSchedule) {
+      const days = cls.fixedSchedule.daysOfWeek || '';
+      const time = cls.fixedSchedule.startTime
+        ? `${cls.fixedSchedule.startTime.substring(0, 5)}`
+        : '';
+      return `${this.formatDays(days)} - ${time}`;
+    }
+    return 'Chưa xác định';
+  }
+
+  formatDays(daysOfWeek: string): string {
+    if (!daysOfWeek) return '';
+    const dayMap: { [key: string]: string } = {
+      '2': 'T2', '3': 'T3', '4': 'T4', '5': 'T5',
+      '6': 'T6', '7': 'T7', '8': 'CN'
+    };
+    return daysOfWeek.split(',').map(d => dayMap[d.trim()] || d).join(', ');
+  }
+
+  calculateEnrollmentTrend(students: any[]): void {
+    const monthCounts = new Map<string, number>();
+    const now = new Date();
+
+    // Get last 6 months
+    for (let i = 5; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      const label = `Tháng ${date.getMonth() + 1}`;
+      this.enrollmentMonths.push(label);
+      monthCounts.set(key, 0);
+    }
+
+    // Count students by joined month
+    students.forEach((student: any) => {
+      if (student.joinedAt) {
+        const joinDate = new Date(student.joinedAt);
+        const key = `${joinDate.getFullYear()}-${String(joinDate.getMonth() + 1).padStart(2, '0')}`;
+        if (monthCounts.has(key)) {
+          monthCounts.set(key, (monthCounts.get(key) || 0) + 1);
+        }
+      }
+    });
+
+    this.enrollmentValues = Array.from(monthCounts.values());
+  }
+
+  getMaxEnrollment(): number {
+    return Math.max(...this.enrollmentValues, 1);
   }
 
   refreshData(): void {
-    this.loadAllData();
-    this.generateMockActivities();
+    this.loadDashboardData();
   }
 
-  updateEnrollmentChart(): void {
-    // Update enrollment data based on selected period
-    console.log('Updating enrollment chart for period:', this.enrollmentPeriod);
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND'
+    }).format(amount);
   }
 
-  viewAllActivities(): void {
-    // Navigate to activities page or open modal
-    console.log('View all activities');
-  }
-
-  getActivityIcon(type: string): string {
-    switch (type) {
-      case 'student': return 'user';
-      case 'teacher': return 'team';
-      case 'course': return 'book';
-      case 'class': return 'schedule';
-      default: return 'info';
-    }
-  }
-
-  formatTime(timestamp: Date): string {
-    const now = new Date();
-    const diff = now.getTime() - timestamp.getTime();
-    const minutes = Math.floor(diff / (1000 * 60));
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-
-    if (minutes < 60) {
-      return `${minutes} phút trước`;
-    } else if (hours < 24) {
-      return `${hours} giờ trước`;
-    } else {
-      return timestamp.toLocaleDateString('vi-VN');
-    }
+  formatDate(dateStr: string): string {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('vi-VN');
   }
 }

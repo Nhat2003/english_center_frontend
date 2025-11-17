@@ -137,7 +137,13 @@ export function formatDaysOfWeekDisplay(daysOfWeek: string | null): string {
 
 export function formatTimeRange(startTime: string | null, endTime: string | null): string {
   if (!startTime || !endTime) return 'Chưa xác định';
-  return `${startTime} - ${endTime}`;
+
+  // Remove seconds from time (HH:mm:ss -> HH:mm)
+  const formatTime = (time: string) => {
+    return time.substring(0, 5); // "20:00:00" -> "20:00"
+  };
+
+  return `${formatTime(startTime)} - ${formatTime(endTime)}`;
 }
 
 // Helper functions for student schedule display

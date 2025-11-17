@@ -118,6 +118,17 @@ export class ClassPaymentsComponent implements OnInit {
     this.loadingSummary = true;
     this.paymentService.getClassPaymentSummary(this.selectedClassId).subscribe({
       next: (summary) => {
+        // Fix: Tính lại count và total theo số học sinh thực tế trong lớp
+        if (summary && summary.students) {
+          summary.count = summary.students.length;
+          summary.total = summary.students.reduce((sum, s) => sum + s.requiredAmount, 0);
+          summary.totalSuccess = summary.students.reduce((sum, s) => sum + s.paidAmount, 0);
+          summary.totalPending = summary.total - summary.totalSuccess;
+          summary.countSuccess = summary.students.filter(s => s.paymentStatus === 'PAID').length;
+          summary.countPending = summary.students.filter(s => s.paymentStatus === 'PARTIAL').length;
+          summary.countFailed = summary.students.filter(s => s.paymentStatus === 'UNPAID').length;
+        }
+
         this.paymentSummary = summary;
         this.loadingSummary = false;
       },

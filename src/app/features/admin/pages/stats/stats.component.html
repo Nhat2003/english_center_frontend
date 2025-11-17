@@ -1,187 +1,230 @@
-<!-- Statistics Dashboard -->
-<div class="stats-container">
-  <!-- Header Section -->
-  <div class="stats-header">
-    <h1 class="stats-title">
-      <span nz-icon nzType="bar-chart" nzTheme="outline"></span>
-      Thống kê tổng quan
-    </h1>
-    <div class="date-filter">
-      <nz-range-picker
-        [(ngModel)]="dateRange"
-        (ngModelChange)="onDateRangeChange($event)"
-        nzFormat="dd/MM/yyyy">
-      </nz-range-picker>
-      <button nz-button nzType="primary" (click)="refreshData()">
-        <span nz-icon nzType="reload"></span>
+<nz-spin [nzSpinning]="loading">
+  <div class="stats-dashboard">
+    <!-- Header -->
+    <div class="dashboard-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <i nz-icon nzType="dashboard" nzTheme="outline"></i>
+        Bảng điều khiển
+      </h1>
+      <p class="page-subtitle">Tổng quan hoạt động trung tâm tiếng Anh</p>
+    </div>
+    <div class="header-actions">
+      <button nz-button nzType="primary" (click)="refreshData()" [nzLoading]="loading">
+        <i nz-icon nzType="reload" nzTheme="outline"></i>
         Làm mới
       </button>
     </div>
   </div>
 
-  <!-- Overview Cards -->
+  <!-- Overview Statistics -->
   <div class="overview-section">
-    <div class="stats-cards">
-      <div class="stat-card students-card">
-        <div class="card-icon">
-          <span nz-icon nzType="user" nzTheme="outline"></span>
+    <div class="stat-cards">
+      <nz-card class="stat-card primary">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i nz-icon nzType="team" nzTheme="outline"></i>
+          </div>
+          <div class="stat-info">
+            <p class="stat-label">Tổng học sinh</p>
+            <h2 class="stat-value">{{ stats.totalStudents }}</h2>
+          </div>
         </div>
-        <div class="card-content">
-          <h3>{{ totalStudents }}</h3>
-          <p>Tổng học sinh</p>
-          <span class="trend positive" *ngIf="studentGrowth > 0">
-            <span nz-icon nzType="arrow-up"></span>
-            +{{ studentGrowth }}%
-          </span>
-          <span class="trend negative" *ngIf="studentGrowth < 0">
-            <span nz-icon nzType="arrow-down"></span>
-            {{ studentGrowth }}%
-          </span>
-        </div>
-      </div>
+      </nz-card>
 
-      <div class="stat-card teachers-card">
-        <div class="card-icon">
-          <span nz-icon nzType="team" nzTheme="outline"></span>
+      <nz-card class="stat-card success">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i nz-icon nzType="user" nzTheme="outline"></i>
+          </div>
+          <div class="stat-info">
+            <p class="stat-label">Giáo viên</p>
+            <h2 class="stat-value">{{ stats.totalTeachers }}</h2>
+          </div>
         </div>
-        <div class="card-content">
-          <h3>{{ totalTeachers }}</h3>
-          <p>Tổng giáo viên</p>
-          <span class="trend positive" *ngIf="teacherGrowth > 0">
-            <span nz-icon nzType="arrow-up"></span>
-            +{{ teacherGrowth }}%
-          </span>
-        </div>
-      </div>
+      </nz-card>
 
-      <div class="stat-card courses-card">
-        <div class="card-icon">
-          <span nz-icon nzType="book" nzTheme="outline"></span>
+      <nz-card class="stat-card warning">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i nz-icon nzType="read" nzTheme="outline"></i>
+          </div>
+          <div class="stat-info">
+            <p class="stat-label">Khóa học</p>
+            <h2 class="stat-value">{{ stats.totalCourses }}</h2>
+          </div>
         </div>
-        <div class="card-content">
-          <h3>{{ totalCourses }}</h3>
-          <p>Tổng khóa học</p>
-          <span class="trend positive" *ngIf="courseGrowth > 0">
-            <span nz-icon nzType="arrow-up"></span>
-            +{{ courseGrowth }}%
-          </span>
-        </div>
-      </div>
+      </nz-card>
 
-      <div class="stat-card classes-card">
-        <div class="card-icon">
-          <span nz-icon nzType="schedule" nzTheme="outline"></span>
+      <nz-card class="stat-card info">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i nz-icon nzType="schedule" nzTheme="outline"></i>
+          </div>
+          <div class="stat-info">
+            <p class="stat-label">Lớp học</p>
+            <h2 class="stat-value">{{ stats.totalClasses }}</h2>
+            <span class="stat-detail">{{ stats.activeClasses }} đang hoạt động</span>
+          </div>
         </div>
-        <div class="card-content">
-          <h3>{{ totalClasses }}</h3>
-          <p>Tổng lớp học</p>
-          <span class="trend positive" *ngIf="classGrowth > 0">
-            <span nz-icon nzType="arrow-up"></span>
-            +{{ classGrowth }}%
-          </span>
-        </div>
-      </div>
+      </nz-card>
     </div>
+  </div>
+
+  <!-- Revenue Section -->
+  <div class="revenue-section">
+    <nz-card class="revenue-card">
+      <div class="card-header">
+        <h3><i nz-icon nzType="dollar-circle" nzTheme="outline"></i> Thống kê doanh thu</h3>
+      </div>
+      <div class="revenue-content">
+        <div class="revenue-item total">
+          <span class="label">Tổng học phí</span>
+          <span class="value">{{ formatCurrency(stats.totalRevenue) }}</span>
+        </div>
+        <div class="revenue-item paid">
+          <span class="label">Đã thu</span>
+          <span class="value success">{{ formatCurrency(stats.paidRevenue) }}</span>
+        </div>
+        <div class="revenue-item unpaid">
+          <span class="label">Còn nợ</span>
+          <span class="value danger">{{ formatCurrency(stats.unpaidRevenue) }}</span>
+        </div>
+        <div class="revenue-item rate">
+          <span class="label">Tỷ lệ đóng</span>
+          <nz-progress
+            [nzPercent]="stats.paymentRate"
+            [nzStrokeColor]="{ '0%': '#108ee9', '100%': '#87d068' }">
+          </nz-progress>
+        </div>
+      </div>
+    </nz-card>
   </div>
 
   <!-- Charts Section -->
   <div class="charts-section">
-    <div class="chart-row">
-      <!-- Student Enrollment Chart -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <h3>Học sinh đăng ký theo tháng</h3>
-          <nz-select [(ngModel)]="enrollmentPeriod" (ngModelChange)="updateEnrollmentChart()">
-            <nz-option nzValue="6months" nzLabel="6 tháng gần đây"></nz-option>
-            <nz-option nzValue="year" nzLabel="12 tháng gần đây"></nz-option>
-          </nz-select>
-        </div>
-        <div class="chart-content">
-          <div class="enrollment-data">
-            <div class="data-point" *ngFor="let month of enrollmentData">
-              <div class="month-label">{{ month.label }}</div>
-              <div class="progress-bar">
-                <div class="progress-fill" [style.width.%]="month.percentage"></div>
+    <!-- Enrollment Trend -->
+    <nz-card class="chart-card">
+      <div class="card-header">
+        <h3><i nz-icon nzType="line-chart" nzTheme="outline"></i> Xu hướng đăng ký</h3>
+      </div>
+      <div class="chart-content enrollment-chart">
+        <div class="chart-bars">
+          <div class="bar-item" *ngFor="let month of enrollmentMonths; let i = index">
+            <div class="bar-container">
+              <div class="bar-fill"
+                   [style.height.%]="(enrollmentValues[i] / getMaxEnrollment()) * 100"
+                   [title]="enrollmentValues[i] + ' học sinh'">
               </div>
-              <div class="value">{{ month.value }}</div>
             </div>
+            <span class="bar-value">{{ enrollmentValues[i] }}</span>
+            <span class="bar-label">{{ month }}</span>
           </div>
         </div>
       </div>
+    </nz-card>
 
-      <!-- Course Popularity Chart -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <h3>Khóa học phổ biến</h3>
-        </div>
-        <div class="chart-content">
-          <div class="popularity-data">
-            <div class="course-item" *ngFor="let course of popularCourses">
-              <div class="course-info">
-                <span class="course-name">{{ course.name }}</span>
-                <span class="course-percentage">{{ course.percentage }}%</span>
+    <!-- Top Courses -->
+    <nz-card class="chart-card">
+      <div class="card-header">
+        <h3><i nz-icon nzType="trophy" nzTheme="outline"></i> Top khóa học phổ biến</h3>
+      </div>
+      <div class="chart-content">
+        <div class="top-list">
+          <div class="top-item" *ngFor="let course of topCourses; let i = index">
+            <div class="rank">{{ i + 1 }}</div>
+            <div class="info">
+              <p class="name">{{ course.name }}</p>
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="course.percentage"></div>
               </div>
-              <div class="course-bar">
-                <div class="course-fill" [style.width.%]="course.percentage" [style.background-color]="course.color"></div>
+              <div class="details">
+                <span>{{ course.studentCount }} học sinh</span>
+                <span>{{ course.classCount }} lớp</span>
               </div>
             </div>
           </div>
+          <div *ngIf="topCourses.length === 0" class="empty-state">
+            <nz-empty nzNotFoundContent="Chưa có dữ liệu khóa học"></nz-empty>
+          </div>
         </div>
       </div>
-    </div>
+    </nz-card>
   </div>
 
-  <!-- Recent Activities -->
-  <div class="activities-section">
-    <div class="activity-card">
-      <div class="activity-header">
-        <h3>
-          <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
-          Hoạt động gần đây
-        </h3>
-        <button nz-button nzType="link" (click)="viewAllActivities()">
-          Xem tất cả
-        </button>
+  <!-- Teacher and Upcoming Classes Section -->
+  <div class="bottom-section">
+    <!-- Top Teachers -->
+    <nz-card class="info-card">
+      <div class="card-header">
+        <h3><i nz-icon nzType="star" nzTheme="outline"></i> Giáo viên xuất sắc</h3>
       </div>
-      <div class="activity-list">
-        <div class="activity-item" *ngFor="let activity of recentActivities">
-          <div class="activity-icon" [ngClass]="activity.type">
-            <span nz-icon [nzType]="getActivityIcon(activity.type)"></span>
-          </div>
-          <div class="activity-content">
-            <p class="activity-text">{{ activity.description }}</p>
-            <span class="activity-time">{{ formatTime(activity.timestamp) }}</span>
-          </div>
+      <div class="card-content">
+        <nz-table
+          [nzData]="topTeachers"
+          [nzShowPagination]="false"
+          [nzSize]="'small'"
+          *ngIf="topTeachers.length > 0">
+          <thead>
+            <tr>
+              <th>Giáo viên</th>
+              <th nzAlign="center">Số lớp</th>
+              <th nzAlign="center">Học sinh</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let teacher of topTeachers">
+              <td>
+                <strong>{{ teacher.name }}</strong>
+              </td>
+              <td nzAlign="center">
+                <nz-tag nzColor="blue">{{ teacher.classCount }}</nz-tag>
+              </td>
+              <td nzAlign="center">
+                <nz-tag nzColor="green">{{ teacher.studentCount }}</nz-tag>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+        <div *ngIf="topTeachers.length === 0" class="empty-state">
+          <nz-empty nzNotFoundContent="Chưa có dữ liệu giáo viên"></nz-empty>
         </div>
       </div>
-    </div>
+    </nz-card>
 
-    <!-- Quick Stats Table -->
-    <div class="quick-stats-card">
-      <div class="stats-header">
-        <h3>
-          <span nz-icon nzType="table" nzTheme="outline"></span>
-          Thống kê nhanh
-        </h3>
+    <!-- Upcoming Classes -->
+    <nz-card class="info-card">
+      <div class="card-header">
+        <h3><i nz-icon nzType="calendar" nzTheme="outline"></i> Lớp học sắp khai giảng</h3>
       </div>
-      <div class="quick-stats-grid">
-        <div class="quick-stat-item">
-          <span class="stat-label">Học sinh hoạt động</span>
-          <span class="stat-value active">{{ activeStudents }}</span>
+      <div class="card-content">
+        <div class="upcoming-list" *ngIf="upcomingClasses.length > 0">
+          <div class="upcoming-item" *ngFor="let cls of upcomingClasses">
+            <div class="class-icon">
+              <i nz-icon nzType="book" nzTheme="outline"></i>
+            </div>
+            <div class="class-info">
+              <h4>{{ cls.name }}</h4>
+              <p class="teacher">
+                <i nz-icon nzType="user" nzTheme="outline"></i>
+                {{ cls.teacherName }}
+              </p>
+              <p class="schedule">
+                <i nz-icon nzType="clock-circle" nzTheme="outline"></i>
+                {{ cls.schedule }}
+              </p>
+              <div class="meta">
+                <nz-tag nzColor="blue">{{ cls.studentCount }} học sinh</nz-tag>
+                <span class="date">{{ formatDate(cls.startDate) }}</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="quick-stat-item">
-          <span class="stat-label">Lớp đang diễn ra</span>
-          <span class="stat-value ongoing">{{ ongoingClasses }}</span>
-        </div>
-        <div class="quick-stat-item">
-          <span class="stat-label">Doanh thu tháng</span>
-          <span class="stat-value revenue">{{ monthlyRevenue | currency:'VND':'symbol':'1.0-0' }}</span>
-        </div>
-        <div class="quick-stat-item">
-          <span class="stat-label">Tỷ lệ hoàn thành</span>
-          <span class="stat-value completion">{{ completionRate }}%</span>
+        <div *ngIf="upcomingClasses.length === 0" class="empty-state">
+          <nz-empty nzNotFoundContent="Không có lớp học sắp khai giảng"></nz-empty>
         </div>
       </div>
-    </div>
+    </nz-card>
   </div>
 </div>
+</nz-spin>
