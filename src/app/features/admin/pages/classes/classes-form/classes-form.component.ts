@@ -83,17 +83,13 @@ export class ClassesFormComponent implements OnInit {
     this.loadDropdownData().then(() => {
       // Handle different ways class data can be passed
       if (this.classData) {
-        console.log('Received class data:', this.classData);
-
         // If we have full class data with more than just ID
         if (this.classData.name || this.classData.teacherId || this.classData.courseId) {
-          console.log('Using full class data');
           this.classDetails = this.classData as Class;
           this.populateForm(this.classData);
         }
         // If we only have ID, load details from API
         else if (this.classData.id) {
-          console.log('Loading class details by ID:', this.classData.id);
           this.loadClassDetails(this.classData.id);
         }
       }
@@ -109,8 +105,6 @@ export class ClassesFormComponent implements OnInit {
   }
 
   loadDropdownData(): Promise<void> {
-    console.log('Loading dropdown data...');
-
     return new Promise((resolve) => {
       this.isLoadingCourses = true;
       this.isLoadingTeachers = true;
@@ -197,12 +191,8 @@ export class ClassesFormComponent implements OnInit {
 
           // Process schedules
           this.schedules = results.schedules as any[];
-          console.log('Loaded fixed schedules:', this.schedules);
-
           // Process rooms
           this.rooms = Array.isArray(results.rooms) ? results.rooms : [];
-          console.log('Loaded rooms:', this.rooms);
-
           // Mark all as loaded
           this.isLoadingCourses = false;
           this.isLoadingTeachers = false;
@@ -210,7 +200,6 @@ export class ClassesFormComponent implements OnInit {
           this.isLoadingSchedules = false;
           this.isLoadingRooms = false;
 
-          console.log('All dropdown data loaded');
           resolve();
         },
         error: (error) => {
@@ -250,7 +239,6 @@ export class ClassesFormComponent implements OnInit {
     // Find selected course
     const selectedCourse = this.courses.find(c => c.id === courseId);
     if (!selectedCourse || !selectedCourse.duration) {
-      console.warn('Course not found or missing duration');
       this.classForm.get('endDate')?.setValue(null);
       return;
     }
@@ -391,7 +379,6 @@ export class ClassesFormComponent implements OnInit {
     this.classService.getClass(classId).subscribe({
       next: (classItem) => {
         this.classDetails = classItem;
-        console.log('Loaded class details:', classItem);
         this.populateForm(classItem);
         this.isLoading = false;
       },
@@ -404,11 +391,6 @@ export class ClassesFormComponent implements OnInit {
   }
 
   populateForm(classItem: any) {
-    console.log('populateForm called with:', classItem);
-    console.log('Available teachers:', this.teachers);
-    console.log('Available courses:', this.courses);
-    console.log('Available schedules:', this.schedules);
-
     // API trả về fixedSchedule object thay vì fixedScheduleId
     // Nên cần match fixedSchedule với schedule trong dropdown để lấy ID
     let fixedScheduleId = classItem.fixedScheduleId || classItem.scheduleId || classItem.schedule || null;
@@ -423,8 +405,7 @@ export class ClassesFormComponent implements OnInit {
       );
       if (matchedSchedule) {
         fixedScheduleId = matchedSchedule.id;
-        console.log('Matched schedule from fixedSchedule:', matchedSchedule);
-      }
+        }
     }
 
     // API trả về teacherName (string) thay vì teacherId
@@ -436,10 +417,8 @@ export class ClassesFormComponent implements OnInit {
       );
       if (matchedTeacher) {
         teacherId = matchedTeacher.id;
-        console.log('Matched teacher from teacherName:', matchedTeacher);
-      } else {
-        console.warn('Could not find teacher with name:', classItem.teacherName);
-      }
+        } else {
+        }
     }
 
     // API trả về courseName (string) thay vì courseId
@@ -451,10 +430,8 @@ export class ClassesFormComponent implements OnInit {
       );
       if (matchedCourse) {
         courseId = matchedCourse.id;
-        console.log('Matched course from courseName:', matchedCourse);
-      } else {
-        console.warn('Could not find course with name:', classItem.courseName);
-      }
+        } else {
+        }
     }
 
     // Map the class data to form fields with detailed logging
@@ -466,8 +443,7 @@ export class ClassesFormComponent implements OnInit {
       const matchedRoom = this.rooms.find(r => r.name === classItem.roomName);
       if (matchedRoom) {
         roomId = matchedRoom.id;
-        console.log('Matched room from roomName:', matchedRoom);
-      }
+        }
     }
 
     const formData = {
@@ -484,10 +460,6 @@ export class ClassesFormComponent implements OnInit {
       status: classItem.status || 'active'
     };
 
-    console.log('Original class item:', classItem);
-    console.log('Mapped form data:', formData);
-    console.log('Form before patch:', this.classForm.value);
-
     this.classForm.patchValue(formData);
 
     // Mark students as checked based on studentIds
@@ -498,8 +470,6 @@ export class ClassesFormComponent implements OnInit {
       this.filteredStudents = [...this.students];
       this.updateSelectAllState();
     }
-
-    console.log('Form after patch:', this.classForm.value);
 
     // Mark form as pristine after loading data
     this.classForm.markAsPristine();
@@ -537,12 +507,6 @@ export class ClassesFormComponent implements OnInit {
         formData.status = rawFormData.status;
       }
 
-      console.log('=== FORM SUBMISSION DEBUG ===');
-      console.log('Raw form data:', rawFormData);
-      console.log('Prepared formData:', formData);
-      console.log('Mode:', this.mode);
-      console.log('Class details:', this.classDetails);
-
       // Xử lý create vs edit mode
       const apiCall = this.mode === 'edit' && this.classDetails?.id
         ? this.classService.updateClass(this.classDetails.id, formData)
@@ -553,7 +517,6 @@ export class ClassesFormComponent implements OnInit {
       apiCall.subscribe({
         next: (classItem) => {
           this.isLoading = false;
-          console.log(`Class ${action}d successfully:`, classItem);
           this.message.success(`${action === 'tạo' ? 'Thêm' : 'Cập nhật'} lớp học thành công!`);
           this.modal.close(true);
         },
@@ -576,7 +539,6 @@ export class ClassesFormComponent implements OnInit {
           if (error.status === 403) {
             this.message.error('Bạn không có quyền thực hiện thao tác này. Vui lòng kiểm tra lại token hoặc quyền truy cập.');
           } else if (error.status === 400) {
-            console.log('400 Bad Request - trying alternative field mapping...');
             this.tryAlternativeCreate(rawFormData, action);
           } else {
             this.handleError(error, action);
@@ -588,8 +550,6 @@ export class ClassesFormComponent implements OnInit {
 
   handleError(error: any, action: string) {
     let errorMessage = `Có lỗi xảy ra khi ${action} lớp học`;
-
-    console.log('HandleError called with:', error);
 
     if (error.status === 400) {
       // Try to get detailed validation error
@@ -625,8 +585,6 @@ export class ClassesFormComponent implements OnInit {
   }
 
   tryAlternativeCreate(rawFormData: any, action: string) {
-    console.log('Trying alternative field mapping...');
-
     // Try with minimal required fields only - matching your sample request
     const alternativeData: any = {
       name: rawFormData.name,
@@ -642,8 +600,6 @@ export class ClassesFormComponent implements OnInit {
       alternativeData.roomId = rawFormData.roomId;
     }
 
-    console.log('Trying alternative data:', alternativeData);
-
     const apiCall = this.mode === 'edit' && this.classDetails?.id
       ? this.classService.updateClass(this.classDetails.id, alternativeData)
       : this.classService.createClass(alternativeData);
@@ -651,7 +607,6 @@ export class ClassesFormComponent implements OnInit {
     apiCall.subscribe({
       next: (classItem) => {
         this.isLoading = false;
-        console.log(`Class ${action}d successfully with alternative:`, classItem);
         this.message.success(`${action === 'tạo' ? 'Thêm' : 'Cập nhật'} lớp học thành công!`);
         this.modal.close(true);
       },

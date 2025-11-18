@@ -50,14 +50,9 @@ export class ClassOverviewComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      console.log('Route params:', params);
       const idParam = params['id'];
-      console.log('Raw ID param:', idParam, typeof idParam);
-
       // Parse và validate classId
       this.classId = parseInt(idParam, 10);
-      console.log('Parsed ClassId:', this.classId);
-
       if (this.classId && !isNaN(this.classId)) {
         this.loadClassDetails();
       } else {
@@ -69,8 +64,6 @@ export class ClassOverviewComponent implements OnInit {
 
   loadClassDetails(): void {
     this.loading = true;
-    console.log('Loading class details for classId:', this.classId);
-
     forkJoin({
       classInfo: this.classService.getClass(this.classId!).pipe(
         catchError(err => {
@@ -104,8 +97,6 @@ export class ClassOverviewComponent implements OnInit {
       )
     }).subscribe({
       next: (result) => {
-        console.log('API Results:', result);
-
         if (!result.classInfo) {
           this.message.error('Không thể tải thông tin lớp');
           this.loading = false;

@@ -12,6 +12,7 @@ import { ClassAttendanceComponent } from './pages/attendance/class-attendance.co
 import { StudentDetailComponent } from './pages/students/student-detail/student-detail.component';
 import { ClassAnnouncementsComponent } from './pages/announcements/class-announcements.component';
 import { TeacherNotificationsComponent } from './pages/notifications/notifications.component';
+import { ProfileSettingsComponent } from './pages/profile-settings/profile-settings.component';
 
 export const TEACHER_ROUTES: Routes = [
   {
@@ -32,7 +33,8 @@ export const TEACHER_ROUTES: Routes = [
       { path: 'assignments', component: TeacherDashboardComponent },
       { path: 'online-classes', component: TeacherDashboardComponent },
       { path: 'materials', component: TeacherDashboardComponent },
-      { path: 'notifications', component: TeacherNotificationsComponent }
+      { path: 'notifications', component: TeacherNotificationsComponent },
+      { path: 'profile-settings', component: ProfileSettingsComponent }
     ]
   }
 ];

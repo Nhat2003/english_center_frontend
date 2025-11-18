@@ -89,7 +89,6 @@ export class CoursesFormComponent implements OnInit {
       apiCall.subscribe({
         next: (course) => {
           this.loading = false;
-          console.log(`Course ${action}d successfully:`, course);
           this.modal.close(true);
         },
         error: (error) => {

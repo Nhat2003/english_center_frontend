@@ -35,7 +35,6 @@ export class EditUserComponent implements OnInit {
 
   ngOnChanges(): void {
     if (this.userForm) {
-      console.log('Edit user data:', this.userData);
       let role = this.userData?.role || null;
       if (typeof role === 'string') {
         // Map role chữ hoa từ backend về đúng format

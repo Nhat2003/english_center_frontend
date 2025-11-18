@@ -117,7 +117,6 @@ export class TeachersFormComponent implements OnInit {
         console.log('Available active users for teacher profile (API):', this.availableUsers);
       },
       error: (error) => {
-        console.log('API không hỗ trợ isActive filter, sử dụng fallback:', error);
         // Fallback: Lấy tất cả users theo role rồi filter
         this.userService.getUsersByRole('TEACHER').subscribe({
           next: (users) => {
@@ -146,11 +145,9 @@ export class TeachersFormComponent implements OnInit {
 
       if (this.mode === 'edit' && this.teacherData?.id) {
         // Update existing teacher
-        console.log('Updating teacher with data:', data);
         this.teacherService.updateTeacher(this.teacherData.id, data).subscribe({
           next: (teacher) => {
             this.loading = false;
-            console.log('Teacher updated successfully:', teacher);
             this.modal.close(true);
           },
           error: (error) => {
@@ -159,11 +156,9 @@ export class TeachersFormComponent implements OnInit {
         });
       } else {
         // Create new teacher
-        console.log('Creating teacher with data:', data);
         this.teacherService.createTeacher(data).subscribe({
           next: (teacher) => {
             this.loading = false;
-            console.log('Teacher created successfully:', teacher);
             this.modal.close(true);
           },
           error: (error) => {
@@ -172,9 +167,7 @@ export class TeachersFormComponent implements OnInit {
         });
       }
     } else {
-      console.log('Form is invalid:', this.form.errors);
-      console.log('Form values:', this.form.value);
-    }
+      }
   }
 
   private handleError(error: any, action: string) {
@@ -228,8 +221,6 @@ export class TeachersFormComponent implements OnInit {
 
   // User selection modal methods
   openUserSelectionModal() {
-    console.log('Opening user selection modal...');
-    console.log('Available users:', this.availableUsers);
     console.log('Current userId:', this.form.get('userId')?.value);
     this.isUserSelectionModalVisible = true;
     this.filterUsers();

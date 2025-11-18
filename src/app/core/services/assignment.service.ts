@@ -120,20 +120,17 @@ export class AssignmentService {
 
   // Tạo bài tập mới
   createAssignment(assignment: any): Observable<Assignment> {
-    console.log('📡 AssignmentService.createAssignment called with:', assignment);
     return this.http.post<Assignment>(this.apiUrl, assignment);
   }
 
   // Tạo bài tập mới với file (FormData)
   createAssignmentWithFile(formData: FormData): Observable<Assignment> {
-    console.log('📡 AssignmentService.createAssignmentWithFile called');
     // Don't set Content-Type header, browser will set it automatically with boundary for FormData
     return this.http.post<Assignment>(this.apiUrl, formData);
   }
 
   // Cập nhật bài tập
   updateAssignment(id: number, formData: FormData): Observable<Assignment> {
-    console.log('📡 AssignmentService.updateAssignment called for ID:', id);
     return this.http.put<Assignment>(`${this.apiUrl}/${id}`, formData);
   }
 
@@ -165,7 +162,6 @@ export class AssignmentService {
       formData.append('content', content);
     }
 
-    console.log('📤 Submitting assignment:', { assignmentId, studentId, hasFile: !!file, hasContent: !!content });
     return this.http.post<Submission>(`${environment.apiUrl}/submissions/assignment/${assignmentId}`, formData);
   }
 
@@ -197,12 +193,9 @@ export class AssignmentService {
    * @returns Observable<StudentAssignment[]> với computed fields
    */
   getMyAssignments(): Observable<StudentAssignment[]> {
-    console.log('📚 Fetching my assignments from:', `${this.apiUrl}/me`);
     return this.http.get<Assignment[]>(`${this.apiUrl}/me`).pipe(
       map(assignments => {
-        console.log('✅ Raw API response:', assignments);
         const mapped = this.mapToStudentAssignments(assignments);
-        console.log('✅ Mapped assignments:', mapped);
         return mapped;
       })
     );

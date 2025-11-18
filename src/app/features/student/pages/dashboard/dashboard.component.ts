@@ -126,7 +126,6 @@ export class StudentDashboardComponent implements OnInit {
         this.loadDashboardFromOverview(overview);
       },
       error: (error) => {
-        console.warn('Overview API not available, falling back to old method:', error);
         this.loadDashboardDataLegacy();
       }
     });
@@ -136,8 +135,6 @@ export class StudentDashboardComponent implements OnInit {
    * Load dashboard using new Overview API response
    */
   loadDashboardFromOverview(overview: StudentOverviewResponse) {
-    console.log('Dashboard overview loaded:', overview);
-
     // Update stats from overview
     this.attendanceSummary = {
       totalSessions: overview.attendanceTotal,

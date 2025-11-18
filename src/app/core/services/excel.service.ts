@@ -149,8 +149,7 @@ export class ExcelService {
         return date.toISOString().split('T')[0];
       }
     } catch (error) {
-      console.warn('Không thể parse ngày:', dateValue);
-    }
+      }
 
     return dateValue; // Trả về giá trị gốc nếu không parse được
   }

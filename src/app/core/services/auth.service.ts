@@ -152,7 +152,6 @@ export class AuthService {
     return this.http.post<any>(`${this.API_URL}/auth/register`, userData)
       .pipe(
         catchError(error => {
-          console.warn('Backend register failed, using fallback:', error);
           // Fallback logic
           if (this.users.find(u => u.username === userData.username)) {
             return of({ success: false, message: 'Tên đăng nhập đã tồn tại!' });
@@ -207,7 +206,6 @@ export class AuthService {
 
         // If token doesn't have exp field, consider it valid
         if (!payload.exp) {
-          console.log('JWT token has no exp field, considering it valid');
           return false;
         }
 
@@ -221,7 +219,6 @@ export class AuthService {
 
           // If token doesn't have exp field, consider it valid
           if (!payload.exp) {
-            console.log('Custom token has no exp field, considering it valid');
             return false;
           }
 
@@ -230,14 +227,12 @@ export class AuthService {
           return expired;
         } catch {
           // If can't parse, consider token as valid (might be opaque token)
-          console.log('Token is opaque, considering it valid');
           return false;
         }
       }
     } catch (error) {
       console.error('Token parse error:', error);
       // If JWT parse fails but token exists, consider it valid (opaque token)
-      console.log('Treating as opaque token, considering it valid');
       return false;
     }
   }

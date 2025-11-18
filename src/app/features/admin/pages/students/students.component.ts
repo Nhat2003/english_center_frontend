@@ -78,8 +78,6 @@ export class StudentsComponent implements OnInit {
 
   fetchStudents() {
     this.loading = true;
-    console.log('Fetching students with pagination:', { pageIndex: this.pageIndex, pageSize: this.pageSize });
-
     // Test với API đơn giản trước
     this.studentService.getStudentsWithoutPagination().subscribe({
       next: (data: any) => {
@@ -89,7 +87,6 @@ export class StudentsComponent implements OnInit {
           this.students = data;
           this.total = data.length;
         } else {
-          console.warn('Unexpected API response format:', data);
           this.allStudents = [];
           this.students = [];
           this.total = 0;
@@ -99,7 +96,6 @@ export class StudentsComponent implements OnInit {
       error: (error) => {
         console.error('Failed to fetch students (without pagination):', error);
         // Fallback: try with pagination
-        console.log('Trying with pagination...');
         this.studentService.getStudents(this.pageIndex - 1, this.pageSize).subscribe({
           next: (data: any) => {
             console.log('Students API response (with pagination):', data);
@@ -110,7 +106,6 @@ export class StudentsComponent implements OnInit {
               this.students = data;
               this.total = data.length;
             } else {
-              console.warn('Unexpected API response format:', data);
               this.students = [];
               this.total = 0;
             }

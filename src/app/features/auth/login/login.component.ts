@@ -39,16 +39,32 @@ export class LoginComponent implements OnInit {
         next: (response) => {
           this.setFormLoadingState(false);
           if (response.success && response.user) {
-            this.message.success(response.message || 'Đăng nhập thành công!');
+            this.message.success('Đăng nhập thành công!');
             this.redirectBasedOnRole(response.user.role);
           } else {
+            // Backend trả về success: false với message
             this.message.error(response.message || 'Đăng nhập thất bại!');
           }
         },
         error: (error) => {
           this.setFormLoadingState(false);
           console.error('Login error:', error);
-          this.message.error('Có lỗi xảy ra trong quá trình đăng nhập!');
+          
+          // Xử lý các lỗi HTTP từ backend
+          if (error.status === 401) {
+            // Backend trả về 401: Sai username hoặc password
+            const errorMessage = error.error?.message || 'Sai tên đăng nhập hoặc mật khẩu!';
+            this.message.error(errorMessage);
+          } else if (error.status === 403) {
+            // Backend trả về 403: Tài khoản bị khóa
+            const errorMessage = error.error?.message || 'Tài khoản đã bị khóa!';
+            this.message.error(errorMessage);
+          } else if (error.status === 0) {
+            this.message.error('Không thể kết nối tới server!');
+          } else {
+            const errorMessage = error.error?.message || 'Có lỗi xảy ra trong quá trình đăng nhập!';
+            this.message.error(errorMessage);
+          }
         }
       });
     }

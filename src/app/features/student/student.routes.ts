@@ -12,7 +12,7 @@ import { GradesComponent } from './pages/grades/grades.component';
 import { AttendanceHistoryComponent } from './pages/attendance-history/attendance-history.component';
 import { ClassAttendanceComponent } from './pages/classes/class-attendance/class-attendance.component';
 import { StudentClassAnnouncementsComponent } from './pages/classes/class-announcements/class-announcements.component';
-
+import { ProfileSettingsComponent } from './pages/profile-settings/profile-settings.component';
 
 import { StudentPaymentComponent } from './pages/payment/student-payment.component';
 import { PaymentSuccessComponent } from './pages/payment-success/payment-success.component';
@@ -39,7 +39,8 @@ export const STUDENT_ROUTES: Routes = [
       { path: 'payment-success', component: PaymentSuccessComponent },
       { path: 'online-classes', component: StudentDashboardComponent },
       { path: 'documents', component: StudentDocumentsComponent },
-      { path: 'notifications', component: StudentNotificationsComponent }
+      { path: 'notifications', component: StudentNotificationsComponent },
+      { path: 'profile-settings', component: ProfileSettingsComponent }
     ]
   }
 ];

@@ -98,29 +98,23 @@ export class StatsComponent implements OnInit {
       classes: this.classService.getClasses(0, 1000)
     }).subscribe({
       next: (results) => {
-        console.log('Dashboard data loaded:', results);
-
         // Process students - now returns paginated response
         const studentsData = (results.students as any);
         const students = studentsData?.content || studentsData || [];
-        console.log('Students:', students.length);
         this.stats.totalStudents = studentsData?.totalElements || students.length;
 
         // Process teachers
         const teachers = Array.isArray(results.teachers)
           ? results.teachers
           : (results.teachers as any)?.content || [];
-        console.log('Teachers:', teachers.length);
         this.stats.totalTeachers = teachers.length;
 
         // Process courses
         const courses = (results.courses as any)?.content || results.courses || [];
-        console.log('Courses:', courses.length);
         this.stats.totalCourses = courses.length;
 
         // Process classes
         const classes = (results.classes as any)?.content || results.classes || [];
-        console.log('Classes:', classes.length);
         this.stats.totalClasses = classes.length;
         this.stats.activeClasses = classes.filter((c: any) =>
           c.status === 'ACTIVE' || c.status === 'active' || c.status === 'ONGOING'
@@ -152,15 +146,12 @@ export class StatsComponent implements OnInit {
 
   loadPaymentStats(classes: any[]): void {
     if (classes.length === 0) {
-      console.log('No classes found for payment stats');
       this.stats.totalRevenue = 0;
       this.stats.paidRevenue = 0;
       this.stats.unpaidRevenue = 0;
       this.stats.paymentRate = 0;
       return;
     }
-
-    console.log('Loading payment stats for', classes.length, 'classes');
 
     // Get payment summary for all classes (limit to first 20 to avoid too many requests)
     const paymentRequests = classes.slice(0, 20).map(cls =>
@@ -169,7 +160,6 @@ export class StatsComponent implements OnInit {
 
     forkJoin(paymentRequests).subscribe({
       next: (summaries) => {
-        console.log('Payment summaries received:', summaries);
         let totalRequired = 0;
         let totalPaid = 0;
 
@@ -182,7 +172,6 @@ export class StatsComponent implements OnInit {
           }
         });
 
-        console.log('Payment stats calculated:', { totalRequired, totalPaid });
         this.stats.totalRevenue = totalRequired;
         this.stats.paidRevenue = totalPaid;
         this.stats.unpaidRevenue = totalRequired - totalPaid;

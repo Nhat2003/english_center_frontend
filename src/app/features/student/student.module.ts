@@ -65,6 +65,7 @@ import { PaymentSuccessComponent } from './pages/payment-success/payment-success
 // Routes
 import { STUDENT_ROUTES } from './student.routes';
 import { SharedModule } from '../../shared/shared.module';
+import { ProfileSettingsComponent } from './pages/profile-settings/profile-settings.component';
 
 @NgModule({
   declarations: [
@@ -83,7 +84,8 @@ import { SharedModule } from '../../shared/shared.module';
     StudentNotificationsComponent,
     ClassTabsComponent,
     StudentPaymentComponent,
-    PaymentSuccessComponent
+    PaymentSuccessComponent,
+    ProfileSettingsComponent
   ],
   imports: [
     CommonModule,

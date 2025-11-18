@@ -53,6 +53,7 @@ import { TeacherNotificationsComponent } from './pages/notifications/notificatio
 // Routes
 import { TEACHER_ROUTES } from './teacher.routes';
 import { SharedModule } from '../../shared/shared.module';
+import { ProfileSettingsComponent } from './pages/profile-settings/profile-settings.component';
 
 @NgModule({
   declarations: [
@@ -68,7 +69,8 @@ import { SharedModule } from '../../shared/shared.module';
     ClassAttendanceComponent,
     StudentDetailComponent,
     ClassAnnouncementsComponent,
-    TeacherNotificationsComponent
+    TeacherNotificationsComponent,
+    ProfileSettingsComponent
   ],
   imports: [
     CommonModule,

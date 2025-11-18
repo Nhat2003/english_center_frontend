@@ -1,0 +1,96 @@
+<div class="profile-settings-container">
+  <nz-spin [nzSpinning]="loading">
+    <nz-card nzTitle="Cài đặt thông tin cá nhân" [nzExtra]="extraTemplate">
+      <form nz-form [formGroup]="profileForm" (ngSubmit)="onSubmit()" nzLayout="vertical">
+
+        <!-- Full Name -->
+        <nz-form-item>
+          <nz-form-label nzRequired>Họ và tên</nz-form-label>
+          <nz-form-control nzErrorTip="Vui lòng nhập họ tên (tối thiểu 2 ký tự)">
+            <input nz-input formControlName="fullName" placeholder="Nhập họ và tên đầy đủ" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Phone -->
+        <nz-form-item>
+          <nz-form-label>Số điện thoại</nz-form-label>
+          <nz-form-control nzErrorTip="Số điện thoại không hợp lệ (10 số)">
+            <input nz-input formControlName="phone" placeholder="Nhập số điện thoại (10 số)" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Email -->
+        <nz-form-item>
+          <nz-form-label>Email</nz-form-label>
+          <nz-form-control nzErrorTip="Email không hợp lệ">
+            <input nz-input formControlName="email" placeholder="Nhập email" type="email" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Date of Birth -->
+        <nz-form-item>
+          <nz-form-label>Ngày sinh</nz-form-label>
+          <nz-form-control>
+            <nz-date-picker
+              formControlName="dob"
+              nzPlaceHolder="Chọn ngày sinh"
+              nzFormat="dd/MM/yyyy"
+              style="width: 100%;">
+            </nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Address -->
+        <nz-form-item>
+          <nz-form-label>Địa chỉ</nz-form-label>
+          <nz-form-control>
+            <textarea
+              nz-input
+              formControlName="address"
+              placeholder="Nhập địa chỉ"
+              [nzAutosize]="{ minRows: 2, maxRows: 4 }">
+            </textarea>
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Action Buttons -->
+        <nz-form-item>
+          <nz-form-control>
+            <button nz-button nzType="primary" type="submit" [nzLoading]="saving">
+              <i nz-icon nzType="save" nzTheme="outline"></i>
+              Lưu thay đổi
+            </button>
+            <button nz-button type="button" (click)="resetForm()" style="margin-left: 8px;">
+              <i nz-icon nzType="redo" nzTheme="outline"></i>
+              Khôi phục
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+
+      </form>
+
+      <ng-template #extraTemplate>
+        <nz-tag nzColor="blue">
+          <i nz-icon nzType="user" nzTheme="outline"></i>
+          Học sinh
+        </nz-tag>
+      </ng-template>
+    </nz-card>
+
+    <!-- Current Profile Info -->
+    <!-- <nz-card nzTitle="Thông tin hiện tại" *ngIf="currentProfile" style="margin-top: 16px;">
+      <nz-descriptions nzBordered [nzColumn]="2">
+        <nz-descriptions-item nzTitle="ID">{{ currentProfile.id }}</nz-descriptions-item>
+        <nz-descriptions-item nzTitle="Họ tên">{{ currentProfile.fullName }}</nz-descriptions-item>
+        <nz-descriptions-item nzTitle="Số điện thoại">{{ currentProfile.phone || 'Chưa cập nhật' }}</nz-descriptions-item>
+        <nz-descriptions-item nzTitle="Email">{{ currentProfile.email || 'Chưa cập nhật' }}</nz-descriptions-item>
+        <nz-descriptions-item nzTitle="Ngày sinh" [nzSpan]="2">
+          {{ currentProfile.dob ? (currentProfile.dob | date: 'dd/MM/yyyy') : 'Chưa cập nhật' }}
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="Địa chỉ" [nzSpan]="2">
+          {{ currentProfile.address || 'Chưa cập nhật' }}
+        </nz-descriptions-item>
+      </nz-descriptions>
+    </nz-card> -->
+  </nz-spin>
+</div>

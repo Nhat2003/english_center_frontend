@@ -21,9 +21,6 @@ export class StudentService {
 			.set('page', page.toString())
 			.set('size', size.toString());
 
-		console.log('Calling students API with params:', { page, size });
-		console.log('Full URL:', `${this.apiUrl}?page=${page}&size=${size}`);
-
 		return this.http.get<any>(this.apiUrl, { params })
 			.pipe(
 				catchError(this.handleError)
@@ -88,7 +85,6 @@ export class StudentService {
 
 	// Lấy tất cả students cho dropdown (không phân trang)
 	getAllStudents(): Observable<Student[]> {
-		console.log('Calling getAllStudents API');
 		return this.http.get<Student[]>(`${this.apiUrl}/all`)
 			.pipe(
 				catchError(this.handleError)
@@ -105,7 +101,6 @@ export class StudentService {
 
 	// Test method để kiểm tra API cơ bản
 	getStudentsWithoutPagination(): Observable<Student[]> {
-		console.log('Calling students API without pagination');
 		return this.http.get<Student[]>(this.apiUrl)
 			.pipe(
 				catchError(this.handleError)
@@ -119,6 +114,29 @@ export class StudentService {
 	 */
 	getMyOverview(): Observable<StudentOverviewResponse> {
 		return this.http.get<StudentOverviewResponse>(`${this.apiUrl}/me/overview`)
+			.pipe(
+				catchError(this.handleError)
+			);
+	}
+
+	/**
+	 * Get current student profile
+	 * API: GET /students/me/profile
+	 */
+	getMyProfile(): Observable<Student> {
+		return this.http.get<Student>(`${this.apiUrl}/me/profile`)
+			.pipe(
+				catchError(this.handleError)
+			);
+	}
+
+	/**
+	 * Update current student profile
+	 * API: PUT /students/me/profile
+	 * @param profileData - Student profile data to update
+	 */
+	updateMyProfile(profileData: Partial<Student>): Observable<Student> {
+		return this.http.put<Student>(`${this.apiUrl}/me/profile`, profileData)
 			.pipe(
 				catchError(this.handleError)
 			);

@@ -79,7 +79,6 @@ export class StudentsFormComponent implements OnInit {
         console.log('Available active users for student profile (API):', this.availableUsers);
       },
       error: (error) => {
-        console.log('API không hỗ trợ isActive filter, sử dụng fallback:', error);
         // Fallback: Lấy tất cả users theo role rồi filter
         this.userService.getUsersByRole('STUDENT').subscribe({
           next: (users) => {
@@ -150,12 +149,9 @@ export class StudentsFormComponent implements OnInit {
         : this.studentService.createStudent(data);
 
       const action = this.mode === 'edit' ? 'cập nhật' : 'tạo';
-      console.log(`${action} student with data:`, data);
-
       apiCall.subscribe({
         next: (student) => {
           this.loading = false;
-          console.log(`Student ${action}d successfully:`, student);
           this.modal.close(true); // Đóng modal và trả về true
         },
         error: (error) => {
@@ -165,9 +161,7 @@ export class StudentsFormComponent implements OnInit {
         }
       });
     } else {
-      console.log('Form is invalid:', this.form.errors);
-      console.log('Form values:', this.form.value);
-    }
+      }
   }
 
   handleError(error: any, action: string) {
@@ -199,8 +193,6 @@ export class StudentsFormComponent implements OnInit {
 
   // User selection modal methods
   openUserSelectionModal() {
-    console.log('Opening user selection modal...');
-    console.log('Available users:', this.availableUsers);
     console.log('Current userId:', this.form.get('userId')?.value);
     this.isUserSelectionModalVisible = true;
     this.filterUsers();

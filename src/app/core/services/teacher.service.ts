@@ -50,4 +50,21 @@ export class TeacherService {
 	getStudentsByClass(classRoomId: number): Observable<any[]> {
 		return this.http.get<any[]>(`${environment.apiUrl}/class-students/${classRoomId}`);
 	}
+
+	/**
+	 * Get current teacher profile
+	 * API: GET /teachers/me/profile
+	 */
+	getMyProfile(): Observable<Teacher> {
+		return this.http.get<Teacher>(`${this.apiUrl}/me/profile`);
+	}
+
+	/**
+	 * Update current teacher profile
+	 * API: PUT /teachers/me/profile
+	 * @param profileData - Teacher profile data to update
+	 */
+	updateMyProfile(profileData: Partial<Teacher>): Observable<Teacher> {
+		return this.http.put<Teacher>(`${this.apiUrl}/me/profile`, profileData);
+	}
 }

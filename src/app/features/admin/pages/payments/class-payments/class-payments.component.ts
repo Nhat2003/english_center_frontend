@@ -76,11 +76,8 @@ export class ClassPaymentsComponent implements OnInit {
     this.loading = true;
     this.classService.getClasses(0, 1000).subscribe({
       next: (response) => {
-        console.log('Raw response:', response);
         // Backend có thể trả về response.content hoặc response.data hoặc trực tiếp là array
         const classesData = response.content || response.data || response || [];
-        console.log('Classes data:', classesData);
-
         this.classes = classesData.map((cls: any) => ({
           id: cls.id,
           name: cls.name,
@@ -88,15 +85,13 @@ export class ClassPaymentsComponent implements OnInit {
           studentCount: cls.students?.length || 0
         }));
 
-        console.log('Mapped classes:', this.classes);
         this.loading = false;
 
         // Tự động chọn lớp đầu tiên nếu có
         if (this.classes.length > 0) {
           this.selectClass(this.classes[0]);
         } else {
-          console.warn('No classes found');
-        }
+          }
       },
       error: (error) => {
         console.error('Error loading classes:', error);

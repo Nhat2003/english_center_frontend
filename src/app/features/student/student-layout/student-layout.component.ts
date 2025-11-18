@@ -39,12 +39,9 @@ export class StudentLayoutComponent implements OnInit, OnDestroy {
     // Subscribe để nhận updates từ AuthService
     this.userSubscription = this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
-      console.log('Current user from subscription:', user);
-
       // Nếu không có user từ subscription, try load từ localStorage
       if (!user) {
         const storedUser = this.authService.getCurrentUser();
-        console.log('User from localStorage:', storedUser);
         if (storedUser) {
           this.currentUser = storedUser;
         }

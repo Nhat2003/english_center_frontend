@@ -120,7 +120,6 @@ export class ClassesComponent implements OnInit {
   }
 
   editClass(classItem: Class) {
-    console.log('Edit class called with:', classItem);
     const modalRef = this.modal.create({
       nzTitle: 'Chỉnh sửa lớp học',
       nzContent: ClassesFormComponent,
@@ -131,8 +130,6 @@ export class ClassesComponent implements OnInit {
         mode: 'edit'
       }
     });
-    console.log('Modal created with params:', { classData: classItem, mode: 'edit' });
-
     modalRef.afterClose.subscribe(result => {
       if (result) {
         this.message.success('Cập nhật lớp học thành công!');

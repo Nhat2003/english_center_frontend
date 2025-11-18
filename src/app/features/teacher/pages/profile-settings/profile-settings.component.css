@@ -1,0 +1,17 @@
+.profile-settings-container {
+  padding: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+nz-card {
+  margin-bottom: 16px;
+}
+
+nz-form-item:last-child {
+  margin-bottom: 0;
+}
+
+button {
+  min-width: 120px;
+}
