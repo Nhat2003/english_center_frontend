@@ -12,9 +12,15 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 })
 export class ProfileSettingsComponent implements OnInit {
   profileForm!: FormGroup;
+  passwordForm!: FormGroup;
   loading = false;
   saving = false;
+  changingPassword = false;
   currentProfile?: Student;
+  isPasswordModalVisible = false;
+  passwordVisible1 = false;
+  passwordVisible2 = false;
+  passwordVisible3 = false;
 
   constructor(
     private fb: FormBuilder,
@@ -25,6 +31,7 @@ export class ProfileSettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
+    this.initPasswordForm();
     this.loadProfile();
   }
 
@@ -36,6 +43,19 @@ export class ProfileSettingsComponent implements OnInit {
       address: [''],
       dob: [null]
     });
+  }
+
+  initPasswordForm(): void {
+    this.passwordForm = this.fb.group({
+      currentPassword: ['', [Validators.required]],
+      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required]]
+    }, { validators: this.passwordMatchValidator });
+  }
+
+  passwordMatchValidator(g: FormGroup) {
+    return g.get('newPassword')?.value === g.get('confirmPassword')?.value
+      ? null : { 'mismatch': true };
   }
 
   loadProfile(): void {
@@ -114,6 +134,59 @@ export class ProfileSettingsComponent implements OnInit {
         address: this.currentProfile.address,
         dob: this.currentProfile.dob ? new Date(this.currentProfile.dob) : null
       });
+      this.message.info('Đã khôi phục thông tin ban đầu');
+    }
+  }
+
+  showPasswordModal(): void {
+    this.isPasswordModalVisible = true;
+  }
+
+  handlePasswordModalCancel(): void {
+    this.isPasswordModalVisible = false;
+    this.passwordForm.reset();
+    this.passwordVisible1 = false;
+    this.passwordVisible2 = false;
+    this.passwordVisible3 = false;
+  }
+
+  onChangePassword(): void {
+    if (this.passwordForm.valid) {
+      this.changingPassword = true;
+      const passwordData = this.passwordForm.value;
+
+      this.studentService.changePassword(passwordData).subscribe({
+        next: () => {
+          this.message.success('Đổi mật khẩu thành công!');
+          this.passwordForm.reset();
+          this.changingPassword = false;
+          this.isPasswordModalVisible = false;
+          this.passwordVisible1 = false;
+          this.passwordVisible2 = false;
+          this.passwordVisible3 = false;
+        },
+        error: (error) => {
+          console.error('Error changing password:', error);
+          let errorMsg = 'Đổi mật khẩu thất bại';
+
+          if (error.status === 400) {
+            errorMsg = error.error?.message || 'Mật khẩu hiện tại không đúng hoặc mật khẩu mới không hợp lệ';
+          } else if (error.status === 401) {
+            errorMsg = 'Mật khẩu hiện tại không đúng';
+          }
+
+          this.message.error(errorMsg);
+          this.changingPassword = false;
+        }
+      });
+    } else {
+      Object.values(this.passwordForm.controls).forEach(control => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+      this.message.warning('Vui lòng kiểm tra lại thông tin mật khẩu!');
     }
   }
 

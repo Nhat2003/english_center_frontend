@@ -67,4 +67,12 @@ export class TeacherService {
 	updateMyProfile(profileData: Partial<Teacher>): Observable<Teacher> {
 		return this.http.put<Teacher>(`${this.apiUrl}/me/profile`, profileData);
 	}
+
+	/**
+	 * Change password for current teacher
+	 * API: PUT /teachers/me/change-password
+	 */
+	changePassword(passwordData: { currentPassword: string; newPassword: string; confirmPassword: string }): Observable<any> {
+		return this.http.put(`${this.apiUrl}/me/change-password`, passwordData);
+	}
 }

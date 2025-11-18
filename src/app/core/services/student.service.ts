@@ -141,4 +141,35 @@ export class StudentService {
 				catchError(this.handleError)
 			);
 	}
+
+	/**
+	 * Change password for current student
+	 * API: PUT /students/me/change-password
+	 */
+	changePassword(passwordData: { currentPassword: string; newPassword: string; confirmPassword: string }): Observable<any> {
+		return this.http.put(`${this.apiUrl}/me/change-password`, passwordData)
+			.pipe(catchError(this.handleError));
+	}
+
+	/**
+	 * Get my classes (current student's classes)
+	 * API: GET /students/me/classes
+	 */
+	getMyClasses(): Observable<any[]> {
+		return this.http.get<any[]>(`${this.apiUrl}/me/classes`)
+			.pipe(
+				catchError(this.handleError)
+			);
+	}
+
+	/**
+	 * Get my schedule (current student's schedule)
+	 * API: GET /students/me/schedule
+	 */
+	getMySchedule(): Observable<any[]> {
+		return this.http.get<any[]>(`${this.apiUrl}/me/schedule`)
+			.pipe(
+				catchError(this.handleError)
+			);
+	}
 }

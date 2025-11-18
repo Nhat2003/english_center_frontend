@@ -72,5 +72,93 @@
       </ng-template>
     </nz-card>
 
+    <!-- Change Password Section -->
+    <nz-card nzTitle="Đổi mật khẩu" style="margin-top: 16px;">
+      <button nz-button nzType="primary" (click)="showPasswordModal()">
+        <i nz-icon nzType="key" nzTheme="outline"></i>
+        Đổi mật khẩu
+      </button>
+      <nz-alert
+        nzType="info"
+        nzMessage="Nhấn nút bên trên để đổi mật khẩu"
+        nzShowIcon
+        style="margin-top: 16px;">
+      </nz-alert>
+    </nz-card>
+
+    <!-- Password Change Modal -->
+    <nz-modal
+      [(nzVisible)]="isPasswordModalVisible"
+      nzTitle="Đổi mật khẩu"
+      (nzOnCancel)="handlePasswordModalCancel()"
+      [nzFooter]="null"
+      nzWidth="500px">
+      <form nz-form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()" nzLayout="vertical">
+        <!-- Current Password -->
+        <nz-form-item>
+          <nz-form-label nzRequired>Mật khẩu hiện tại</nz-form-label>
+          <nz-form-control nzErrorTip="Vui lòng nhập mật khẩu hiện tại">
+            <nz-input-group [nzSuffix]="suffixTemplate1">
+              <input
+                [type]="passwordVisible1 ? 'text' : 'password'"
+                nz-input
+                formControlName="currentPassword"
+                placeholder="Nhập mật khẩu hiện tại" />
+            </nz-input-group>
+            <ng-template #suffixTemplate1>
+              <i nz-icon [nzType]="passwordVisible1 ? 'eye-invisible' : 'eye'" (click)="passwordVisible1 = !passwordVisible1"></i>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- New Password -->
+        <nz-form-item>
+          <nz-form-label nzRequired>Mật khẩu mới</nz-form-label>
+          <nz-form-control nzErrorTip="Mật khẩu mới phải có ít nhất 6 ký tự">
+            <nz-input-group [nzSuffix]="suffixTemplate2">
+              <input
+                [type]="passwordVisible2 ? 'text' : 'password'"
+                nz-input
+                formControlName="newPassword"
+                placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)" />
+            </nz-input-group>
+            <ng-template #suffixTemplate2>
+              <i nz-icon [nzType]="passwordVisible2 ? 'eye-invisible' : 'eye'" (click)="passwordVisible2 = !passwordVisible2"></i>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Confirm Password -->
+        <nz-form-item>
+          <nz-form-label nzRequired>Xác nhận mật khẩu mới</nz-form-label>
+          <nz-form-control [nzErrorTip]="passwordForm.hasError('mismatch') ? 'Mật khẩu xác nhận không khớp' : 'Vui lòng xác nhận mật khẩu'">
+            <nz-input-group [nzSuffix]="suffixTemplate3">
+              <input
+                [type]="passwordVisible3 ? 'text' : 'password'"
+                nz-input
+                formControlName="confirmPassword"
+                placeholder="Nhập lại mật khẩu mới" />
+            </nz-input-group>
+            <ng-template #suffixTemplate3>
+              <i nz-icon [nzType]="passwordVisible3 ? 'eye-invisible' : 'eye'" (click)="passwordVisible3 = !passwordVisible3"></i>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Submit Button -->
+        <nz-form-item>
+          <nz-form-control>
+            <button nz-button nzType="primary" nzDanger type="submit" [nzLoading]="changingPassword" style="width: 100%;">
+              <i nz-icon nzType="key" nzTheme="outline"></i>
+              Đổi mật khẩu
+            </button>
+            <button nz-button type="button" (click)="handlePasswordModalCancel()" style="margin-top: 8px; width: 100%;">
+              Hủy
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </nz-modal>
+
   </nz-spin>
 </div>
