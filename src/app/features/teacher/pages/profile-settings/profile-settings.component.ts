@@ -72,7 +72,7 @@ export class ProfileSettingsComponent implements OnInit {
           this.currentProfile = updatedProfile;
           this.message.success('Cập nhật thông tin thành công!');
           this.saving = false;
-          
+
           // Navigate back to previous page after 1 second
           setTimeout(() => {
             this.location.back();

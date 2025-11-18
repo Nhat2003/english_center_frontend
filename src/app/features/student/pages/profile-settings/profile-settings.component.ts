@@ -66,11 +66,11 @@ export class ProfileSettingsComponent implements OnInit {
     if (this.profileForm.valid) {
       this.saving = true;
       const formValue = this.profileForm.value;
-      
+
       // Convert date to string if exists
       const profileData = {
         ...formValue,
-        dob: formValue.dob 
+        dob: formValue.dob
           ? new Date(formValue.dob).toISOString().split('T')[0]
           : null
       };
@@ -80,7 +80,7 @@ export class ProfileSettingsComponent implements OnInit {
           this.currentProfile = updatedProfile;
           this.message.success('Cập nhật thông tin thành công!');
           this.saving = false;
-          
+
           // Navigate back to previous page after 1 second
           setTimeout(() => {
             this.location.back();
