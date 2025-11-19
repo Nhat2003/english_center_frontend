@@ -12,8 +12,12 @@ import { Observable } from 'rxjs';
 })
 export class LoginComponent implements OnInit {
   form!: FormGroup;
+  forgotPasswordForm!: FormGroup;
   isLoading = false;
   passwordVisible = false;
+  isForgotPasswordModalVisible = false;
+  sendingResetEmail = false;
+  temporaryPassword = '';
 
   constructor(
     private fb: FormBuilder,
@@ -26,6 +30,10 @@ export class LoginComponent implements OnInit {
     this.form = this.fb.group({
       username: [{ value: '', disabled: false }, Validators.required],
       password: [{ value: '', disabled: false }, Validators.required]
+    });
+
+    this.forgotPasswordForm = this.fb.group({
+      email: ['', [Validators.required]]
     });
   }
 
@@ -113,6 +121,62 @@ export class LoginComponent implements OnInit {
       return 'Vui lòng nhập mật khẩu';
     }
     return '';
+  }
+
+  showForgotPasswordModal(): void {
+    this.isForgotPasswordModalVisible = true;
+    this.temporaryPassword = '';
+  }
+
+  handleForgotPasswordCancel(): void {
+    this.isForgotPasswordModalVisible = false;
+    this.forgotPasswordForm.reset();
+    this.temporaryPassword = '';
+  }
+
+  onForgotPassword(): void {
+    if (this.forgotPasswordForm.valid) {
+      this.sendingResetEmail = true;
+      const email = this.forgotPasswordForm.value.email;
+
+      this.authService.forgotPassword(email).subscribe({
+        next: (response) => {
+          this.sendingResetEmail = false;
+
+          // Lưu temporary password nếu có (dev mode)
+          if (response && response.temporaryPassword) {
+            this.temporaryPassword = response.temporaryPassword;
+            console.log('🔑 Temporary Password (DEV):', this.temporaryPassword);
+          }
+
+          this.message.success('Mật khẩu tạm đã được tạo! Kiểm tra email hoặc sử dụng mật khẩu hiển thị trong modal.');
+        },
+        error: (error) => {
+          this.sendingResetEmail = false;
+          console.error('Forgot password error:', error);
+
+          if (error.status === 404) {
+            this.message.error('Email/Username không tồn tại trong hệ thống!');
+          } else if (error.status === 400) {
+            const errorMsg = error.error?.message || 'Email does not exist';
+            this.message.error(errorMsg === 'Email does not exist'
+              ? 'Email/Username không tồn tại trong hệ thống!'
+              : errorMsg);
+          } else if (error.status === 0) {
+            this.message.error('Không thể kết nối đến server!');
+          } else {
+            this.message.error('Có lỗi xảy ra. Vui lòng thử lại sau!');
+          }
+        }
+      });
+    } else {
+      Object.values(this.forgotPasswordForm.controls).forEach(control => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+    }
   }
 
 }

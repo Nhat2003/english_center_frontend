@@ -11,9 +11,14 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzMessageModule } from 'ng-zorro-antd/message';
 import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
+import { NzResultModule } from 'ng-zorro-antd/result';
 
 // Components
 import { LoginComponent } from './login/login.component';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
 
 // Routes
@@ -22,7 +27,8 @@ import { AUTH_ROUTES } from './auth.routes';
 @NgModule({
   declarations: [
     LoginComponent,
-
+    ForgotPasswordComponent,
+    ResetPasswordComponent
   ],
   imports: [
     CommonModule,
@@ -36,7 +42,10 @@ import { AUTH_ROUTES } from './auth.routes';
     NzIconModule,
     NzSpinModule,
     NzMessageModule,
-    NzCardModule
+    NzCardModule,
+    NzModalModule,
+    NzAlertModule,
+    NzResultModule
   ]
 })
 export class AuthModule { }

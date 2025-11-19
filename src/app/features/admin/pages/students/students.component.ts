@@ -79,7 +79,7 @@ export class StudentsComponent implements OnInit {
   fetchStudents() {
     this.loading = true;
     // Test với API đơn giản trước
-    this.studentService.getStudentsWithoutPagination().subscribe({
+    this.studentService.getAllStudents().subscribe({
       next: (data: any) => {
         console.log('Students API response (without pagination):', data);
         if (Array.isArray(data)) {

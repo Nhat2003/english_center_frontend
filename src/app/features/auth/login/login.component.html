@@ -75,8 +75,74 @@
 
       <div class="login-links">
         <span></span>
-        <a href="#" class="forgot-password">Quên mật khẩu?</a>
+        <a (click)="showForgotPasswordModal()" class="forgot-password">Quên mật khẩu?</a>
       </div>
     </form>
   </nz-card>
+
+  <!-- Forgot Password Modal -->
+  <nz-modal
+    [(nzVisible)]="isForgotPasswordModalVisible"
+    nzTitle="Quên mật khẩu"
+    (nzOnCancel)="handleForgotPasswordCancel()"
+    [nzFooter]="null"
+    [nzBodyStyle]="{'padding': '24px'}"
+    nzWidth="550px">
+
+    <form nz-form [formGroup]="forgotPasswordForm" (ngSubmit)="onForgotPassword()" nzLayout="vertical" class="forgot-password-form">
+      <nz-alert
+        nzType="info"
+        nzMessage="Nhập email của bạn. Chúng tôi sẽ tạo mật khẩu tạm và gửi đến email của bạn."
+        nzShowIcon
+        class="info-alert">
+      </nz-alert>
+
+      <!-- Hiển thị temporary password nếu đã có -->
+      <nz-alert
+        *ngIf="temporaryPassword"
+        nzType="success"
+        nzMessage="Đã tạo mật khẩu tạm thời, vui lòng kiểm tra email"
+        nzShowIcon
+        class="success-alert">
+      </nz-alert>
+
+      <nz-form-item>
+        <nz-form-label nzRequired>Email</nz-form-label>
+        <nz-form-control nzErrorTip="Vui lòng nhập email">
+          <nz-input-group [nzPrefix]="emailPrefix">
+            <input
+              nz-input
+              formControlName="email"
+              placeholder="Nhập email của bạn"
+              type="email" />
+          </nz-input-group>
+          <ng-template #emailPrefix>
+            <i nz-icon nzType="mail" nzTheme="outline"></i>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item class="button-group">
+        <nz-form-control>
+          <button
+            nz-button
+            nzType="primary"
+            type="submit"
+            [nzLoading]="sendingResetEmail"
+            [disabled]="temporaryPassword !== '' || forgotPasswordForm.invalid"
+            class="submit-btn">
+            <span nz-icon nzType="mail"></span>
+            Tạo mật khẩu tạm
+          </button>
+          <button
+            nz-button
+            type="button"
+            (click)="handleForgotPasswordCancel()"
+            class="cancel-btn">
+            {{temporaryPassword ? 'Đóng' : 'Hủy'}}
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </nz-modal>
 </div>

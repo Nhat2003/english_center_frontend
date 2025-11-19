@@ -99,26 +99,6 @@ export class StudentService {
 			);
 	}
 
-	// Test method để kiểm tra API cơ bản
-	getStudentsWithoutPagination(): Observable<Student[]> {
-		return this.http.get<Student[]>(this.apiUrl)
-			.pipe(
-				catchError(this.handleError)
-			);
-	}
-
-	/**
-	 * Get student overview data for dashboard
-	 * API: GET /students/me/overview
-	 * @returns StudentOverviewResponse with all stats
-	 */
-	getMyOverview(): Observable<StudentOverviewResponse> {
-		return this.http.get<StudentOverviewResponse>(`${this.apiUrl}/me/overview`)
-			.pipe(
-				catchError(this.handleError)
-			);
-	}
-
 	/**
 	 * Get current student profile
 	 * API: GET /students/me/profile
@@ -149,27 +129,5 @@ export class StudentService {
 	changePassword(passwordData: { currentPassword: string; newPassword: string; confirmPassword: string }): Observable<any> {
 		return this.http.put(`${this.apiUrl}/me/change-password`, passwordData)
 			.pipe(catchError(this.handleError));
-	}
-
-	/**
-	 * Get my classes (current student's classes)
-	 * API: GET /students/me/classes
-	 */
-	getMyClasses(): Observable<any[]> {
-		return this.http.get<any[]>(`${this.apiUrl}/me/classes`)
-			.pipe(
-				catchError(this.handleError)
-			);
-	}
-
-	/**
-	 * Get my schedule (current student's schedule)
-	 * API: GET /students/me/schedule
-	 */
-	getMySchedule(): Observable<any[]> {
-		return this.http.get<any[]>(`${this.apiUrl}/me/schedule`)
-			.pipe(
-				catchError(this.handleError)
-			);
 	}
 }

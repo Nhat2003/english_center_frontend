@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, of } from 'rxjs';
+import { Observable, BehaviorSubject, of, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
@@ -167,9 +167,52 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem(this.STORAGE_KEY);
     localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.STORAGE_KEY);
     this.currentUserSubject.next(null);
+  }
+
+  /**
+   * Forgot password - Send reset password email
+   * API: POST /auth/forgot-password
+   */
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post(`${this.API_URL}/auth/forgot-password`, { email })
+      .pipe(
+        catchError(error => {
+          console.error('Forgot password error:', error);
+          return throwError(() => error);
+        })
+      );
+  }
+
+  /**
+   * Validate reset password token
+   * API: GET /auth/reset/validate?token=...
+   */
+  validateResetToken(token: string): Observable<any> {
+    return this.http.get(`${this.API_URL}/auth/reset/validate`, {
+      params: { token }
+    }).pipe(
+      catchError(error => {
+        console.error('Validate token error:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Reset password with token
+   * API: POST /auth/reset-password
+   */
+  resetPassword(token: string, newPassword: string): Observable<any> {
+    return this.http.post(`${this.API_URL}/auth/reset-password`, { token, newPassword })
+      .pipe(
+        catchError(error => {
+          console.error('Reset password error:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   isLoggedIn(): boolean {
