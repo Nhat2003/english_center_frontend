@@ -586,7 +586,7 @@ export class ChatboxComponent implements OnInit, OnDestroy {
 
   searchUsersFromAPI(query: string) {
     const url = `${this.baseUrl}/users/search?q=${encodeURIComponent(query)}`;
-    
+
     this.http.get<any[]>(url).subscribe({
       next: (users) => {
         console.log('✅ Search results:', users);
@@ -607,10 +607,10 @@ export class ChatboxComponent implements OnInit, OnDestroy {
   }
 
   loadAllUsers(searchQuery?: string) {
-    const url = searchQuery 
+    const url = searchQuery
       ? `${this.baseUrl}/users/search?q=${encodeURIComponent(searchQuery)}`
       : `${this.baseUrl}/chat/contacts`;
-    
+
     this.http.get<any[]>(url).subscribe({
       next: (users) => {
         console.log('✅ Users loaded:', users);
