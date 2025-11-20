@@ -36,6 +36,7 @@ import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { NzRateModule } from 'ng-zorro-antd/rate';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 
 // Components
 import { StudentLayoutComponent } from './student-layout/student-layout.component';
@@ -125,6 +126,7 @@ import { ProfileSettingsComponent } from './pages/profile-settings/profile-setti
     NzRateModule,
     NzTypographyModule,
     NzFormModule,
+    NzDatePickerModule,
     SharedModule
   ],
   providers: [

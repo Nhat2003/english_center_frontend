@@ -11,6 +11,7 @@ import { NzMessageModule } from 'ng-zorro-antd/message';
 import { RouterModule } from '@angular/router';
 import { AdminLayoutComponent } from './admin-layout.component';
 import { BreadcrumbComponent } from '../../../core/components/breadcrumb/breadcrumb/breadcrumb.component';
+import { SharedModule } from '../../../shared/shared.module';
 
 @NgModule({
   declarations: [AdminLayoutComponent, BreadcrumbComponent],
@@ -24,7 +25,8 @@ import { BreadcrumbComponent } from '../../../core/components/breadcrumb/breadcr
     NzAvatarModule,
     NzButtonModule,
     NzMessageModule,
-    RouterModule
+    RouterModule,
+    SharedModule
   ],
   exports: [AdminLayoutComponent, BreadcrumbComponent]
 })

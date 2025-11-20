@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
@@ -62,6 +63,8 @@ export class ChatboxComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   private conversationSubscription: any = null;
   private processedMessageIds = new Set<number>(); // Track processed messages to avoid duplicates
+  private searchTimeout: any;
+  private baseUrl = 'http://localhost:8080';
 
   constructor(
     private chatService: ChatService,
@@ -69,7 +72,8 @@ export class ChatboxComponent implements OnInit, OnDestroy {
     private classService: ClassService,
     private studentService: StudentService,
     private teacherService: TeacherService,
-    private notification: NzNotificationService
+    private notification: NzNotificationService,
+    private http: HttpClient
   ) {}
 
   ngOnInit() {
@@ -536,49 +540,89 @@ export class ChatboxComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const searchTerm = this.searchText.toLowerCase();
+    // Debounce search
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
 
-    // If in class view, search within classes
-    if (this.showClassView) {
-      // Search in all students from all classes
-      const allStudentsFromClasses: UserForChat[] = [];
-      this.myClasses.forEach(classItem => {
-        classItem.students.forEach(student => {
-          // Add class name to student for display
-          allStudentsFromClasses.push({
-            ...student,
-            className: classItem.name
+    this.searchTimeout = setTimeout(() => {
+      const searchTerm = this.searchText.toLowerCase();
+      console.log('🔍 Searching:', searchTerm);
+
+      // If in class view, search within classes
+      if (this.showClassView) {
+        // Search in all students from all classes
+        const allStudentsFromClasses: UserForChat[] = [];
+        this.myClasses.forEach(classItem => {
+          classItem.students.forEach(student => {
+            // Add class name to student for display
+            allStudentsFromClasses.push({
+              ...student,
+              className: classItem.name
+            });
           });
         });
-      });
 
-      // Filter by name or class name
-      this.searchResults = allStudentsFromClasses.filter(student =>
-        student.fullName.toLowerCase().includes(searchTerm) ||
-        (student.className && student.className.toLowerCase().includes(searchTerm))
-      );
-    } else {
-      // Regular user search for conversation view
-      this.searchResults = this.allUsers.filter(user =>
-        user.fullName.toLowerCase().includes(searchTerm) &&
-        user.id !== this.currentUserId // Exclude current user
-      );
-    }
+        // Filter by name or class name
+        this.searchResults = allStudentsFromClasses.filter(student =>
+          student.fullName.toLowerCase().includes(searchTerm) ||
+          (student.className && student.className.toLowerCase().includes(searchTerm))
+        );
+      } else {
+        // For ADMIN: use /users/search API for dynamic search
+        // For others: search in allUsers (contacts)
+        if (this.currentUserRole === 'ADMIN') {
+          this.searchUsersFromAPI(searchTerm);
+        } else {
+          // Regular user search for conversation view
+          this.searchResults = this.allUsers.filter(user =>
+            user.fullName.toLowerCase().includes(searchTerm) &&
+            user.id !== this.currentUserId // Exclude current user
+          );
+        }
+      }
+    }, 300); // Debounce 300ms
   }
 
-  loadAllUsers() {
-    // Use the new /chat/contacts API
-    this.chatService.getContacts().subscribe({
-      next: (contacts: any[]) => {
-        this.allUsers = contacts.map(contact => ({
-          id: contact.id,
-          fullName: contact.fullName,
-          avatar: contact.avatar,
-          role: contact.role || 'USER'
+  searchUsersFromAPI(query: string) {
+    const url = `${this.baseUrl}/users/search?q=${encodeURIComponent(query)}`;
+    
+    this.http.get<any[]>(url).subscribe({
+      next: (users) => {
+        console.log('✅ Search results:', users);
+        this.searchResults = users
+          .filter(u => u.id !== this.currentUserId) // Exclude current user
+          .map(u => ({
+            id: u.id,
+            fullName: u.fullName || u.username,
+            role: u.role,
+            avatar: u.avatar
+          }));
+      },
+      error: (err) => {
+        console.error('❌ Search error:', err);
+        this.searchResults = [];
+      }
+    });
+  }
+
+  loadAllUsers(searchQuery?: string) {
+    const url = searchQuery 
+      ? `${this.baseUrl}/users/search?q=${encodeURIComponent(searchQuery)}`
+      : `${this.baseUrl}/chat/contacts`;
+    
+    this.http.get<any[]>(url).subscribe({
+      next: (users) => {
+        console.log('✅ Users loaded:', users);
+        this.allUsers = users.map(u => ({
+          id: u.id,
+          fullName: u.fullName || u.username,
+          avatar: u.avatar,
+          role: u.role || 'USER'
         }));
       },
       error: (err) => {
-        console.error('Failed to load contacts:', err);
+        console.error('❌ Load users error:', err);
         this.allUsers = [];
       }
     });

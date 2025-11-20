@@ -94,8 +94,6 @@ export class TeacherDashboardComponent implements OnInit {
       this.teacherId = user.teacher.id;
       this.currentUser = user;
       this.loadDashboardData();
-    } else {
-      this.message.error('Không tìm thấy thông tin giáo viên');
     }
 
     // Update current time every minute

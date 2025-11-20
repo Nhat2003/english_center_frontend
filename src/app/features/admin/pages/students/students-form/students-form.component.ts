@@ -36,14 +36,14 @@ export class StudentsFormComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       userId: [null, Validators.required],
-      fullName: [null, Validators.required],
-      email: [null, [Validators.required, Validators.email]],
-      dob: [null, Validators.required],
-      gender: [null, Validators.required],
-      phone: [null, Validators.required],
-      address: [null, Validators.required],
-      joinedAt: [null, Validators.required],
-      className: [null, Validators.required]
+      fullName: [null],
+      email: [null],
+      dob: [null],
+      gender: [null],
+      phone: [null],
+      address: [null],
+      joinedAt: [null],
+      className: [null]
     });
   }
 
@@ -221,7 +221,11 @@ export class StudentsFormComponent implements OnInit {
   }
 
   selectUser(user: User) {
-    this.form.patchValue({ userId: user.id });
+    this.form.patchValue({
+      userId: user.id,
+      fullName: user.fullName || user.username,
+      email: user.email
+    });
     this.isUserSelectionModalVisible = false;
     this.message.success(`Đã chọn: ${user.fullName || user.username}`);
   }

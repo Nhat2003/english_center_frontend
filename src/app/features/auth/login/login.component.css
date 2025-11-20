@@ -310,7 +310,13 @@
   margin-bottom: 0;
 }
 
-.submit-btn {
+::ng-deep .forgot-password-form .button-group .ant-form-item-control-input-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+::ng-deep .forgot-password-form .submit-btn {
   width: 100%;
   height: 44px;
   font-size: 15px;
@@ -319,30 +325,33 @@
   background: linear-gradient(135deg, #3bb273 0%, #4cc084 100%);
   border: none;
   transition: all 0.3s ease;
+  color: white;
 }
 
-.submit-btn:hover:not(:disabled) {
+::ng-deep .forgot-password-form .submit-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(59, 178, 115, 0.3);
+  background: linear-gradient(135deg, #3bb273 0%, #4cc084 100%);
+  color: white;
 }
 
-.submit-btn:disabled {
+::ng-deep .forgot-password-form .submit-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+  background: linear-gradient(135deg, #3bb273 0%, #4cc084 100%);
 }
 
-.cancel-btn {
+::ng-deep .forgot-password-form .cancel-btn {
   width: 100%;
   height: 44px;
   font-size: 15px;
   font-weight: 500;
   border-radius: 8px;
-  margin-top: 12px;
   transition: all 0.3s ease;
 }
 
-.cancel-btn:hover {
+::ng-deep .forgot-password-form .cancel-btn:hover {
   color: #3bb273;
   border-color: #3bb273;
 }

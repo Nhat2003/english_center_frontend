@@ -43,14 +43,14 @@ export class TeachersFormComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       userId: [null, Validators.required],
-      fullName: [null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
-      email: [null, [Validators.required, Validators.email]],
-      dob: [null, Validators.required],
-      gender: [null, Validators.required],
-      phone: [null, [Validators.required, Validators.pattern(/^[0-9]{10,11}$/)]],
-      address: [null, [Validators.required, Validators.minLength(10), Validators.maxLength(255)]],
-      speciality: [null, [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
-      hiredAt: [null, Validators.required]
+      fullName: [null],
+      email: [null],
+      dob: [null],
+      gender: [null],
+      phone: [null],
+      address: [null],
+      speciality: [null],
+      hiredAt: [null]
     });
   }
 
@@ -249,7 +249,11 @@ export class TeachersFormComponent implements OnInit {
   }
 
   selectUser(user: User) {
-    this.form.patchValue({ userId: user.id });
+    this.form.patchValue({
+      userId: user.id,
+      fullName: user.fullName || user.username,
+      email: user.email
+    });
     this.isUserSelectionModalVisible = false;
     this.message.success(`Đã chọn: ${user.fullName || user.username}`);
   }

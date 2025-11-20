@@ -49,7 +49,7 @@
       </div>
       <div nz-col [nzSpan]="12">
         <nz-form-item>
-          <nz-form-label [nzRequired]="true" nzFor="fullName">Họ tên</nz-form-label>
+          <nz-form-label nzFor="fullName">Họ tên</nz-form-label>
           <nz-form-control>
             <input nz-input formControlName="fullName" id="fullName" placeholder="Nhập họ tên" />
           </nz-form-control>
@@ -57,7 +57,7 @@
       </div>
       <div nz-col [nzSpan]="12">
         <nz-form-item>
-          <nz-form-label [nzRequired]="true" nzFor="email">Email</nz-form-label>
+          <nz-form-label nzFor="email">Email</nz-form-label>
           <nz-form-control>
             <input nz-input formControlName="email" id="email" placeholder="Nhập email" type="email" />
           </nz-form-control>
@@ -65,7 +65,7 @@
       </div>
       <div nz-col [nzSpan]="12">
         <nz-form-item>
-          <nz-form-label [nzRequired]="true" nzFor="dob">Ngày sinh</nz-form-label>
+          <nz-form-label nzFor="dob">Ngày sinh</nz-form-label>
           <nz-form-control>
             <input nz-input type="date" formControlName="dob" id="dob" />
           </nz-form-control>
@@ -73,7 +73,7 @@
       </div>
       <div nz-col [nzSpan]="12">
         <nz-form-item>
-          <nz-form-label [nzRequired]="true" nzFor="gender">Giới tính</nz-form-label>
+          <nz-form-label nzFor="gender">Giới tính</nz-form-label>
           <nz-form-control>
             <nz-select formControlName="gender" id="gender" nzPlaceHolder="Chọn giới tính">
               <nz-option nzValue="Male" nzLabel="Nam"></nz-option>
@@ -84,7 +84,7 @@
       </div>
       <div nz-col [nzSpan]="12">
         <nz-form-item>
-          <nz-form-label [nzRequired]="true" nzFor="phone">Số điện thoại</nz-form-label>
+          <nz-form-label nzFor="phone">Số điện thoại</nz-form-label>
           <nz-form-control>
             <input nz-input formControlName="phone" id="phone" placeholder="Nhập số điện thoại" />
           </nz-form-control>
@@ -92,23 +92,23 @@
       </div>
       <div nz-col [nzSpan]="24">
         <nz-form-item>
-          <nz-form-label [nzRequired]="true" nzFor="address">Địa chỉ</nz-form-label>
+          <nz-form-label nzFor="address">Địa chỉ</nz-form-label>
           <nz-form-control>
             <input nz-input formControlName="address" id="address" placeholder="Nhập địa chỉ" />
           </nz-form-control>
         </nz-form-item>
       </div>
-      <div nz-col [nzSpan]="12">
+      <div nz-col [nzSpan]="12" *ngIf="mode !== 'create'">
         <nz-form-item>
-          <nz-form-label [nzRequired]="true" nzFor="className">Lớp học</nz-form-label>
+          <nz-form-label nzFor="className">Lớp học</nz-form-label>
           <nz-form-control>
             <input nz-input formControlName="className" id="className" placeholder="Nhập tên lớp học" />
           </nz-form-control>
         </nz-form-item>
       </div>
-      <div nz-col [nzSpan]="12">
+      <div nz-col [nzSpan]="mode === 'create' ? 24 : 12">
         <nz-form-item>
-          <nz-form-label [nzRequired]="true" nzFor="joinedAt">Ngày vào trung tâm</nz-form-label>
+          <nz-form-label nzFor="joinedAt">Ngày vào trung tâm</nz-form-label>
           <nz-form-control>
             <input nz-input type="date" formControlName="joinedAt" id="joinedAt" />
           </nz-form-control>

@@ -4,6 +4,7 @@ import { Location } from '@angular/common';
 import { TeacherService } from '../../../../core/services/teacher.service';
 import { Teacher } from '../../../../core/models/teacher.model';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-profile-settings',
@@ -26,7 +27,8 @@ export class ProfileSettingsComponent implements OnInit {
     private fb: FormBuilder,
     private teacherService: TeacherService,
     private message: NzMessageService,
-    private location: Location
+    private location: Location,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -40,6 +42,7 @@ export class ProfileSettingsComponent implements OnInit {
       fullName: ['', [Validators.required, Validators.minLength(2)]],
       phone: ['', [Validators.pattern(/^[0-9]{10}$/)]],
       email: ['', [Validators.email]],
+      dob: [null],
       address: [''],
       speciality: ['']
     });
@@ -67,6 +70,7 @@ export class ProfileSettingsComponent implements OnInit {
           fullName: profile.fullName,
           phone: profile.phone,
           email: profile.email,
+          dob: profile.dob ? new Date(profile.dob) : null,
           address: profile.address,
           speciality: profile.speciality
         });
@@ -85,11 +89,31 @@ export class ProfileSettingsComponent implements OnInit {
   onSubmit(): void {
     if (this.profileForm.valid) {
       this.saving = true;
-      const profileData = this.profileForm.value;
+      const formValue = this.profileForm.value;
+
+      // Convert date to string if exists
+      const profileData = {
+        ...formValue,
+        dob: formValue.dob
+          ? new Date(formValue.dob).toISOString().split('T')[0]
+          : null
+      };
 
       this.teacherService.updateMyProfile(profileData).subscribe({
         next: (updatedProfile) => {
           this.currentProfile = updatedProfile;
+
+          // Update user in localStorage
+          const currentUser = this.authService.getCurrentUser();
+          if (currentUser && currentUser.teacher && updatedProfile.id) {
+            currentUser.teacher = {
+              ...currentUser.teacher,
+              ...updatedProfile,
+              id: updatedProfile.id
+            };
+            localStorage.setItem('current_user', JSON.stringify(currentUser));
+          }
+
           this.message.success('Cập nhật thông tin thành công!');
           this.saving = false;
 
@@ -123,6 +147,7 @@ export class ProfileSettingsComponent implements OnInit {
         fullName: this.currentProfile.fullName,
         phone: this.currentProfile.phone,
         email: this.currentProfile.email,
+        dob: this.currentProfile.dob ? new Date(this.currentProfile.dob) : null,
         address: this.currentProfile.address,
         speciality: this.currentProfile.speciality
       });

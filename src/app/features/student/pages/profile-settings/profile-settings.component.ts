@@ -4,6 +4,7 @@ import { Location } from '@angular/common';
 import { StudentService } from '../../../../core/services/student.service';
 import { Student } from '../../../../core/models/student.model';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-profile-settings',
@@ -26,7 +27,8 @@ export class ProfileSettingsComponent implements OnInit {
     private fb: FormBuilder,
     private studentService: StudentService,
     private message: NzMessageService,
-    private location: Location
+    private location: Location,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -98,6 +100,18 @@ export class ProfileSettingsComponent implements OnInit {
       this.studentService.updateMyProfile(profileData).subscribe({
         next: (updatedProfile) => {
           this.currentProfile = updatedProfile;
+
+          // Update user in localStorage
+          const currentUser = this.authService.getCurrentUser();
+          if (currentUser && currentUser.student && updatedProfile.id) {
+            currentUser.student = {
+              ...currentUser.student,
+              ...updatedProfile,
+              id: updatedProfile.id
+            };
+            localStorage.setItem('current_user', JSON.stringify(currentUser));
+          }
+
           this.message.success('Cập nhật thông tin thành công!');
           this.saving = false;
 

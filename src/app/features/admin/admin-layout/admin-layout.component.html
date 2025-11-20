@@ -1,11 +1,23 @@
 <nz-layout style="min-height: 100vh;">
   <!-- Header -->
-  <nz-header style="position: fixed; width: 100%; z-index: 1000; background: #fff; border-bottom: 1px solid #f0f0f0; padding: 0 24px; display: flex; align-items: center; justify-content: space-between;">
+  <nz-header style="position: fixed; width: 100%; z-index: 1000; background: #fff; border-bottom: 1px solid #f0f0f0; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);">
     <div style="display: flex; align-items: center;">
       <button nz-button nzType="text" nzSize="large" (click)="isCollapsed = !isCollapsed" style="margin-right: 16px;">
         <span nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></span>
       </button>
-      <span style="font-size: 18px; font-weight: 500;">TOEIC DOWNTOWN Admin</span>
+      
+      <div class="logo-wrapper">
+        <div class="logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white">
+            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+            <path d="M10 17l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" fill="rgba(255,255,255,0.3)"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <div class="brand-name">TOEIC DOWNTOWN</div>
+          <div class="brand-subtitle">Admin Panel</div>
+        </div>
+      </div>
     </div>
 
     <div style="display: flex; align-items: center;">
@@ -72,4 +84,7 @@
       <router-outlet></router-outlet>
     </nz-content>
   </nz-layout>
+
+  <!-- Chatbot Component -->
+  <app-chatbox></app-chatbox>
 </nz-layout>

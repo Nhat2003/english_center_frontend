@@ -27,13 +27,29 @@
           </nz-form-control>
         </nz-form-item>
 
-        <!-- Specialization -->
-        <nz-form-item>
-          <nz-form-label>Chuyên môn</nz-form-label>
-          <nz-form-control>
-            <input nz-input formControlName="speciality" placeholder="Nhập chuyên môn (VD: TOEIC, IELTS, General English)" />
-          </nz-form-control>
-        </nz-form-item>
+        <!-- Date of Birth & Specialization (Same Row) -->
+        <nz-row [nzGutter]="16">
+          <nz-col [nzSpan]="12">
+            <nz-form-item>
+              <nz-form-label>Ngày sinh</nz-form-label>
+              <nz-form-control>
+                <input nz-input type="date" formControlName="dob" placeholder="mm/dd/yyyy" />
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+          <nz-col [nzSpan]="12">
+            <nz-form-item>
+              <nz-form-label>Chuyên môn</nz-form-label>
+              <nz-form-control>
+                <nz-select formControlName="speciality" nzPlaceHolder="Chọn chuyên môn" nzAllowClear>
+                  <nz-option nzValue="TOEIC RL" nzLabel="TOEIC RL"></nz-option>
+                  <nz-option nzValue="TOEIC SW" nzLabel="TOEIC SW"></nz-option>
+                  <nz-option nzValue="IELTS" nzLabel="IELTS"></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+        </nz-row>
 
         <!-- Address -->
         <nz-form-item>

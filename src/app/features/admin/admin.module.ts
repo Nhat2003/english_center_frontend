@@ -59,6 +59,7 @@ import { PaymentsComponent } from './pages/payments/payments.component';
 import { ClassPaymentsComponent } from './pages/payments/class-payments/class-payments.component';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
+
 @NgModule({
   declarations: [
     UserListComponent,
