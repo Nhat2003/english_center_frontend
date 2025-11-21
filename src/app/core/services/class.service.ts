@@ -59,4 +59,12 @@ export class ClassService {
         catchError(this.handleError)
       );
   }
+
+  // Lấy danh sách học sinh trong lớp
+  getStudentsByClass(classRoomId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${classRoomId}/students`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
 }

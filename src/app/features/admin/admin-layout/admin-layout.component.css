@@ -117,12 +117,24 @@
   border-radius: 6px;
   margin: 4px 8px;
   transition: all 0.3s;
+  height: 48px;
+  line-height: 48px;
+}
+
+:host ::ng-deep .ant-menu-item .anticon {
+  font-size: 18px;
+  margin-right: 10px;
+  transition: all 0.3s;
 }
 
 /* Hover */
 :host ::ng-deep .ant-menu-item:hover {
   background: #e6f7ef !important; /* xanh lá nhạt khi hover */
   color: #3bb273 !important; /* chữ màu primary */
+}
+
+:host ::ng-deep .ant-menu-item:hover .anticon {
+  transform: scale(1.1);
 }
 
 /* Selected */
@@ -139,4 +151,46 @@
 :host ::ng-deep .ant-menu-item.ant-menu-item-selected {
   background: #c5ecd8 !important; /* nền xanh dịu */
   color: #2e8b57 !important; /* chữ secondary */
+}
+
+/* Collapsed Sidebar - Chỉ hiển thị icon */
+:host ::ng-deep .ant-menu-inline-collapsed .ant-menu-item {
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 6px auto;
+  width: 56px;
+  height: 56px;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), transform 0.2s ease-out;
+}
+
+/* Ẩn text khi thu gọn, chỉ hiển thị icon */
+:host ::ng-deep .ant-menu-inline-collapsed .ant-menu-item > span:not(.anticon):not(nz-badge) {
+  display: none !important;
+}
+
+:host ::ng-deep .ant-menu-inline-collapsed .ant-menu-item .anticon {
+  font-size: 24px;
+  margin: 0;
+  line-height: 1;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+:host ::ng-deep .ant-menu-inline-collapsed .ant-menu-item:hover {
+  transform: scale(1.08);
+  background-color: rgba(59, 178, 115, 0.12) !important;
+}
+
+:host ::ng-deep .ant-menu-inline-collapsed .ant-menu-item:hover .anticon {
+  transform: scale(1.15);
+}
+
+:host ::ng-deep .ant-menu-inline-collapsed .ant-menu-item-selected {
+  transform: scale(1);
+  box-shadow: 0 4px 12px rgba(59, 178, 115, 0.3);
+}
+
+:host ::ng-deep .ant-menu-inline-collapsed .ant-menu-item-selected:hover {
+  transform: scale(1.02);
 }

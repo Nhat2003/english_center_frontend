@@ -51,7 +51,7 @@
               <div class="schedule-label">Thời gian</div>
               <div class="schedule-value">
                 <span nz-icon nzType="clock-circle"></span>
-                {{ classInfo.fixedSchedule.startTime }} - {{ classInfo.fixedSchedule.endTime }}
+                {{ classInfo.fixedSchedule.startTime.substring(0,5) }} - {{ classInfo.fixedSchedule.endTime.substring(0,5) }}
               </div>
             </div>
             <div class="schedule-item">
@@ -161,6 +161,21 @@
           </div>
         </nz-card>
 
+        <!-- View Students Button Card -->
+        <nz-card class="view-students-card">
+          <button
+            nz-button
+            nzType="primary"
+            nzSize="large"
+            nzBlock
+            (click)="showStudentsModal()"
+            class="view-students-btn">
+            <span nz-icon nzType="team"></span>
+            Xem danh sách học sinh
+            <nz-badge [nzCount]="students.length" [nzShowZero]="true"></nz-badge>
+          </button>
+        </nz-card>
+
       </div>
 
     </div>
@@ -172,3 +187,48 @@
     nzNotFoundContent="Không tìm thấy thông tin lớp học"
   ></nz-empty>
 </div>
+
+<!-- Students Modal -->
+<nz-modal
+  [(nzVisible)]="isStudentsModalVisible"
+  nzTitle="Danh sách học sinh"
+  [nzFooter]="null"
+  (nzOnCancel)="handleStudentsModalCancel()"
+  nzWidth="600px"
+  nzClassName="students-modal">
+
+  <div class="modal-header-info">
+    <span class="modal-class-name">
+      <span nz-icon nzType="read" nzTheme="fill"></span>
+      {{ classInfo?.name }}
+    </span>
+    <span class="modal-student-count">
+      <span nz-icon nzType="team"></span>
+      {{ students.length }} học sinh
+    </span>
+  </div>
+
+  <nz-spin *ngIf="loadingStudents" nzTip="Đang tải danh sách học sinh...">
+    <div class="loading-placeholder"></div>
+  </nz-spin>
+
+  <div class="modal-students-list" *ngIf="!loadingStudents">
+    <div class="modal-student-item" *ngFor="let student of students; let i = index">
+      <div class="student-avatar">
+        <span nz-icon nzType="user"></span>
+      </div>
+      <div class="student-info">
+        <div class="student-name-row">
+          <span class="student-index">{{ i + 1 }}</span>
+          <span class="student-full-name">{{ student.fullName }}</span>
+        </div>
+      </div>
+    </div>
+
+    <nz-empty
+      *ngIf="students.length === 0"
+      nzNotFoundContent="Chưa có học sinh nào trong lớp"
+      [nzNotFoundImage]="'simple'">
+    </nz-empty>
+  </div>
+</nz-modal>

@@ -17,8 +17,12 @@
   box-shadow: 0 4px 20px rgba(59, 178, 115, 0.3);
 }
 
+.welcome-card :deep(.ant-card-head) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
 .welcome-card :deep(.ant-card-head-title) {
-  color: white;
+  color: white !important;
   font-size: 20px;
   font-weight: 600;
 }

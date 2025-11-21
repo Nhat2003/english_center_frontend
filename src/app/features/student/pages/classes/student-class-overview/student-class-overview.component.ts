@@ -14,6 +14,9 @@ export class StudentClassOverviewComponent implements OnInit {
   classId!: number;
   classInfo?: Class;
   loading = false;
+  students: any[] = [];
+  loadingStudents = false;
+  isStudentsModalVisible = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -26,6 +29,7 @@ export class StudentClassOverviewComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.classId = +params['id'];
       this.loadClassInfo();
+      this.loadStudents();
     });
   }
 
@@ -42,6 +46,29 @@ export class StudentClassOverviewComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  loadStudents(): void {
+    this.loadingStudents = true;
+    this.classService.getStudentsByClass(this.classId).subscribe({
+      next: (data) => {
+        this.students = data;
+        this.loadingStudents = false;
+      },
+      error: (err) => {
+        console.error('Error loading students:', err);
+        this.message.error('Không thể tải danh sách học sinh');
+        this.loadingStudents = false;
+      }
+    });
+  }
+
+  showStudentsModal(): void {
+    this.isStudentsModalVisible = true;
+  }
+
+  handleStudentsModalCancel(): void {
+    this.isStudentsModalVisible = false;
   }
 
   /**
