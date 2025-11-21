@@ -216,6 +216,6 @@ export class StudentDetailComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['../../students'], { relativeTo: this.route });
+    this.router.navigate(['/teacher/classes']);
   }
 }

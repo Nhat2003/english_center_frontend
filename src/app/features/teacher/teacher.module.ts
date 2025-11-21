@@ -54,6 +54,7 @@ import { TeacherNotificationsComponent } from './pages/notifications/notificatio
 import { TEACHER_ROUTES } from './teacher.routes';
 import { SharedModule } from '../../shared/shared.module';
 import { ProfileSettingsComponent } from './pages/profile-settings/profile-settings.component';
+import { CoreModule } from '../../core/core.module';
 
 @NgModule({
   declarations: [
@@ -107,7 +108,8 @@ import { ProfileSettingsComponent } from './pages/profile-settings/profile-setti
     NzFormModule,
     NzAlertModule,
     NzSelectModule,
-    SharedModule
+    SharedModule,
+    CoreModule
   ]
 })
 export class TeacherModule { }

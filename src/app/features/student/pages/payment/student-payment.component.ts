@@ -3,7 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { PaymentService } from '../../../../core/services/payment.service';
+import { StudentService } from '../../../../core/services/student.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-student-payment',
@@ -12,6 +14,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 })
 export class StudentPaymentComponent implements OnInit {
   loading = false;
+  dataLoaded = false;
   studentId: number | null = null;
   classRoomId: number | null = null;
   className: string = '';
@@ -22,11 +25,14 @@ export class StudentPaymentComponent implements OnInit {
   classes: any[] = [];
   paid = false;
   paymentHistory: any[] = [];
+  allPaymentHistory: any[] = [];
   paidAmount: number | null = null;
+  dueDate: string | null = null;
 
   constructor(
     private authService: AuthService,
     private paymentService: PaymentService,
+    private studentService: StudentService,
     private route: ActivatedRoute,
     private router: Router,
     private message: NzMessageService
@@ -47,14 +53,44 @@ export class StudentPaymentComponent implements OnInit {
       const vnpResponseCode = params['vnp_ResponseCode'] || params['rspCode']; // Backend có thể trả về rspCode hoặc vnp_ResponseCode
       const vnpTransactionStatus = params['vnp_TransactionStatus'];
 
-      // Bước 4: Luôn gọi GET /payments/due-for-student để làm mới công nợ
+      // Bước 4: Lấy tất cả các lớp của học sinh (cả chưa bắt đầu)
+      // Kết hợp 2 API: getClassesByStudent (tất cả lớp) + getDueForStudent (thông tin học phí)
       if (this.studentId) {
-        this.paymentService.getDueForStudent(this.studentId).subscribe(res => {
-          // Lọc chỉ lấy các lớp chưa thanh toán
-          this.classes = (res || []).filter((cls: any) => !cls.isPaid);
+        forkJoin({
+          allClasses: this.studentService.getClassesByStudent(this.studentId),
+          paymentInfo: this.paymentService.getDueForStudent(this.studentId)
+        }).subscribe(({ allClasses, paymentInfo }) => {
+          console.log('📚 All classes:', allClasses);
+          console.log('💰 Payment info:', paymentInfo);
 
-          // Luôn load lịch sử thanh toán
-          this.loadPaymentHistory();
+          // Merge dữ liệu: lấy thông tin lớp từ allClasses, thông tin học phí từ paymentInfo
+          this.classes = allClasses.map((cls: any) => {
+            const paymentData = paymentInfo.find((p: any) => p.classRoomId === cls.id);
+            const merged = {
+              classRoomId: cls.id,
+              className: cls.name,
+              courseName: cls.course?.name || '',
+              amount: paymentData?.amount || 0,
+              currency: paymentData?.currency || 'VND',
+              paidAmount: paymentData?.paidAmount || 0,
+              isPaid: paymentData?.isPaid || false,
+              paymentStatus: paymentData?.paymentStatus || 'UNPAID',
+              dueDate: paymentData?.dueDate || cls.endDate
+            };
+            console.log(`🔀 Merged class ${cls.name}:`, merged);
+            return merged;
+          });
+
+          console.log('✅ Final classes array:', this.classes);
+
+          // Đánh dấu data đã load xong
+          this.dataLoaded = true;
+
+          // Load lịch sử thanh toán cho tất cả các lớp
+          this.loadAllPaymentHistory();
+
+          // Không load lịch sử ngay, chỉ load khi cần
+          // this.loadPaymentHistory();
 
           // Ưu tiên kiểm tra vnpResponseCode trước nếu có
           if (vnpResponseCode || vnpTransactionStatus) {
@@ -100,11 +136,11 @@ export class StudentPaymentComponent implements OnInit {
             this.handlePaymentStatusDirect(status, classRoomIdParam);
           } else {
             // Không có status từ callback, load bình thường
+            // Luôn chọn lớp đầu tiên để hiển thị nội dung
             if (this.classes.length > 0) {
-              const foundClass = classRoomIdParam ?
-                this.classes.find(c => c.classRoomId == +classRoomIdParam) : null;
-              if (foundClass) {
-                this.selectClass(foundClass);
+              if (classRoomIdParam) {
+                const foundClass = this.classes.find(c => c.classRoomId == +classRoomIdParam);
+                this.selectClass(foundClass || this.classes[0]);
               } else {
                 this.selectClass(this.classes[0]);
               }
@@ -126,12 +162,14 @@ export class StudentPaymentComponent implements OnInit {
     // Gọi API kiểm tra trạng thái payment theo ID
     this.paymentService.getPaymentById(paymentIdNum).subscribe({
       next: (payment) => {
+        console.log('💳 Payment status from API:', payment);
+
         // Kiểm tra nếu status=PENDING và vnpResponseCode="24" → user đã hủy tại cổng
         if (payment.status === 'PENDING' && vnpResponseCode === '24') {
           this.message.warning('Bạn đã hủy thanh toán tại cổng thanh toán. Vui lòng thử lại!');
           this.selectClassAndClearParams(classRoomIdParam);
-        } else if (payment.status === 'COMPLETED') {
-          // Thanh toán thành công
+        } else if (payment.status === 'SUCCESS' || payment.status === 'COMPLETED') {
+          // Thanh toán thành công (backend có thể trả về SUCCESS hoặc COMPLETED)
           this.message.success('Thanh toán thành công!');
           // Reload lại dữ liệu sau khi thanh toán thành công
           setTimeout(() => {
@@ -239,11 +277,30 @@ export class StudentPaymentComponent implements OnInit {
     if (!this.studentId) return;
 
     // Reload lại danh sách lớp để cập nhật trạng thái
-    this.paymentService.getDueForStudent(this.studentId).subscribe(res => {
-      // Lọc chỉ lấy các lớp chưa thanh toán
-      this.classes = (res || []).filter((cls: any) => !cls.isPaid);
+    forkJoin({
+      allClasses: this.studentService.getClassesByStudent(this.studentId),
+      paymentInfo: this.paymentService.getDueForStudent(this.studentId)
+    }).subscribe(({ allClasses, paymentInfo }) => {
+      // Merge dữ liệu
+      this.classes = allClasses.map((cls: any) => {
+        const paymentData = paymentInfo.find((p: any) => p.classRoomId === cls.id);
+        return {
+          classRoomId: cls.id,
+          className: cls.name,
+          courseName: cls.course?.name || '',
+          amount: paymentData?.amount || 0,
+          currency: paymentData?.currency || 'VND',
+          paidAmount: paymentData?.paidAmount || 0,
+          isPaid: paymentData?.isPaid || false,
+          paymentStatus: paymentData?.paymentStatus || 'UNPAID',
+          dueDate: paymentData?.dueDate || cls.endDate
+        };
+      });
 
-      // Nếu không còn lớp nào cần thanh toán, load lịch sử
+      // Đánh dấu data đã load xong
+      this.dataLoaded = true;
+
+      // Nếu không có lớp nào, load lịch sử
       if (this.classes.length === 0) {
         this.loadPaymentHistory();
         return;
@@ -270,20 +327,33 @@ export class StudentPaymentComponent implements OnInit {
     this.paymentService.getPaymentHistory(this.studentId).subscribe({
       next: (history) => {
         this.paymentHistory = history || [];
-        // Reset các field khác
-        this.classRoomId = null;
-        this.className = '';
-        this.courseName = '';
-        this.fee = null;
-        this.amount = null;
-        this.paid = true; // Đã thanh toán hết
-        this.paidAmount = null;
+        // KHÔNG reset các field khác nữa, giữ nguyên thông tin lớp đang chọn
       },
       error: (err) => {
         console.error('Error loading payment history:', err);
         this.message.error('Không thể tải lịch sử thanh toán');
       }
     });
+  }
+
+  loadAllPaymentHistory() {
+    if (!this.studentId) return;
+
+    // Gọi API lấy toàn bộ lịch sử thanh toán của học sinh
+    this.paymentService.getPaymentHistory(this.studentId).subscribe({
+      next: (history) => {
+        this.allPaymentHistory = history || [];
+        console.log('📜 All payment history:', this.allPaymentHistory);
+      },
+      error: (err) => {
+        console.error('Error loading all payment history:', err);
+      }
+    });
+  }
+
+  getClassNameById(classRoomId: number): string {
+    const cls = this.classes.find(c => c.classRoomId === classRoomId);
+    return cls?.className || `Lớp #${classRoomId}`;
   }
 
   selectClass(cls: any) {
@@ -297,6 +367,7 @@ export class StudentPaymentComponent implements OnInit {
     // Sử dụng trực tiếp dữ liệu từ API response
     this.paid = cls.isPaid || false;
     this.paidAmount = cls.paidAmount || 0;
+    this.dueDate = cls.dueDate || null;
 
     // Load payment history nếu đã thanh toán
     if (this.paid && this.studentId && this.classRoomId) {

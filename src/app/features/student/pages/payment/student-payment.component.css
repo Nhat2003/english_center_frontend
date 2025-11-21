@@ -94,6 +94,20 @@
   box-shadow: 0 4px 12px rgba(59, 178, 115, 0.2);
 }
 
+.class-card.paid-card {
+  background: linear-gradient(135deg, #f0f0f0 0%, #fafafa 100%);
+  border-color: #d0d0d0;
+}
+
+.class-card.paid-card:hover {
+  border-color: #a0a0a0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.class-card.paid-card .class-icon {
+  background: #52c41a;
+}
+
 .class-card-header {
   display: flex;
   align-items: flex-start;
@@ -140,15 +154,47 @@
   white-space: nowrap;
 }
 
+.payment-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #52c41a;
+  background: #f6ffed;
+  border: 1px solid #b7eb8f;
+  border-radius: 4px;
+  padding: 2px 8px;
+  margin-top: 6px;
+}
+
+.payment-status-badge.unpaid {
+  color: #fa8c16;
+  background: #fff7e6;
+  border-color: #ffd591;
+}
+
+.payment-status-badge i {
+  font-size: 12px;
+}
+
 .class-card-footer {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 8px;
   padding-top: 12px;
   border-top: 1px solid #e0e0e0;
 }
 
-.fee-label {
+.fee-info,
+.paid-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fee-label,
+.paid-label {
   font-size: 13px;
   color: #666;
 }
@@ -157,6 +203,12 @@
   font-size: 16px;
   font-weight: 700;
   color: #3bb273;
+}
+
+.paid-amount {
+  font-size: 14px;
+  font-weight: 600;
+  color: #52c41a;
 }
 
 .selected-indicator {
@@ -303,6 +355,29 @@
   align-items: baseline;
   justify-content: center;
   gap: 8px;
+}
+
+.due-date-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #fff7e6;
+  border: 1px solid #ffd591;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #d46b08;
+}
+
+.due-date-info i {
+  font-size: 16px;
+}
+
+.due-date-info strong {
+  color: #d46b08;
+  font-weight: 600;
 }
 
 .amount-number {
@@ -602,6 +677,244 @@
   color: #888;
 }
 
+/* All Payment History Section */
+.all-history-section {
+  margin-top: 32px;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-left i {
+  font-size: 24px;
+  color: #3bb273;
+}
+
+.header-left h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.total-transactions {
+  padding: 6px 16px;
+  background: linear-gradient(135deg, #e8f5ed 0%, #f0f8f5 100%);
+  border: 1px solid #3bb273;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #3bb273;
+}
+
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+}
+
+.history-card {
+  background: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.history-card:hover {
+  border-color: #3bb273;
+  box-shadow: 0 4px 12px rgba(59, 178, 115, 0.15);
+  transform: translateY(-2px);
+}
+
+.history-card.success-card {
+  border-color: #52c41a;
+  background: linear-gradient(135deg, #f6ffed 0%, #ffffff 100%);
+}
+
+.history-card.pending-card {
+  border-color: #faad14;
+  background: linear-gradient(135deg, #fffbe6 0%, #ffffff 100%);
+}
+
+.history-card.failed-card {
+  border-color: #ff4d4f;
+  background: linear-gradient(135deg, #fff1f0 0%, #ffffff 100%);
+}
+
+.history-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.card-title i {
+  font-size: 18px;
+}
+
+.success-card .card-title i {
+  color: #52c41a;
+}
+
+.pending-card .card-title i {
+  color: #faad14;
+}
+
+.failed-card .card-title i {
+  color: #ff4d4f;
+}
+
+.class-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-tag {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tag-success {
+  background: #f6ffed;
+  color: #52c41a;
+  border: 1px solid #b7eb8f;
+}
+
+.tag-pending {
+  background: #fffbe6;
+  color: #faad14;
+  border: 1px solid #ffe58f;
+}
+
+.tag-failed {
+  background: #fff1f0;
+  color: #ff4d4f;
+  border: 1px solid #ffccc7;
+}
+
+.history-card-body {
+  padding: 20px;
+}
+
+.amount-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.amount-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.amount-currency {
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  background: #fafafa;
+  border-radius: 8px;
+}
+
+.detail-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.detail-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+  word-break: break-all;
+}
+
+.empty-history {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+}
+
+.empty-history i {
+  font-size: 64px;
+  color: #d9d9d9;
+  margin-bottom: 16px;
+}
+
+.empty-history p {
+  font-size: 16px;
+  margin: 0;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .payment-wrapper {
@@ -614,6 +927,20 @@
 
   .page-title i {
     font-size: 28px;
+  }
+
+  .history-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .all-history-section {
+    padding: 16px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
 
   .info-grid {

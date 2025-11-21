@@ -67,6 +67,7 @@ import { PaymentSuccessComponent } from './pages/payment-success/payment-success
 import { STUDENT_ROUTES } from './student.routes';
 import { SharedModule } from '../../shared/shared.module';
 import { ProfileSettingsComponent } from './pages/profile-settings/profile-settings.component';
+import { CoreModule } from '../../core/core.module';
 
 @NgModule({
   declarations: [
@@ -127,7 +128,8 @@ import { ProfileSettingsComponent } from './pages/profile-settings/profile-setti
     NzTypographyModule,
     NzFormModule,
     NzDatePickerModule,
-    SharedModule
+    SharedModule,
+    CoreModule
   ],
   providers: [
     StudentScheduleService

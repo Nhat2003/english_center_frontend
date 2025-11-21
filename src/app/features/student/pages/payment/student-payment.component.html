@@ -1,5 +1,13 @@
 <div class="payment-wrapper">
   <div class="payment-container">
+    <!-- Loading State -->
+    <div *ngIf="!dataLoaded" style="text-align: center; padding: 60px 20px;">
+      <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
+      <p style="margin-top: 16px; color: #666;">Đang tải thông tin học phí...</p>
+    </div>
+
+    <!-- Content - Only show when data loaded -->
+    <div *ngIf="dataLoaded">
     <!-- Page Title -->
     <div class="page-header">
       <h1 class="page-title">
@@ -13,12 +21,13 @@
     <div class="class-selection-section" *ngIf="classes.length > 1">
       <div class="selection-header">
         <i nz-icon nzType="select" nzTheme="outline"></i>
-        <span>Chọn lớp học cần thanh toán</span>
+        <span>Chọn lớp học</span>
       </div>
       <div class="class-cards">
         <div class="class-card"
              *ngFor="let cls of classes"
              [class.selected]="cls.classRoomId === classRoomId"
+             [class.paid-card]="cls.isPaid"
              (click)="selectClass(cls)">
           <div class="class-card-header">
             <div class="class-icon">
@@ -27,11 +36,25 @@
             <div class="class-info">
               <div class="class-name">{{ cls.className }}</div>
               <div class="course-name" *ngIf="cls.courseName">{{ cls.courseName }}</div>
+              <div class="payment-status-badge" *ngIf="cls.isPaid">
+                <i nz-icon nzType="check-circle" nzTheme="fill"></i>
+                Đã thanh toán
+              </div>
+              <div class="payment-status-badge unpaid" *ngIf="!cls.isPaid && cls.dueDate">
+                <i nz-icon nzType="clock-circle" nzTheme="outline"></i>
+                Hạn: {{ cls.dueDate | date:'dd/MM/yyyy' }}
+              </div>
             </div>
           </div>
           <div class="class-card-footer">
-            <span class="fee-label">Học phí:</span>
-            <span class="fee-amount">{{ cls.amount | number }} {{ cls.currency }}</span>
+            <div class="fee-info">
+              <span class="fee-label">Học phí:</span>
+              <span class="fee-amount">{{ cls.amount | number }} {{ cls.currency }}</span>
+            </div>
+            <div class="paid-info" *ngIf="cls.isPaid">
+              <span class="paid-label">Đã đóng:</span>
+              <span class="paid-amount">{{ cls.paidAmount | number }} {{ cls.currency }}</span>
+            </div>
           </div>
           <div class="selected-indicator" *ngIf="cls.classRoomId === classRoomId">
             <i nz-icon nzType="check-circle" nzTheme="fill"></i>
@@ -61,6 +84,15 @@
             <span class="info-value">{{ courseName }}</span>
           </div>
         </div>
+        <div class="info-item" *ngIf="dueDate && !paid">
+          <div class="info-icon">
+            <i nz-icon nzType="clock-circle" nzTheme="outline"></i>
+          </div>
+          <div class="info-details">
+            <span class="info-label">Hạn đóng</span>
+            <span class="info-value">{{ dueDate | date:'dd/MM/yyyy' }}</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -87,6 +119,10 @@
               <span class="amount-number">{{ fee | number }}</span>
               <span class="amount-currency">{{ currency }}</span>
             </div>
+          </div>
+          <div class="due-date-info" *ngIf="dueDate && !paid">
+            <i nz-icon nzType="clock-circle" nzTheme="outline"></i>
+            <span>Hạn đóng: <strong>{{ dueDate | date:'dd/MM/yyyy' }}</strong></span>
           </div>
           <button class="payment-button" (click)="pay()" [disabled]="loading || fee === null || !amount || amount <= 0">
             <i *ngIf="!loading" nz-icon nzType="check-circle" nzTheme="outline"></i>
@@ -152,50 +188,87 @@
       </div>
     </div>
 
-    <!-- All Payment History (Always Show) -->
-    <div class="history-container" *ngIf="paymentHistory.length > 0" style="margin-top: 24px;">
-      <div class="history-header">
-        <i nz-icon nzType="history" nzTheme="outline"></i>
-        <span>Lịch sử thanh toán của bạn</span>
+    <!-- All Payment History Section - Redesigned -->
+    <div class="all-history-section" *ngIf="allPaymentHistory.length > 0">
+      <div class="section-header">
+        <div class="header-left">
+          <i nz-icon nzType="file-text" nzTheme="outline"></i>
+          <h2>Lịch sử thanh toán</h2>
+        </div>
+        <div class="header-right">
+          <span class="total-transactions">{{ allPaymentHistory.length }} giao dịch</span>
+        </div>
       </div>
-      <div class="history-list">
-        <div class="history-item" *ngFor="let p of paymentHistory">
-          <div class="history-item-header">
-            <span class="transaction-id">Mã GD: {{ p.vnpTxnRef || p.id }}</span>
-            <span class="status-badge" [ngClass]="{
-              'status-success': p.status === 'SUCCESS',
-              'status-pending': p.status === 'PENDING',
-              'status-failed': p.status === 'FAILED'
+
+      <div class="history-grid">
+        <div class="history-card" *ngFor="let payment of allPaymentHistory"
+             [ngClass]="{'success-card': payment.status === 'SUCCESS', 'pending-card': payment.status === 'PENDING', 'failed-card': payment.status === 'FAILED'}">
+
+          <!-- Card Header -->
+          <div class="history-card-header">
+            <div class="card-title">
+              <i nz-icon [nzType]="payment.status === 'SUCCESS' ? 'check-circle' : payment.status === 'PENDING' ? 'clock-circle' : 'close-circle'" nzTheme="fill"></i>
+              <span class="class-name">{{ getClassNameById(payment.classRoomId) }}</span>
+            </div>
+            <div class="status-tag" [ngClass]="{
+              'tag-success': payment.status === 'SUCCESS',
+              'tag-pending': payment.status === 'PENDING',
+              'tag-failed': payment.status === 'FAILED'
             }">
-              <i *ngIf="p.status === 'SUCCESS'" nz-icon nzType="check-circle" nzTheme="fill"></i>
-              <i *ngIf="p.status === 'PENDING'" nz-icon nzType="clock-circle" nzTheme="fill"></i>
-              <i *ngIf="p.status === 'FAILED'" nz-icon nzType="close-circle" nzTheme="fill"></i>
-              {{ p.status === 'SUCCESS' ? 'Thành công' : p.status === 'PENDING' ? 'Đang xử lý' : 'Thất bại' }}
-            </span>
+              {{ payment.status === 'SUCCESS' ? 'Thành công' : payment.status === 'PENDING' ? 'Đang xử lý' : 'Thất bại' }}
+            </div>
           </div>
-          <div class="history-item-body">
-            <div class="transaction-info">
-              <div class="info-row">
-                <span class="info-label">Lớp học:</span>
-                <span class="info-value">Lớp ID {{ p.classRoomId }}</span>
+
+          <!-- Card Body -->
+          <div class="history-card-body">
+            <div class="amount-row">
+              <span class="amount-value">{{ payment.amount | number }}</span>
+              <span class="amount-currency">{{ payment.currency }}</span>
+            </div>
+
+            <div class="details-grid">
+              <div class="detail-item">
+                <span class="detail-icon">🔖</span>
+                <div class="detail-content">
+                  <span class="detail-label">Mã giao dịch</span>
+                  <span class="detail-value">{{ payment.vnpTxnRef || payment.orderRef || payment.id }}</span>
+                </div>
               </div>
-              <div class="info-row">
-                <span class="info-label">Số tiền:</span>
-                <span class="info-value transaction-amount">
-                  <strong>{{ p.amount | number }}</strong> {{ p.currency }}
-                </span>
+
+              <div class="detail-item">
+                <span class="detail-icon">📅</span>
+                <div class="detail-content">
+                  <span class="detail-label">Thời gian</span>
+                  <span class="detail-value">{{ payment.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
               </div>
-              <div class="info-row">
-                <span class="info-label">Thời gian:</span>
-                <span class="info-value">
-                  <i nz-icon nzType="calendar" nzTheme="outline"></i>
-                  {{ p.createdAt | date:'dd/MM/yyyy HH:mm' }}
-                </span>
+
+              <div class="detail-item" *ngIf="payment.paymentMethod">
+                <span class="detail-icon">💳</span>
+                <div class="detail-content">
+                  <span class="detail-label">Phương thức</span>
+                  <span class="detail-value">{{ payment.paymentMethod }}</span>
+                </div>
+              </div>
+
+              <div class="detail-item" *ngIf="payment.dueDate">
+                <span class="detail-icon">⏰</span>
+                <div class="detail-content">
+                  <span class="detail-label">Hạn đóng</span>
+                  <span class="detail-value">{{ payment.dueDate | date:'dd/MM/yyyy' }}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Empty State -->
+      <div class="empty-history" *ngIf="allPaymentHistory.length === 0">
+        <i nz-icon nzType="file-text" nzTheme="outline"></i>
+        <p>Chưa có giao dịch nào</p>
+      </div>
+    </div>
     </div>
   </div>
 </div>
