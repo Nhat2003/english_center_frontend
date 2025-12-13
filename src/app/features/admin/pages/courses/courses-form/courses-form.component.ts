@@ -31,7 +31,7 @@ export class CoursesFormComponent implements OnInit {
       description: [null],
       duration: [null, [Validators.required, Validators.min(1)]],
       fee: [null, [Validators.required, Validators.min(0)]],
-      level: [null, Validators.required]
+      level: [null] // Không required
     });
   }
 

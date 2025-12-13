@@ -12,6 +12,37 @@ import { environment } from '../../../environments/environment';
 	providedIn: 'root'
 })
 export class StudentService {
+				// Tìm kiếm học sinh (admin)
+				searchStudents(q: string, page: number = 0, size: number = 10): Observable<any> {
+					let params = new HttpParams()
+						.set('q', q)
+						.set('page', page.toString())
+						.set('size', size.toString());
+					return this.http.get<any>(`${environment.apiUrl}/students/search`, { params })
+						.pipe(catchError(this.handleError));
+				}
+			// Lấy danh sách học sinh cho admin (chuẩn backend mới)
+			getAdminStudentList(page: number = 0, size: number = 10, searchText: string = ''): Observable<any> {
+				let params = new HttpParams()
+					.set('page', page.toString())
+					.set('size', size.toString());
+				if (searchText && searchText.trim()) {
+					params = params.set('search', searchText.trim());
+				}
+				return this.http.get<any>(`${environment.apiUrl}/students/admin/list`, { params })
+					.pipe(catchError(this.handleError));
+			}
+		// Lấy danh sách học sinh có tìm kiếm (nếu backend hỗ trợ search param)
+		getStudentsWithSearch(page: number = 0, size: number = 10, searchText: string = ''): Observable<any> {
+			let params = new HttpParams()
+				.set('page', page.toString())
+				.set('size', size.toString());
+			if (searchText && searchText.trim()) {
+				params = params.set('search', searchText.trim());
+			}
+			return this.http.get<any>(this.apiUrl, { params })
+				.pipe(catchError(this.handleError));
+		}
 	private apiUrl = `${environment.apiUrl}/students`;
 
 	constructor(private http: HttpClient) {}

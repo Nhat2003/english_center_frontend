@@ -5,7 +5,7 @@
     <nz-card class="teacher-header-card">
       <div class="teacher-header">
         <div class="teacher-avatar">
-          <nz-avatar [nzSize]="80" [nzIcon]="'user'" [nzText]="getAvatarText()"></nz-avatar>
+
         </div>
         <div class="teacher-info-header">
           <h2 class="teacher-name">{{ teacherData?.fullName || 'N/A' }}</h2>
@@ -68,6 +68,7 @@
             <div class="info-value">{{ teacherData?.address || 'N/A' }}</div>
           </div>
         </div>
+
       </nz-card>
 
       <!-- Professional Information Card -->
@@ -87,6 +88,21 @@
             </div>
             <div class="info-value">{{ (teacherData?.hiredAt | date:'dd/MM/yyyy') || 'N/A' }}</div>
           </div>
+        </div>
+
+                <div class="info-item">
+          <div class="info-label">
+            <i nz-icon nzType="bank" nzTheme="outline"></i>
+            Tên ngân hàng
+          </div>
+          <div class="info-value">{{ teacherData?.bankName || 'N/A' }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">
+            <i nz-icon nzType="credit-card" nzTheme="outline"></i>
+            Số tài khoản
+          </div>
+          <div class="info-value">{{ teacherData?.bankAccountNumber || 'N/A' }}</div>
         </div>
       </nz-card>
     </div>

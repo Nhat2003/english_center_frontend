@@ -22,4 +22,5 @@ export interface User {
   role: string;
   isActive: boolean;
   student?: Student;
+  avatar?: string;
 }
