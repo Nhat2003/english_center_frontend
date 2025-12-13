@@ -1,7 +1,7 @@
 .class-payments-container {
   padding: 24px;
   background: #f0f2f5;
-  min-height: calc(100vh - 64px);
+  min-height: 100%;
 }
 
 /* Page Header */

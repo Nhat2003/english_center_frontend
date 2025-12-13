@@ -15,9 +15,9 @@
           <i nz-icon nzType="experiment"></i>
           {{ currentUser.teacher.speciality }}
         </nz-tag>
-        <nz-tag nzColor="orange">
+        <!-- <nz-tag nzColor="orange">
           ID: {{ currentUser.teacher.id }}
-        </nz-tag>
+        </nz-tag> -->
       </div>
     </div>
 
@@ -98,6 +98,17 @@
               {{ formatSessionInfo(schedule.sessionIndex, schedule.totalSessions) }}
             </div>
 
+            <div class="schedule-actions">
+              <button nz-button nzType="text" nzSize="small" (click)="openRescheduleModal(schedule)" nzDanger>
+                <i nz-icon nzType="edit"></i>
+                Đổi lịch
+              </button>
+              <button nz-button nzType="text" nzSize="small" (click)="showStudentList(schedule)">
+                <i nz-icon nzType="team"></i>
+                Học sinh
+              </button>
+            </div>
+
           </div>
         </div>
       </div>
@@ -110,6 +121,150 @@
       <div style="height: 200px;"></div>
     </nz-spin>
   </div>
+
+  <!-- Student Modal -->
+  <nz-modal
+    [nzVisible]="isStudentModalVisible"
+    nzTitle="Danh sách học sinh"
+    nzWidth="600px"
+    [nzOkText]="'Đóng'"
+    [nzCancelText]="''"
+    (nzOnOk)="closeStudentModal()"
+  >
+    <div *ngIf="selectedSchedule" class="student-modal-content">
+      <div class="schedule-info">
+        <p><strong>Lớp:</strong> {{ selectedSchedule.className }}</p>
+        <p><strong>Ngày:</strong> {{ selectedSchedule.date | date: 'dd/MM/yyyy' }}</p>
+        <p><strong>Giờ:</strong> {{ formatScheduleTime(selectedSchedule.start, selectedSchedule.end) }}</p>
+      </div>
+
+      <nz-spin *ngIf="modalLoading" nzSimple [nzSize]="'large'"></nz-spin>
+
+      <div *ngIf="!modalLoading && modalStudents.length > 0" class="student-list">
+        <nz-table #nzTable [nzData]="modalStudents" nzSize="small" [nzPageSize]="10">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Tên học sinh</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let student of modalStudents">
+              <td>{{ student.id }}</td>
+              <td>{{ student.fullName }}</td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+
+      <div *ngIf="!modalLoading && modalStudents.length === 0" class="empty-state">
+        <p>Không có học sinh trong lớp này</p>
+      </div>
+    </div>
+  </nz-modal>
+
+  <!-- Reschedule Modal -->
+  <nz-modal
+    [nzVisible]="isRescheduleModalVisible"
+    nzTitle="Đổi lịch dạy"
+    nzWidth="600px"
+    [nzOkText]="'Lưu'"
+    nzOkButtonDanger
+    [nzCancelText]="'Hủy'"
+    [nzOkLoading]="isRescheduleLoading"
+    (nzOnOk)="submitReschedule()"
+    (nzOnCancel)="closeRescheduleModal()"
+  >
+    <div *ngIf="rescheduleSchedule" class="reschedule-modal-content">
+      <div class="current-schedule-info">
+        <h4>Lịch hiện tại:</h4>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">Buổi học:</span>
+            <span class="value">{{ rescheduleSchedule.title }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Ngày:</span>
+            <span class="value">{{ rescheduleSchedule.date | date: 'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Giờ:</span>
+            <span class="value">{{ formatScheduleTime(rescheduleSchedule.start, rescheduleSchedule.end) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Lớp:</span>
+            <span class="value">{{ rescheduleSchedule.className }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Phòng:</span>
+            <span class="value">{{ rescheduleSchedule.roomName }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Khóa học:</span>
+            <span class="value">{{ rescheduleSchedule.courseName }}</span>
+          </div>
+        </div>
+      </div>
+
+      <nz-divider></nz-divider>
+
+      <form nz-form [formGroup]="rescheduleForm">
+        <h4>Lịch mới:</h4>
+
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="newDate">Ngày</nz-form-label>
+          <nz-form-control nzErrorTip="Vui lòng chọn ngày">
+            <nz-date-picker
+              id="newDate"
+              formControlName="newDate"
+              nzPlaceHolder="Chọn ngày"
+              nzFormat="dd/MM/yyyy"
+              style="width: 100%;"
+            ></nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Giờ học</nz-form-label>
+          <nz-form-control nzErrorTip="Vui lòng chọn khung giờ">
+            <nz-select
+              nzPlaceHolder="Chọn khung giờ học"
+              style="width: 100%;"
+              [(ngModel)]="selectedTimeSlot"
+              [ngModelOptions]="{standalone: true}"
+            >
+              <nz-option
+                *ngFor="let slot of timeSlots"
+                [nzValue]="slot"
+                [nzLabel]="slot.label"
+              >
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="reason">Lý do đổi lịch</nz-form-label>
+          <nz-form-control nzErrorTip="Vui lòng nhập lý do">
+            <textarea
+              id="reason"
+              formControlName="reason"
+              nz-input
+              nzAutosize
+              [nzAutosize]="{ minRows: 3, maxRows: 6 }"
+              nzPlaceHolder="Nhập lý do đổi lịch..."
+            ></textarea>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-control>
+            <label nz-checkbox formControlName="notifyStudents">
+              <span>Thông báo cho học sinh</span>
+            </label>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </div>
+  </nz-modal>
 </div>
-
-

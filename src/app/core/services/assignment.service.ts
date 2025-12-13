@@ -62,6 +62,14 @@ export interface SubmissionHistoryResponse {
   originalFilename: string | null;
 }
 
+// Response từ GET /submissions/student/{studentId}/history?gradedOnly=true
+export interface GroupedSubmissionHistory {
+  assignmentId: number;
+  assignmentTitle: string;
+  submissions: SubmissionHistoryResponse[];
+  latestGrade: number | null;
+}
+
 export interface Teacher {
   id: number;
   fullName: string;
@@ -281,6 +289,18 @@ export class AssignmentService {
   }
 
   /**
+   * Lấy submission của học sinh hiện tại cho một assignment (endpoint an toàn)
+   * GET /submissions/assignment/{assignmentId}/me
+   * @param assignmentId - ID của bài tập
+   * @returns Observable<MySubmissionResponse | null> - Submission của học sinh hoặc null nếu chưa nộp
+   */
+  getMySubmissionForAssignment(assignmentId: number): Observable<MySubmissionResponse | null> {
+    return this.http.get<MySubmissionResponse | null>(
+      `${environment.apiUrl}/submissions/assignment/${assignmentId}/me`
+    );
+  }
+
+  /**
    * Lấy tất cả submissions của học sinh
    * @param studentId - ID của học sinh
    * @returns Observable<Submission[]>
@@ -311,10 +331,31 @@ export class AssignmentService {
    * Lấy lịch sử nộp bài của một học sinh cụ thể (kèm assignmentTitle) - Dành cho giáo viên
    * GET /submissions/student/{studentId}/history
    * @param studentId - ID của học sinh
-   * @returns Observable<SubmissionHistoryResponse[]> - Danh sách submissions kèm tên bài tập
+   * @param gradedOnly - Chỉ lấy submissions đã chấm điểm (mặc định: false)
+   * @returns Observable<SubmissionHistoryResponse[]> hoặc Observable<GroupedSubmissionHistory[]>
    */
-  getStudentSubmissionHistory(studentId: number): Observable<SubmissionHistoryResponse[]> {
-    return this.http.get<SubmissionHistoryResponse[]>(`${environment.apiUrl}/submissions/student/${studentId}/history`);
+  getStudentSubmissionHistory(studentId: number, gradedOnly: boolean = false): Observable<SubmissionHistoryResponse[] | GroupedSubmissionHistory[]> {
+    const params: any = {};
+    if (gradedOnly) {
+      params.gradedOnly = 'true';
+    }
+    return this.http.get<SubmissionHistoryResponse[] | GroupedSubmissionHistory[]>(
+      `${environment.apiUrl}/submissions/student/${studentId}/history`,
+      { params }
+    );
+  }
+
+  /**
+   * Lấy lịch sử điểm của học sinh (chỉ bài đã chấm) - Dành cho giáo viên
+   * GET /submissions/student/{studentId}/history?gradedOnly=true
+   * @param studentId - ID của học sinh
+   * @returns Observable<GroupedSubmissionHistory[]> - Danh sách submissions đã chấm điểm, nhóm theo bài tập
+   */
+  getStudentGradeHistory(studentId: number): Observable<GroupedSubmissionHistory[]> {
+    return this.http.get<GroupedSubmissionHistory[]>(
+      `${environment.apiUrl}/submissions/student/${studentId}/history`,
+      { params: { gradedOnly: 'true' } }
+    );
   }
 
   // ========== DOWNLOAD METHODS ==========

@@ -34,6 +34,7 @@ import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzSelectModule } from 'ng-zorro-antd/select';
+import { EditScheduleComponent } from './pages/classes/edit-schedule/edit-schedule.component';
 
 // Components
 import { TeacherLayoutComponent } from './teacher-layout/teacher-layout.component';
@@ -49,11 +50,11 @@ import { ClassAttendanceComponent } from './pages/attendance/class-attendance.co
 import { StudentDetailComponent } from './pages/students/student-detail/student-detail.component';
 import { ClassAnnouncementsComponent } from './pages/announcements/class-announcements.component';
 import { TeacherNotificationsComponent } from './pages/notifications/notifications.component';
+import { ProfileSettingsComponent } from './pages/profile-settings/profile-settings.component';
 
 // Routes
 import { TEACHER_ROUTES } from './teacher.routes';
 import { SharedModule } from '../../shared/shared.module';
-import { ProfileSettingsComponent } from './pages/profile-settings/profile-settings.component';
 import { CoreModule } from '../../core/core.module';
 
 @NgModule({
@@ -71,7 +72,8 @@ import { CoreModule } from '../../core/core.module';
     StudentDetailComponent,
     ClassAnnouncementsComponent,
     TeacherNotificationsComponent,
-    ProfileSettingsComponent
+    ProfileSettingsComponent,
+    EditScheduleComponent
   ],
   imports: [
     CommonModule,

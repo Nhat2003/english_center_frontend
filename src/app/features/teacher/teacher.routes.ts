@@ -13,6 +13,7 @@ import { StudentDetailComponent } from './pages/students/student-detail/student-
 import { ClassAnnouncementsComponent } from './pages/announcements/class-announcements.component';
 import { TeacherNotificationsComponent } from './pages/notifications/notifications.component';
 import { ProfileSettingsComponent } from './pages/profile-settings/profile-settings.component';
+import { EditScheduleComponent } from './pages/classes/edit-schedule/edit-schedule.component';
 
 export const TEACHER_ROUTES: Routes = [
   {
@@ -34,7 +35,8 @@ export const TEACHER_ROUTES: Routes = [
       { path: 'online-classes', component: TeacherDashboardComponent },
       { path: 'materials', component: TeacherDashboardComponent },
       { path: 'notifications', component: TeacherNotificationsComponent },
-      { path: 'profile-settings', component: ProfileSettingsComponent }
+      { path: 'profile-settings', component: ProfileSettingsComponent },
+      { path: 'classes/:id/edit-schedule', component: EditScheduleComponent }
     ]
   }
 ];

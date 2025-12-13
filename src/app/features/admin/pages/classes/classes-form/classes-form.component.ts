@@ -104,6 +104,8 @@ export class ClassesFormComponent implements OnInit {
     }
   }
 
+
+
   loadDropdownData(): Promise<void> {
     return new Promise((resolve) => {
       this.isLoadingCourses = true;

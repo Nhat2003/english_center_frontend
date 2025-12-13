@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { AuthService, User } from '../../../../core/services/auth.service';
 import { ScheduleService } from '../../../../core/services/schedule.service';
+import { ClassService } from '../../../../core/services/class.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import {
   ScheduleItemForTeacherDTO,
@@ -29,13 +31,33 @@ export class TeacherScheduleComponent implements OnInit {
   modalStudents: Array<{ id: number; fullName: string }> = [];
   modalLoading = false;
 
+  // Reschedule modal
+  isRescheduleModalVisible = false;
+  rescheduleSchedule: ScheduleItemForTeacherDTO | null = null;
+  rescheduleForm: FormGroup;
+  isRescheduleLoading = false;
+
+  // Time slots for reschedule
+  timeSlots = [
+    { label: '18:00 - 20:00', start: '18:00', end: '20:00' },
+    { label: '20:00 - 22:00', start: '20:00', end: '22:00' }
+  ];
+  selectedTimeSlot: { start: string; end: string } | null = null;
+
   constructor(
     private authService: AuthService,
     private scheduleService: ScheduleService,
+    private classService: ClassService,
     private message: NzMessageService,
-    private http: HttpClient
+    private http: HttpClient,
+    private fb: FormBuilder
   ) {
     this.setWeekStart();
+    this.rescheduleForm = this.fb.group({
+      newDate: [null, Validators.required],
+      reason: [null, Validators.required],
+      notifyStudents: [true]
+    });
   }
 
   ngOnInit(): void {
@@ -58,7 +80,8 @@ export class TeacherScheduleComponent implements OnInit {
 
     // Sử dụng teacher.id nếu có, nếu không thì dùng fallback = 2
     const teacherId = this.currentUser.teacher?.id || 2;
-    this.scheduleService.getTeacherSchedule(teacherId, fromDate, toDate).subscribe({
+    // Set includeOverrides = false to exclude overridden sessions and show only active schedules
+    this.scheduleService.getTeacherSchedule(teacherId, fromDate, toDate, false).subscribe({
       next: (data: ScheduleItemForTeacherDTO[]) => {
         this.teacherSchedules = data;
         this.loading = false;
@@ -212,6 +235,87 @@ export class TeacherScheduleComponent implements OnInit {
     this.selectedSchedule = null;
     this.modalStudents = [];
     this.modalLoading = false;
+  }
+
+  // Reschedule methods
+  openRescheduleModal(schedule: ScheduleItemForTeacherDTO): void {
+    this.rescheduleSchedule = schedule;
+    this.isRescheduleModalVisible = true;
+
+    // Reset form and set default date
+    const startDate = new Date(schedule.start);
+
+    this.rescheduleForm.patchValue({
+      newDate: startDate,
+      reason: '',
+      notifyStudents: true
+    });
+
+    this.selectedTimeSlot = null;
+  }
+
+  closeRescheduleModal(): void {
+    this.isRescheduleModalVisible = false;
+    this.rescheduleSchedule = null;
+    this.rescheduleForm.reset({ notifyStudents: true });
+    this.selectedTimeSlot = null;
+  }
+
+  submitReschedule(): void {
+    if (!this.rescheduleForm.valid || !this.rescheduleSchedule || !this.selectedTimeSlot) {
+      this.message.warning('Vui lòng nhập đầy đủ thông tin!');
+      return;
+    }
+
+    const formValue = this.rescheduleForm.value;
+
+    // Validate reason
+    if (!formValue.reason || formValue.reason.trim() === '') {
+      this.message.warning('Vui lòng nhập lý do đổi lịch!');
+      return;
+    }
+
+    const newDate = new Date(formValue.newDate);
+
+    // Format date as YYYY-MM-DD
+    const dateStr = `${newDate.getFullYear()}-${String(newDate.getMonth() + 1).padStart(2, '0')}-${String(newDate.getDate()).padStart(2, '0')}`;
+
+    // Create full ISO DateTime strings (yyyy-MM-ddTHH:mm:ss)
+    const newStart = `${dateStr}T${this.selectedTimeSlot.start}:00`;
+    const newEnd = `${dateStr}T${this.selectedTimeSlot.end}:00`;
+
+    console.log('Submitting reschedule:', {
+      classId: this.rescheduleSchedule.classId,
+      originalDate: this.rescheduleSchedule.date,
+      newStart,
+      newEnd,
+      reason: formValue.reason,
+      notifyStudents: formValue.notifyStudents
+    });
+
+    this.isRescheduleLoading = true;
+    this.classService.rescheduleSession(
+      this.rescheduleSchedule.classId,
+      this.rescheduleSchedule.date,
+      newStart,
+      newEnd,
+      formValue.reason,
+      formValue.notifyStudents
+    ).subscribe({
+      next: (response) => {
+        this.isRescheduleLoading = false;
+        console.log('Reschedule success:', response);
+        this.message.success('Đổi lịch thành công!');
+        this.closeRescheduleModal();
+        // Reload schedule
+        setTimeout(() => this.loadTeacherSchedule(), 1000);
+      },
+      error: (error) => {
+        this.isRescheduleLoading = false;
+        console.error('Error rescheduling:', error);
+        this.message.error('Đổi lịch thất bại: ' + (error.error?.message || error.message));
+      }
+    });
   }
 
   // ...existing code...

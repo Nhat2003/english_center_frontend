@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { AssignmentService } from '../../../../core/services/assignment.service';
 import { StudentAssignment } from '../../../../core/models/assignment.model';
@@ -18,18 +18,30 @@ export class StudentAssignmentsComponent implements OnInit {
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private message: NzMessageService,
     private assignmentService: AssignmentService
   ) {}
 
   ngOnInit(): void {
+    // Check if we're in class context (route: /classes/:id/assignments)
+    this.route.params.subscribe(params => {
+      if (params['id']) {
+        this.studentClassId = +params['id'];
+      }
+    });
+
     const userStr = localStorage.getItem('user');
 
     if (userStr) {
       try {
         const user = JSON.parse(userStr);
         this.studentId = user.student?.id || user.id || null;
-        this.studentClassId = user.student?.classRoomId || user.classRoomId || user.classId || null;
+        
+        // Nếu chưa có classId từ route, lấy từ user data
+        if (!this.studentClassId) {
+          this.studentClassId = user.student?.classRoomId || user.classRoomId || user.classId || null;
+        }
 
         if (!this.studentId) {
           this.message.error('Không tìm thấy thông tin học sinh');
@@ -84,8 +96,12 @@ export class StudentAssignmentsComponent implements OnInit {
   }
 
   viewDetail(assignment: StudentAssignment): void {
-    // Navigate to detail page
-    this.router.navigate(['/student/assignments', assignment.id]);
+    // Navigate to detail page - check if we're in class context
+    if (this.studentClassId) {
+      this.router.navigate(['/student/classes', this.studentClassId, 'assignments', assignment.id]);
+    } else {
+      this.router.navigate(['/student/assignments', assignment.id]);
+    }
   }
 
   getStatusColor(assignment: StudentAssignment): string {

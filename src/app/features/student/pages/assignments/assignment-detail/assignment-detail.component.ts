@@ -14,6 +14,7 @@ export class AssignmentDetailComponent implements OnInit {
   loading = false;
   submitting = false;
   studentId: number | null = null;
+  classId: number | null = null; // Track if we're in class context
 
   // Submit form
   submissionContent = '';
@@ -27,20 +28,27 @@ export class AssignmentDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Check if we're in class context (route: /classes/:id/assignments/:assignmentId)
+    this.route.params.subscribe(params => {
+      if (params['id']) {
+        this.classId = +params['id'];
+      }
+
+      // Get assignment ID from route
+      const assignmentId = params['assignmentId'] || params['id'];
+      if (assignmentId) {
+        this.loadAssignmentDetail(+assignmentId);
+      } else {
+        this.message.error('Không tìm thấy bài tập');
+        this.goBack();
+      }
+    });
+
     // Get student ID from localStorage
     const userStr = localStorage.getItem('user');
     if (userStr) {
       const user = JSON.parse(userStr);
       this.studentId = user.student?.id || user.id || null;
-    }
-
-    // Get assignment ID from route
-    const assignmentId = this.route.snapshot.paramMap.get('id');
-    if (assignmentId) {
-      this.loadAssignmentDetail(+assignmentId);
-    } else {
-      this.message.error('Không tìm thấy bài tập');
-      this.goBack();
     }
   }
 
@@ -48,34 +56,60 @@ export class AssignmentDetailComponent implements OnInit {
     this.loading = true;
     this.assignmentService.getAssignmentDetail(id).subscribe({
       next: (data) => {
-        // Map AssignmentDetail to StudentAssignment
-        const firstSubmission = data.submissions && data.submissions.length > 0 ? data.submissions[0] : null;
+        // Sử dụng endpoint mới an toàn để lấy submission của học sinh hiện tại
+        this.assignmentService.getMySubmissionForAssignment(id).subscribe({
+          next: (mySubmission) => {
+            this.assignment = {
+              id: data.id,
+              title: data.title,
+              description: data.description,
+              dueDate: data.dueDate,
+              createdAt: data.dueDate, // Fallback to dueDate
+              fileUrl: data.fileUrl,
+              originalFilename: data.originalFilename, // ⭐ Map originalFilename from assignment
+              fileName: data.fileUrl ? this.getFileNameFromUrl(data.fileUrl) : undefined,
+              classRoomId: data.classRoom.id,
+              classRoom: data.classRoom,
+              teacher: data.teacher,
+              submissions: mySubmission ? [mySubmission as any] : [],
+              submitted: !!mySubmission,
+              submittedAt: mySubmission?.submittedAt,
+              submittedFileUrl: mySubmission?.fileUrl,
+              submittedFileName: mySubmission?.originalFilename || (mySubmission?.fileUrl ? this.getFileNameFromUrl(mySubmission.fileUrl) : undefined),
+              submittedContent: mySubmission?.content, // ⭐ Map content from submission
+              grade: mySubmission?.grade !== null && mySubmission?.grade !== undefined ? mySubmission?.grade : undefined,
+              feedback: mySubmission?.feedback || undefined,
+              hasFile: !!data.fileUrl,
+              allowLateSubmission: true,
+              mySubmission: mySubmission as any
+            } as unknown as StudentAssignment;
 
-        this.assignment = {
-          id: data.id,
-          title: data.title,
-          description: data.description,
-          dueDate: data.dueDate,
-          createdAt: data.dueDate, // Fallback to dueDate
-          fileUrl: data.fileUrl,
-          originalFilename: data.originalFilename, // ⭐ Map originalFilename from assignment
-          fileName: data.fileUrl ? this.getFileNameFromUrl(data.fileUrl) : undefined,
-          classRoomId: data.classRoom.id,
-          classRoom: data.classRoom,
-          teacher: data.teacher,
-          submissions: data.submissions || [],
-          submitted: !!firstSubmission,
-          submittedAt: firstSubmission?.submittedAt,
-          submittedFileUrl: firstSubmission?.fileUrl,
-          submittedFileName: firstSubmission?.originalFilename || (firstSubmission?.fileUrl ? this.getFileNameFromUrl(firstSubmission.fileUrl) : undefined),
-          submittedContent: firstSubmission?.content, // ⭐ Map content from submission
-          grade: firstSubmission?.grade !== null ? firstSubmission?.grade : undefined,
-          feedback: firstSubmission?.feedback || undefined,
-          hasFile: !!data.fileUrl,
-          allowLateSubmission: true
-        } as unknown as StudentAssignment;
+            this.loading = false;
+          },
+          error: (err) => {
+            console.error('Failed to load my submission:', err);
+            // Nếu không lấy được submission (chưa nộp), vẫn hiển thị assignment
+            this.assignment = {
+              id: data.id,
+              title: data.title,
+              description: data.description,
+              dueDate: data.dueDate,
+              createdAt: data.dueDate,
+              fileUrl: data.fileUrl,
+              originalFilename: data.originalFilename,
+              fileName: data.fileUrl ? this.getFileNameFromUrl(data.fileUrl) : undefined,
+              classRoomId: data.classRoom.id,
+              classRoom: data.classRoom,
+              teacher: data.teacher,
+              submissions: [],
+              submitted: false,
+              hasFile: !!data.fileUrl,
+              allowLateSubmission: true
+            } as unknown as StudentAssignment;
 
-        this.loading = false;
+            this.loading = false;
+          }
+        });
       },
       error: (err) => {
         console.error('Failed to load assignment:', err);
@@ -194,8 +228,8 @@ export class AssignmentDetailComponent implements OnInit {
       return;
     }
 
-    // Get submission ID from assignment submissions
-    const submission = this.assignment.submissions?.[0];
+    // Get submission ID from mySubmission
+    const submission = this.assignment.mySubmission || this.assignment.submissions?.[0];
     if (submission?.id) {
       this.assignmentService.downloadSubmissionFile(submission.id, this.assignment.submittedFileName);
       this.message.info('Đang tải xuống file đã nộp...');
@@ -250,6 +284,11 @@ export class AssignmentDetailComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/student/assignments']);
+    // If we're in class context, go back to class assignments
+    if (this.classId) {
+      this.router.navigate(['/student/classes', this.classId, 'assignments']);
+    } else {
+      this.router.navigate(['/student/assignments']);
+    }
   }
 }

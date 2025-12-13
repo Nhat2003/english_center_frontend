@@ -23,8 +23,8 @@ export class AdminLayoutComponent implements OnInit {
     { label: 'Quản lý học sinh', icon: 'solution', route: '/admin/students' },
     { label: 'Quản lý khóa học', icon: 'book', route: '/admin/courses' },
     { label: 'Quản lý lớp học', icon: 'team', route: '/admin/classes' },
-    { label: 'Quản lý lịch học', icon: 'calendar', route: '/admin/schedules' },
-    { label: 'Quản lý thanh toán', icon: 'credit-card', route: '/admin/payments' },
+    { label: 'Quản lý ca học', icon: 'calendar', route: '/admin/schedules' },
+    { label: 'Quản lý học phí', icon: 'credit-card', route: '/admin/payments' },
     { label: 'Thống kê', icon: 'bar-chart', route: '/admin/stats' }
   ];
 

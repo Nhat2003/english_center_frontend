@@ -117,4 +117,16 @@ export class CoursesFormComponent implements OnInit {
   onCancel() {
     this.modal.close(false);
   }
+
+  getLevelText(level: string | undefined): string {
+    if (!level) return 'N/A';
+    const levels: { [key: string]: string } = {
+      'BEGINNER': 'Sơ cấp',
+      'INTERMEDIATE': 'Trung cấp',
+      'ADVANCED': 'Nâng cao',
+      'TOEIC': 'TOEIC',
+      'IELTS': 'IELTS'
+    };
+    return levels[level] || level;
+  }
 }

@@ -160,7 +160,7 @@ export class TeachersComponent {
       nzTitle: 'Thông tin giáo viên',
       nzContent: TeachersFormComponent,
       nzFooter: null,
-      nzWidth: 600,
+      nzWidth: 1000,
       nzComponentParams: {
         teacher: { id: teacher.id }, // Chỉ truyền id để component tự load dữ liệu
         mode: 'view'

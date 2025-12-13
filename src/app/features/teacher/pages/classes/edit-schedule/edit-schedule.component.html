@@ -1,0 +1,243 @@
+<div class="reschedule-wrapper">
+  <!-- Header -->
+  <div class="reschedule-header">
+    <div class="header-content">
+      <h1>
+        <span nz-icon nzType="calendar" nzTheme="outline"></span>
+        Đổi lịch học
+      </h1>
+      <p>Chọn buổi học cần thay đổi lịch và nhập thông tin lịch mới</p>
+    </div>
+  </div>
+
+  <!-- Step 1: Select Session -->
+  <div class="step-container" [class.active]="step === 1">
+    <div class="step-header">
+      <div class="step-number">
+        <span [class.completed]="step > 1">1</span>
+      </div>
+      <div class="step-info">
+        <h3>Chọn buổi học</h3>
+        <p>Chọn buổi học bạn muốn đổi lịch</p>
+      </div>
+    </div>
+
+    <div class="step-content" *ngIf="step >= 1">
+      <nz-spin *ngIf="isLoading" nzSimple [nzSize]="'large'"></nz-spin>
+
+      <div *ngIf="!isLoading" class="sessions-grid">
+        <div *ngIf="sessions.length === 0" class="empty-state">
+          <span nz-icon nzType="inbox" nzTheme="outline"></span>
+          <p>Không có buổi học nào</p>
+        </div>
+
+        <div
+          *ngFor="let session of sessions"
+          class="session-card"
+          [class.selected]="selectedSession?.id === session.id"
+          (click)="selectSession(session)"
+        >
+          <div class="session-header">
+            <h4>{{ session.title }}</h4>
+            <span class="session-badge" *ngIf="session.sessionIndex">
+              Buổi {{ session.sessionIndex }}/{{ session.totalSessions }}
+            </span>
+          </div>
+
+          <div class="session-meta">
+            <div class="meta-item">
+              <span nz-icon nzType="calendar" nzTheme="outline"></span>
+              {{ session.date | date: 'dd/MM/yyyy' }}
+            </div>
+            <div class="meta-item">
+              <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
+              {{ session.time }}
+            </div>
+          </div>
+
+          <div class="session-details" *ngIf="session.className || session.roomName">
+            <div class="detail-item">
+              <span nz-icon nzType="team" nzTheme="outline"></span>
+              <span>{{ session.className }}</span>
+            </div>
+            <div class="detail-item">
+              <span nz-icon nzType="home" nzTheme="outline"></span>
+              <span>{{ session.roomName }}</span>
+            </div>
+          </div>
+
+          <div class="session-action" *ngIf="selectedSession?.id === session.id">
+            <span nz-icon nzType="check-circle" nzTheme="fill"></span>
+            Đã chọn
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Edit Details -->
+  <div class="step-container" [class.active]="step === 2">
+    <div class="step-header">
+      <div class="step-number">
+        <span [class.completed]="step > 2">2</span>
+      </div>
+      <div class="step-info">
+        <h3>Nhập lịch mới</h3>
+        <p>Cung cấp thông tin lịch học mới</p>
+      </div>
+    </div>
+
+    <div class="step-content" *ngIf="step >= 2">
+      <!-- Current Session Info -->
+      <div class="current-session-box" *ngIf="selectedSession">
+        <h4>
+          <span nz-icon nzType="info-circle" nzTheme="outline"></span>
+          Buổi học hiện tại
+        </h4>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Buổi học:</span>
+            <span class="info-value">{{ selectedSession.title }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Ngày:</span>
+            <span class="info-value">{{ selectedSession.date | date: 'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Giờ học:</span>
+            <span class="info-value">{{ selectedSession.time }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Lớp học:</span>
+            <span class="info-value">{{ selectedSession.className || '-' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Phòng:</span>
+            <span class="info-value">{{ selectedSession.roomName || '-' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Khóa học:</span>
+            <span class="info-value">{{ selectedSession.courseName || '-' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reschedule Form -->
+      <form nz-form [formGroup]="rescheduleForm" (ngSubmit)="confirmChange()">
+        <div class="form-section">
+          <h4>
+            <span nz-icon nzType="calendar" nzTheme="outline"></span>
+            Lịch mới
+          </h4>
+
+          <!-- Date and Time -->
+          <div class="form-grid">
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="newDate">Ngày mới</nz-form-label>
+              <nz-form-control nzErrorTip="Vui lòng chọn ngày">
+                <nz-date-picker
+                  id="newDate"
+                  formControlName="newDate"
+                  nzPlaceHolder="Chọn ngày mới"
+                  nzFormat="dd/MM/yyyy"
+                  style="width: 100%;"
+                ></nz-date-picker>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="newStartTime">Giờ bắt đầu</nz-form-label>
+              <nz-form-control nzErrorTip="Vui lòng nhập giờ">
+                <nz-time-picker
+                  id="newStartTime"
+                  formControlName="newStartTime"
+                  nzPlaceHolder="HH:mm"
+                  nzFormat="HH:mm"
+                  style="width: 100%;"
+                ></nz-time-picker>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="newEndTime">Giờ kết thúc</nz-form-label>
+              <nz-form-control nzErrorTip="Vui lòng nhập giờ">
+                <nz-time-picker
+                  id="newEndTime"
+                  formControlName="newEndTime"
+                  nzPlaceHolder="HH:mm"
+                  nzFormat="HH:mm"
+                  style="width: 100%;"
+                ></nz-time-picker>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+
+        <!-- Reason -->
+        <div class="form-section">
+          <h4>
+            <span nz-icon nzType="message" nzTheme="outline"></span>
+            Lý do thay đổi
+          </h4>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="reason">Lý do</nz-form-label>
+            <nz-form-control nzErrorTip="Vui lòng nhập lý do">
+              <textarea
+                nz-input
+                id="reason"
+                formControlName="reason"
+                placeholder="Nhập lý do thay đổi lịch học..."
+                [nzAutosize]="{ minRows: 3, maxRows: 5 }"
+              ></textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <!-- Options -->
+        <div class="form-section">
+          <h4>
+            <span nz-icon nzType="setting" nzTheme="outline"></span>
+            Tuỳ chọn
+          </h4>
+          <nz-form-item>
+            <nz-form-control>
+              <label nz-checkbox formControlName="notifyStudents" [nzChecked]="true">
+                <span>Thông báo cho học viên về thay đổi này</span>
+              </label>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <!-- Actions -->
+        <div class="form-actions">
+          <button nz-button nzType="default" type="button" (click)="goBack()" class="btn-secondary">
+            <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
+            Quay lại
+          </button>
+          <button
+            nz-button
+            nzType="primary"
+            type="submit"
+            [nzLoading]="isSubmitting"
+            [disabled]="rescheduleForm.invalid || isSubmitting"
+            class="btn-primary"
+          >
+            <span nz-icon nzType="check" nzTheme="outline"></span>
+            Xác nhận đổi lịch
+          </button>
+        </div>
+      </form>
+
+      <!-- Success Message -->
+      <nz-alert
+        *ngIf="success"
+        nzType="success"
+        nzMessage="Đổi lịch thành công!"
+        nzDescription="Lịch học đã được cập nhật. Học viên sẽ nhận được thông báo về thay đổi này."
+        nzShowIcon
+        nzCloseable
+        class="success-alert"
+      ></nz-alert>
+    </div>
+  </div>
+</div>

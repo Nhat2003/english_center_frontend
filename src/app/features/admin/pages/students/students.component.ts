@@ -162,7 +162,7 @@ export class StudentsComponent implements OnInit {
       nzTitle: 'Thông tin học viên',
       nzContent: StudentsFormComponent,
       nzFooter: null,
-      nzWidth: 600,
+      nzWidth: 1000,
       nzComponentParams: {
         student: { id: student.id }, // Chỉ truyền id để component tự load dữ liệu
         mode: 'view'

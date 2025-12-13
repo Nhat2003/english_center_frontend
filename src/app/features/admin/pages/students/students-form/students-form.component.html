@@ -1,7 +1,108 @@
+<!-- View Mode - Card Display -->
+<div *ngIf="isViewMode" class="student-detail-view">
+  <nz-spin [nzSpinning]="loading" nzTip="Đang tải...">
+    <!-- Header Card -->
+    <nz-card class="student-header-card">
+      <div class="student-header">
+        <div class="student-avatar">
+          <nz-avatar [nzSize]="80" [nzIcon]="'user'" [nzText]="getAvatarText()"></nz-avatar>
+        </div>
+        <div class="student-info-header">
+          <h2 class="student-name">{{ studentData?.fullName || 'N/A' }}</h2>
+          <p class="student-class">
+            <i nz-icon nzType="book" nzTheme="outline"></i>
+            {{ studentData?.className || 'Chưa có lớp' }}
+          </p>
+          <div class="student-meta">
+            <nz-tag nzColor="blue">
+              <i nz-icon nzType="idcard" nzTheme="outline"></i>
+              ID: {{ studentData?.id }}
+            </nz-tag>
+            <nz-tag nzColor="green">
+              <i nz-icon nzType="user" nzTheme="outline"></i>
+              Học viên
+            </nz-tag>
+          </div>
+        </div>
+      </div>
+    </nz-card>
 
+    <!-- Two Column Layout for Cards -->
+    <div class="cards-grid">
+      <!-- Personal Information Card -->
+      <nz-card nzTitle="Thông tin cá nhân" class="info-section-card">
+        <div class="info-grid-single">
+          <div class="info-item">
+            <div class="info-label">
+              <i nz-icon nzType="mail" nzTheme="outline"></i>
+              Email
+            </div>
+            <div class="info-value">{{ studentData?.email || 'N/A' }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <i nz-icon nzType="phone" nzTheme="outline"></i>
+              Số điện thoại
+            </div>
+            <div class="info-value">{{ studentData?.phone || 'N/A' }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <i nz-icon nzType="calendar" nzTheme="outline"></i>
+              Ngày sinh
+            </div>
+            <div class="info-value">{{ (studentData?.dob | date:'dd/MM/yyyy') || 'N/A' }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <i nz-icon nzType="man" nzTheme="outline"></i>
+              Giới tính
+            </div>
+            <div class="info-value">{{ getGenderText(studentData?.gender) }}</div>
+          </div>
+          <div class="info-item full-width">
+            <div class="info-label">
+              <i nz-icon nzType="home" nzTheme="outline"></i>
+              Địa chỉ
+            </div>
+            <div class="info-value">{{ studentData?.address || 'N/A' }}</div>
+          </div>
+        </div>
+      </nz-card>
 
+      <!-- Study Information Card -->
+      <nz-card nzTitle="Thông tin học tập" class="info-section-card">
+        <div class="info-grid-single">
+          <div class="info-item">
+            <div class="info-label">
+              <i nz-icon nzType="book" nzTheme="outline"></i>
+              Lớp học
+            </div>
+            <div class="info-value">{{ studentData?.className || 'Chưa có lớp' }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <i nz-icon nzType="calendar-check" nzTheme="outline"></i>
+              Ngày vào trung tâm
+            </div>
+            <div class="info-value">{{ (studentData?.joinedAt | date:'dd/MM/yyyy') || 'N/A' }}</div>
+          </div>
+        </div>
+      </nz-card>
+    </div>
 
-<div class="card shadow-sm p-4" style="border-radius: 12px; max-width: 650px; margin: 0 auto; background: #fff;">
+    <!-- Action Buttons -->
+    <div class="action-footer">
+      <button nz-button nzType="default" (click)="onCancel()" type="button">
+        <i nz-icon nzType="close" nzTheme="outline"></i>
+        Đóng
+      </button>
+    </div>
+  </nz-spin>
+</div>
+
+<!-- Edit/Create Mode - Form Display -->
+<div *ngIf="!isViewMode" class="card shadow-sm p-4" style="border-radius: 12px; max-width: 650px; margin: 0 auto; background: #fff;">
   <form nz-form [formGroup]="form" (ngSubmit)="onSubmit()" nzLayout="vertical">
     <div class="form-header mb-4 d-flex align-items-center">
       <div class="avatar bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width:48px;height:48px;border-radius:50%;font-size:24px;">

@@ -29,6 +29,15 @@ export class StudentPaymentComponent implements OnInit {
   paidAmount: number | null = null;
   dueDate: string | null = null;
 
+  get isOverdue(): boolean {
+    if (!this.dueDate || this.paid) return false;
+    const due = new Date(this.dueDate);
+    const now = new Date();
+    // So sánh đến hết ngày dueDate
+    due.setHours(23,59,59,999);
+    return now > due;
+  }
+
   constructor(
     private authService: AuthService,
     private paymentService: PaymentService,

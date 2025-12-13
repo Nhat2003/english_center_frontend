@@ -28,6 +28,7 @@ export const STUDENT_ROUTES: Routes = [
       { path: 'classes', component: StudentClassesComponent },
       { path: 'classes/:id/overview', component: StudentClassOverviewComponent },
       { path: 'classes/:id/assignments', component: StudentAssignmentsComponent },
+      { path: 'classes/:id/assignments/:assignmentId', component: AssignmentDetailComponent },
       { path: 'classes/:id/grades', component: GradesComponent },
       { path: 'classes/:id/materials', component: StudentDocumentsComponent },
       { path: 'classes/:id/attendance', component: ClassAttendanceComponent },

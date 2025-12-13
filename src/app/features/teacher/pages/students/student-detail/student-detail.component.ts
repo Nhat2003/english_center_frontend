@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { StudentService } from '../../../../../core/services/student.service';
-import { AssignmentService, SubmissionHistoryResponse } from '../../../../../core/services/assignment.service';
+import { AssignmentService, SubmissionHistoryResponse, GroupedSubmissionHistory } from '../../../../../core/services/assignment.service';
 import { StudentDetail } from '../../../../../core/models/student-detail.model';
 
 interface GradeStatistics {
@@ -78,12 +78,18 @@ export class StudentDetailComponent implements OnInit {
 
   loadGradeHistory(): void {
     this.loadingGrades = true;
-    // Sử dụng API: GET /submissions/student/{studentId}/history
-    this.assignmentService.getStudentSubmissionHistory(this.studentId).subscribe({
-      next: (allSubmissions) => {
-        // Lọc ra các submission đã được chấm điểm
-        this.submissions = allSubmissions.filter(s =>
-          s.grade !== null && s.grade !== undefined
+    // Sử dụng API: GET /submissions/student/{studentId}/history?gradedOnly=true
+    this.assignmentService.getStudentGradeHistory(this.studentId).subscribe({
+      next: (groupedHistory: GroupedSubmissionHistory[]) => {
+        // Flatten grouped submissions into a single array
+        this.submissions = [];
+        groupedHistory.forEach(group => {
+          this.submissions.push(...group.submissions);
+        });
+
+        // Sort by submitted date (newest first)
+        this.submissions.sort((a, b) =>
+          new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
         );
 
         this.calculateStatistics();
@@ -216,6 +222,6 @@ export class StudentDetailComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/teacher/classes']);
+    window.history.back();
   }
 }

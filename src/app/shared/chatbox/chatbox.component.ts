@@ -546,52 +546,49 @@ export class ChatboxComponent implements OnInit, OnDestroy {
     }
 
     this.searchTimeout = setTimeout(() => {
-      const searchTerm = this.searchText.toLowerCase();
-      console.log('🔍 Searching:', searchTerm);
-
-      // If in class view, search within classes
+      const searchTerm = this.searchText.trim();
+      // Nếu đang ở chế độ xem lớp, tìm trong danh sách học sinh các lớp
       if (this.showClassView) {
-        // Search in all students from all classes
         const allStudentsFromClasses: UserForChat[] = [];
         this.myClasses.forEach(classItem => {
           classItem.students.forEach(student => {
-            // Add class name to student for display
             allStudentsFromClasses.push({
               ...student,
               className: classItem.name
             });
           });
         });
-
-        // Filter by name or class name
         this.searchResults = allStudentsFromClasses.filter(student =>
-          student.fullName.toLowerCase().includes(searchTerm) ||
-          (student.className && student.className.toLowerCase().includes(searchTerm))
+          student.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (student.className && student.className.toLowerCase().includes(searchTerm.toLowerCase()))
         );
       } else {
-        // For ADMIN: use /users/search API for dynamic search
-        // For others: search in allUsers (contacts)
-        if (this.currentUserRole === 'ADMIN') {
-          this.searchUsersFromAPI(searchTerm);
-        } else {
-          // Regular user search for conversation view
-          this.searchResults = this.allUsers.filter(user =>
-            user.fullName.toLowerCase().includes(searchTerm) &&
-            user.id !== this.currentUserId // Exclude current user
-          );
-        }
+        // Luôn dùng API tìm kiếm cho mọi vai trò
+        this.userService.searchUsers(searchTerm).subscribe({
+          next: (users) => {
+            this.searchResults = users
+              .filter(u => u.id !== this.currentUserId)
+              .map(u => ({
+                id: u.id,
+                fullName: u.fullName || u.username,
+                role: u.role,
+                avatar: u.avatar
+              }));
+          },
+          error: () => {
+            this.searchResults = [];
+          }
+        });
       }
     }, 300); // Debounce 300ms
   }
 
-  searchUsersFromAPI(query: string) {
-    const url = `${this.baseUrl}/users/search?q=${encodeURIComponent(query)}`;
-
-    this.http.get<any[]>(url).subscribe({
+  searchUsersFromAPI(query: string, classId?: number, role?: string) {
+    this.userService.searchUsers(query, classId, role).subscribe({
       next: (users) => {
         console.log('✅ Search results:', users);
         this.searchResults = users
-          .filter(u => u.id !== this.currentUserId) // Exclude current user
+          .filter(u => u.id !== this.currentUserId)
           .map(u => ({
             id: u.id,
             fullName: u.fullName || u.username,
@@ -606,26 +603,39 @@ export class ChatboxComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadAllUsers(searchQuery?: string) {
-    const url = searchQuery
-      ? `${this.baseUrl}/users/search?q=${encodeURIComponent(searchQuery)}`
-      : `${this.baseUrl}/chat/contacts`;
-
-    this.http.get<any[]>(url).subscribe({
-      next: (users) => {
-        console.log('✅ Users loaded:', users);
-        this.allUsers = users.map(u => ({
-          id: u.id,
-          fullName: u.fullName || u.username,
-          avatar: u.avatar,
-          role: u.role || 'USER'
-        }));
-      },
-      error: (err) => {
-        console.error('❌ Load users error:', err);
-        this.allUsers = [];
-      }
-    });
+  loadAllUsers(searchQuery?: string, classId?: number, role?: string) {
+    if (searchQuery || classId || role) {
+      this.userService.searchUsers(searchQuery || '', classId, role).subscribe({
+        next: (users) => {
+          console.log('✅ Users loaded:', users);
+          this.allUsers = users.map(u => ({
+            id: u.id,
+            fullName: u.fullName || u.username,
+            avatar: u.avatar,
+            role: u.role || 'USER'
+          }));
+        },
+        error: (err) => {
+          console.error('❌ Load users error:', err);
+          this.allUsers = [];
+        }
+      });
+    } else {
+      // Fallback: load contacts if no search/filter
+      this.http.get<any[]>(`${this.baseUrl}/chat/contacts`).subscribe({
+        next: (users) => {
+          this.allUsers = users.map(u => ({
+            id: u.id,
+            fullName: u.fullName || u.username,
+            avatar: u.avatar,
+            role: u.role || 'USER'
+          }));
+        },
+        error: (err) => {
+          this.allUsers = [];
+        }
+      });
+    }
   }
 
   startConversationWithUser(user: UserForChat) {

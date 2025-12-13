@@ -237,4 +237,19 @@ export class StudentsFormComponent implements OnInit {
     const user = this.availableUsers.find(u => u.id === userId);
     return user ? (user.fullName || user.username || '') : '';
   }
+
+  getAvatarText(): string {
+    const name = this.studentData?.fullName;
+    if (!name) return 'S';
+    const parts = name.split(' ');
+    if (parts.length >= 2) {
+      return parts[0].charAt(0).toUpperCase() + parts[parts.length - 1].charAt(0).toUpperCase();
+    }
+    return name.charAt(0).toUpperCase();
+  }
+
+  getGenderText(gender: string | undefined): string {
+    if (!gender) return 'N/A';
+    return gender === 'Male' ? 'Nam' : gender === 'Female' ? 'Nữ' : 'N/A';
+  }
 }

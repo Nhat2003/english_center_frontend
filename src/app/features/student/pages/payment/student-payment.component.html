@@ -124,12 +124,17 @@
             <i nz-icon nzType="clock-circle" nzTheme="outline"></i>
             <span>Hạn đóng: <strong>{{ dueDate | date:'dd/MM/yyyy' }}</strong></span>
           </div>
-          <button class="payment-button" (click)="pay()" [disabled]="loading || fee === null || !amount || amount <= 0">
+          <button class="payment-button" (click)="pay()" [disabled]="loading || fee === null || !amount || amount <= 0 || isOverdue">
             <i *ngIf="!loading" nz-icon nzType="check-circle" nzTheme="outline"></i>
             <span class="spinner" *ngIf="loading"></span>
-            <span>{{ loading ? 'Đang xử lý...' : 'Thanh toán bằng VNPAY' }}</span>
+            <span>
+              {{ isOverdue ? 'Đã quá hạn thanh toán' : (loading ? 'Đang xử lý...' : 'Thanh toán bằng VNPAY') }}
+            </span>
           </button>
-          <div class="payment-method-info">
+          <div *ngIf="isOverdue" class="overdue-warning" style="color: #ff4d4f; margin-top: 8px; font-weight: 500;">
+            Đã quá hạn thanh toán học phí, vui lòng liên hệ quản trị viên
+          </div>
+          <div class="payment-method-info" *ngIf="!isOverdue">
             <i nz-icon nzType="info-circle" nzTheme="outline"></i>
             <span>Bạn sẽ được chuyển đến cổng thanh toán VNPAY an toàn</span>
           </div>
