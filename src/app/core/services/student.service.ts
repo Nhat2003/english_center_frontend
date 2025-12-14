@@ -59,19 +59,14 @@ export class StudentService {
 	}
 
 	private handleError(error: HttpErrorResponse) {
-		console.error('Student API Error:', error);
-		console.error('Error status:', error.status);
-		console.error('Error message:', error.message);
-		console.error('Error body:', error.error);
-
 		if (error.status === 401) {
-			console.error('Unauthorized - Token may be expired');
+			// Unauthorized - Token may be expired
 		} else if (error.status === 400) {
-			console.error('Bad Request - Check parameters or request format');
+			// Bad Request - Check parameters or request format
 		} else if (error.status === 403) {
-			console.error('Forbidden - Insufficient permissions');
+			// Forbidden - Insufficient permissions
 		} else if (error.status === 404) {
-			console.error('Not Found - API endpoint may not exist');
+			// Not Found - API endpoint may not exist
 		}
 
 		return throwError(() => error);
@@ -96,7 +91,6 @@ export class StudentService {
 
 	// Import students from Excel data (JSON array)
 	importStudents(students: any[]): Observable<any> {
-		console.log('Sending JSON import request with', students.length, 'students');
 		return this.http.post<any>(`${this.apiUrl}/import`, students)
 			.pipe(
 				catchError(this.handleError)
@@ -108,17 +102,12 @@ export class StudentService {
 		const formData = new FormData();
 		formData.append('file', file, file.name);
 
-		console.log('Uploading file:', file.name, 'Size:', file.size, 'Type:', file.type);
-
 		// Gửi FormData - HttpClient sẽ tự động set Content-Type: multipart/form-data
 		return this.http.post<any>(`${this.apiUrl}/import`, formData, {
 			reportProgress: true
 		})
 			.pipe(
-				catchError(error => {
-					console.error('File upload error:', error);
-					return throwError(() => error);
-				})
+				catchError(this.handleError)
 			);
 	}
 

@@ -69,15 +69,10 @@ export class ImportStudentsComponent {
       // Đọc file Excel
       this.previewData = await this.excelService.readExcelFile(this.selectedFile);
 
-      console.log('Preview data:', this.previewData);
-
       // Validate dữ liệu
       const validation = this.excelService.validateStudentData(this.previewData);
       this.validData = validation.valid;
       this.errors = validation.errors;
-
-      console.log('Valid data:', this.validData);
-      console.log('Errors:', this.errors);
 
       if (this.validData.length === 0) {
         this.message.error('Không có dữ liệu hợp lệ để import');

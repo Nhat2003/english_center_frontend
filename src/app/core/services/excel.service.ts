@@ -50,8 +50,6 @@ export class ExcelService {
           // Lấy header (row đầu tiên) - các cột phải theo thứ tự chính xác
           const headers = (jsonData[0] as string[]).map(h => h ? h.trim() : '');
 
-          console.log('Excel headers found:', headers);
-
           // Chuyển đổi data từ row 2 trở đi
           const students: ExcelStudent[] = [];
 
