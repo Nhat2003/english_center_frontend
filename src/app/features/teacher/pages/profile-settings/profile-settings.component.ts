@@ -44,7 +44,8 @@ export class ProfileSettingsComponent implements OnInit {
       email: ['', [Validators.email]],
       dob: [null],
       address: [''],
-      speciality: ['']
+      speciality: [''],
+      gender: ['', [Validators.required]]
     });
   }
 
@@ -72,7 +73,8 @@ export class ProfileSettingsComponent implements OnInit {
           email: profile.email,
           dob: profile.dob ? new Date(profile.dob) : null,
           address: profile.address,
-          speciality: profile.speciality
+          speciality: profile.speciality,
+          gender: profile.gender
         });
         this.loading = false;
       },
@@ -149,7 +151,8 @@ export class ProfileSettingsComponent implements OnInit {
         email: this.currentProfile.email,
         dob: this.currentProfile.dob ? new Date(this.currentProfile.dob) : null,
         address: this.currentProfile.address,
-        speciality: this.currentProfile.speciality
+        speciality: this.currentProfile.speciality,
+        gender: this.currentProfile.gender
       });
       this.message.info('Đã khôi phục thông tin ban đầu');
     }

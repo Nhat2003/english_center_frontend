@@ -15,9 +15,27 @@
         <nz-alert
           nzType="info"
           nzMessage="Hướng dẫn import file Excel"
-          nzDescription="File Excel cần có các cột: Họ tên, Email, Ngày sinh, Giới tính, Số điện thoại, Địa chỉ, Lớp học"
+          nzDescription="File Excel cần có các cột theo thứ tự: Họ và tên (bắt buộc), Email, Số điện thoại, Địa chỉ, Ngày sinh, Giới tính, Ngày vào trung tâm. Chỉ cột 'Họ và tên' là bắt buộc."
           nzShowIcon="true">
         </nz-alert>
+      </div>
+
+      <!-- Import Mode Selection -->
+      <div class="mode-selection" style="margin: 16px 0;">
+        <nz-radio-group [(ngModel)]="importMode">
+          <label nz-radio nzValue="direct">Import trực tiếp (nhanh hơn)</label>
+          <label nz-radio nzValue="preview">Xem trước dữ liệu</label>
+        </nz-radio-group>
+        <div style="margin-top: 8px; color: #666; font-size: 12px;">
+          <span *ngIf="importMode === 'direct'">
+            <i nz-icon nzType="thunderbolt" nzTheme="outline"></i>
+            File sẽ được upload trực tiếp lên server để xử lý
+          </span>
+          <span *ngIf="importMode === 'preview'">
+            <i nz-icon nzType="eye" nzTheme="outline"></i>
+            Xem trước và kiểm tra dữ liệu trước khi import
+          </span>
+        </div>
       </div>
 
       <div class="file-upload">
@@ -77,28 +95,28 @@
         <nz-table
           [nzData]="validData"
           [nzSize]="'small'"
-          [nzPageSize]="5"
-          [nzScroll]="{ x: '800px', y: '300px' }">
+          [nzShowPagination]="false"
+          [nzScroll]="{ x: '1200px', y: '500px' }">
           <thead>
             <tr>
-              <th>Họ tên</th>
-              <th>Email</th>
-              <th>Ngày sinh</th>
-              <th>Giới tính</th>
-              <th>SĐT</th>
-              <th>Địa chỉ</th>
-              <th>Lớp</th>
+              <th nzWidth="180px">Họ và tên</th>
+              <th nzWidth="200px">Email</th>
+              <th nzWidth="120px">Số điện thoại</th>
+              <th nzWidth="200px">Địa chỉ</th>
+              <th nzWidth="120px">Ngày sinh</th>
+              <th nzWidth="100px">Giới tính</th>
+              <th nzWidth="150px">Ngày vào trung tâm</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let student of validData">
               <td>{{ student.fullName }}</td>
               <td>{{ student.email }}</td>
-              <td>{{ student.dob | date:'dd/MM/yyyy' }}</td>
-              <td>{{ student.gender === 'Male' ? 'Nam' : 'Nữ' }}</td>
               <td>{{ student.phone }}</td>
               <td>{{ student.address }}</td>
-              <td>{{ student.className }}</td>
+              <td>{{ student.dob | date:'dd/MM/yyyy' }}</td>
+              <td>{{ student.gender === 'Male' ? 'Nam' : (student.gender === 'Female' ? 'Nữ' : student.gender) }}</td>
+              <td>{{ student.joinedAt | date:'dd/MM/yyyy' }}</td>
             </tr>
           </tbody>
         </nz-table>

@@ -94,11 +94,31 @@ export class StudentService {
 		return this.http.put<Student>(`${this.apiUrl}/${id}`, student);
 	}
 
-	// Import students from Excel data
-	importStudents(students: any[]): Observable<{successCount: number, errors: string[]}> {
-		return this.http.post<{successCount: number, errors: string[]}>(`${this.apiUrl}/import`, students)
+	// Import students from Excel data (JSON array)
+	importStudents(students: any[]): Observable<any> {
+		console.log('Sending JSON import request with', students.length, 'students');
+		return this.http.post<any>(`${this.apiUrl}/import`, students)
 			.pipe(
 				catchError(this.handleError)
+			);
+	}
+
+	// Import students from Excel file (multipart/form-data)
+	importStudentsFromFile(file: File): Observable<any> {
+		const formData = new FormData();
+		formData.append('file', file, file.name);
+
+		console.log('Uploading file:', file.name, 'Size:', file.size, 'Type:', file.type);
+
+		// Gửi FormData - HttpClient sẽ tự động set Content-Type: multipart/form-data
+		return this.http.post<any>(`${this.apiUrl}/import`, formData, {
+			reportProgress: true
+		})
+			.pipe(
+				catchError(error => {
+					console.error('File upload error:', error);
+					return throwError(() => error);
+				})
 			);
 	}
 

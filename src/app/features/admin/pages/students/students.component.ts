@@ -180,7 +180,7 @@ export class StudentsComponent implements OnInit {
       nzTitle: 'Import danh sách học viên từ Excel',
       nzContent: ImportStudentsComponent,
       nzFooter: null,
-      nzWidth: 800,
+      nzWidth: 1400,
       nzBodyStyle: { padding: '0' }
     });
 

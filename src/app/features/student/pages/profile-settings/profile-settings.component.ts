@@ -43,7 +43,8 @@ export class ProfileSettingsComponent implements OnInit {
       phone: ['', [Validators.pattern(/^[0-9]{10}$/)]],
       email: ['', [Validators.email]],
       address: [''],
-      dob: [null]
+      dob: [null],
+      gender: ['', [Validators.required]]
     });
   }
 
@@ -70,7 +71,8 @@ export class ProfileSettingsComponent implements OnInit {
           phone: profile.phone,
           email: profile.email,
           address: profile.address,
-          dob: profile.dob ? new Date(profile.dob) : null
+          dob: profile.dob ? new Date(profile.dob) : null,
+          gender: profile.gender
         });
         this.loading = false;
       },
@@ -146,7 +148,8 @@ export class ProfileSettingsComponent implements OnInit {
         phone: this.currentProfile.phone,
         email: this.currentProfile.email,
         address: this.currentProfile.address,
-        dob: this.currentProfile.dob ? new Date(this.currentProfile.dob) : null
+        dob: this.currentProfile.dob ? new Date(this.currentProfile.dob) : null,
+        gender: this.currentProfile.gender
       });
       this.message.info('Đã khôi phục thông tin ban đầu');
     }
