@@ -125,75 +125,7 @@
     </nz-card>
 
     <!-- Top Courses -->
-    <nz-card class="chart-card">
-      <div class="card-header">
-        <h3><i nz-icon nzType="trophy" nzTheme="outline"></i> Top khóa học phổ biến</h3>
-      </div>
-      <div class="chart-content">
-        <div class="top-list">
-          <div class="top-item" *ngFor="let course of topCourses; let i = index">
-            <div class="rank">{{ i + 1 }}</div>
-            <div class="info">
-              <p class="name">{{ course.name }}</p>
-              <div class="progress-bar">
-                <div class="progress-fill" [style.width.%]="course.percentage"></div>
-              </div>
-              <div class="details">
-                <span>{{ course.studentCount }} học sinh</span>
-                <span>{{ course.classCount }} lớp</span>
-              </div>
-            </div>
-          </div>
-          <div *ngIf="topCourses.length === 0" class="empty-state">
-            <nz-empty nzNotFoundContent="Chưa có dữ liệu khóa học"></nz-empty>
-          </div>
-        </div>
-      </div>
-    </nz-card>
-  </div>
-
-  <!-- Teacher and Upcoming Classes Section -->
-  <div class="bottom-section">
-    <!-- Top Teachers -->
-    <nz-card class="info-card">
-      <div class="card-header">
-        <h3><i nz-icon nzType="star" nzTheme="outline"></i> Giáo viên xuất sắc</h3>
-      </div>
-      <div class="card-content">
-        <nz-table
-          [nzData]="topTeachers"
-          [nzShowPagination]="false"
-          [nzSize]="'small'"
-          *ngIf="topTeachers.length > 0">
-          <thead>
-            <tr>
-              <th>Giáo viên</th>
-              <th nzAlign="center">Số lớp</th>
-              <th nzAlign="center">Học sinh</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let teacher of topTeachers">
-              <td>
-                <strong>{{ teacher.name }}</strong>
-              </td>
-              <td nzAlign="center">
-                <nz-tag nzColor="blue">{{ teacher.classCount }}</nz-tag>
-              </td>
-              <td nzAlign="center">
-                <nz-tag nzColor="green">{{ teacher.studentCount }}</nz-tag>
-              </td>
-            </tr>
-          </tbody>
-        </nz-table>
-        <div *ngIf="topTeachers.length === 0" class="empty-state">
-          <nz-empty nzNotFoundContent="Chưa có dữ liệu giáo viên"></nz-empty>
-        </div>
-      </div>
-    </nz-card>
-
-    <!-- Upcoming Classes -->
-    <nz-card class="info-card">
+       <nz-card class="info-card">
       <div class="card-header">
         <h3><i nz-icon nzType="calendar" nzTheme="outline"></i> Lớp học sắp khai giảng</h3>
       </div>
@@ -222,6 +154,105 @@
         </div>
         <div *ngIf="upcomingClasses.length === 0" class="empty-state">
           <nz-empty nzNotFoundContent="Không có lớp học sắp khai giảng"></nz-empty>
+        </div>
+      </div>
+    </nz-card>
+
+  </div>
+
+  <!-- Teacher and Upcoming Classes Section -->
+  <div class="bottom-section">
+    <!-- Top Teachers -->
+    <nz-card class="info-card teacher-card">
+      <div class="card-header">
+        <h3>
+          <i nz-icon nzType="star" nzTheme="twotone" [nzTwotoneColor]="'#52c41a'"></i>
+          Giáo viên xuất sắc
+        </h3>
+        <span class="header-badge success">Top 4</span>
+      </div>
+      <div class="card-content">
+        <div class="teacher-list" *ngIf="topTeachers.length > 0">
+          <div class="teacher-item" *ngFor="let teacher of topTeachers; let i = index">
+            <div class="teacher-avatar" [class.top-teacher]="i === 0">
+              <div class="avatar-circle" [class.gold-border]="i === 0" [class.silver-border]="i === 1" [class.bronze-border]="i === 2">
+                <i nz-icon nzType="user" nzTheme="outline"></i>
+              </div>
+              <div class="rank-badge-small" *ngIf="i < 3">
+                <i nz-icon nzType="crown" nzTheme="filled"
+                   [style.color]="i === 0 ? '#ffd700' : i === 1 ? '#c0c0c0' : '#cd7f32'"></i>
+              </div>
+            </div>
+            <div class="teacher-info">
+              <h4 class="teacher-name">{{ teacher.name }}</h4>
+              <div class="teacher-stats">
+                <div class="stat-badge class-stat">
+                  <i nz-icon nzType="schedule" nzTheme="outline"></i>
+                  <span>{{ teacher.classCount }} lớp</span>
+                </div>
+                <div class="stat-badge student-stat">
+                  <i nz-icon nzType="team" nzTheme="outline"></i>
+                  <span>{{ teacher.studentCount }} HS</span>
+                </div>
+              </div>
+            </div>
+            <div class="teacher-rank">
+              <div class="rank-circle" [class.gold]="i === 0" [class.silver]="i === 1" [class.bronze]="i === 2">
+                #{{ i + 1 }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="topTeachers.length === 0" class="empty-state">
+          <nz-empty nzNotFoundContent="Chưa có dữ liệu giáo viên"></nz-empty>
+        </div>
+      </div>
+    </nz-card>
+
+    <!-- Upcoming Classes -->
+  <nz-card class="chart-card course-card">
+      <div class="card-header">
+        <h3>
+          <i nz-icon nzType="trophy" nzTheme="twotone" [nzTwotoneColor]="'#faad14'"></i>
+          Top khóa học phổ biến
+        </h3>
+        <span class="header-badge">Top 3</span>
+      </div>
+      <div class="chart-content">
+        <div class="top-list">
+          <div class="top-item course-item" *ngFor="let course of topCourses; let i = index">
+            <div class="rank-badge" [class.gold]="i === 0" [class.silver]="i === 1" [class.bronze]="i === 2">
+              <span class="rank-number">{{ i + 1 }}</span>
+              <i nz-icon [nzType]="i < 3 ? 'trophy' : 'star'" nzTheme="filled"></i>
+            </div>
+            <div class="info">
+              <div class="course-header">
+                <p class="name">{{ course.name }}</p>
+                <span class="percentage-badge">{{ course.percentage }}%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill"
+                     [style.width.%]="course.percentage"
+                     [class.gold-progress]="i === 0"
+                     [class.silver-progress]="i === 1"
+                     [class.bronze-progress]="i === 2">
+                </div>
+              </div>
+              <div class="details">
+                <span class="detail-item">
+                  <i nz-icon nzType="team" nzTheme="outline"></i>
+                  {{ course.studentCount }} học sinh
+                </span>
+                <span class="detail-item">
+                  <i nz-icon nzType="schedule" nzTheme="outline"></i>
+                  {{ course.classCount }} lớp
+                </span>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="topCourses.length === 0" class="empty-state">
+            <nz-empty nzNotFoundContent="Chưa có dữ liệu khóa học"></nz-empty>
+          </div>
         </div>
       </div>
     </nz-card>

@@ -114,7 +114,6 @@ export class TeachersFormComponent implements OnInit {
         // Filter thêm isActive = true để đảm bảo
         this.availableUsers = users.filter(user => user.isActive === true);
         this.filteredUsers = [...this.availableUsers];
-        console.log('Available active users for teacher profile (API):', this.availableUsers);
       },
       error: (error) => {
         // Fallback: Lấy tất cả users theo role rồi filter
@@ -123,7 +122,6 @@ export class TeachersFormComponent implements OnInit {
             // Chỉ lấy users có isActive = true
             this.availableUsers = users.filter(user => user.isActive === true);
             this.filteredUsers = [...this.availableUsers];
-            console.log('Available active users for teacher profile (filtered):', this.availableUsers);
           },
           error: (err) => {
             console.error('Error loading users with role TEACHER:', err);

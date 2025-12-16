@@ -194,4 +194,15 @@ export class StudentsComponent implements OnInit {
       }
     });
   }
+
+  /* ======================
+     HELPERS
+  ====================== */
+
+  genderLabel(gender?: string): string {
+    const v = (gender || '').toLowerCase();
+    if (v === 'male') return 'Nam';
+    if (v === 'female') return 'Nữ';
+    return gender || '';
+  }
 }

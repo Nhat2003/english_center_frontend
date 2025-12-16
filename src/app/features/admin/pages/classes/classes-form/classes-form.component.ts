@@ -540,8 +540,21 @@ export class ClassesFormComponent implements OnInit {
           // Handle different error codes
           if (error.status === 403) {
             this.message.error('Bạn không có quyền thực hiện thao tác này. Vui lòng kiểm tra lại token hoặc quyền truy cập.');
+          } else if (error.status === 409) {
+            // Conflict error - schedule conflict
+            this.message.error('Xung đột lịch');
           } else if (error.status === 400) {
-            this.tryAlternativeCreate(rawFormData, action);
+            // Check if error message indicates schedule conflict
+            const errorMsg = error.error?.message || error.error?.error || error.error || '';
+            if (typeof errorMsg === 'string' &&
+                (errorMsg.toLowerCase().includes('conflict') ||
+                 errorMsg.toLowerCase().includes('xung đột') ||
+                 errorMsg.toLowerCase().includes('schedule') ||
+                 errorMsg.toLowerCase().includes('lịch'))) {
+              this.message.error('Xung đột lịch');
+            } else {
+              this.tryAlternativeCreate(rawFormData, action);
+            }
           } else {
             this.handleError(error, action);
           }
@@ -553,14 +566,44 @@ export class ClassesFormComponent implements OnInit {
   handleError(error: any, action: string) {
     let errorMessage = `Có lỗi xảy ra khi ${action} lớp học`;
 
-    if (error.status === 400) {
+    if (error.status === 409) {
+      // HTTP 409 Conflict - Schedule conflict
+      errorMessage = 'Xung đột lịch';
+    } else if (error.status === 400) {
       // Try to get detailed validation error
       if (error.error?.message) {
-        errorMessage = error.error.message;
+        const msg = error.error.message;
+        // Check if the error message indicates schedule conflict
+        if (typeof msg === 'string' &&
+            (msg.toLowerCase().includes('conflict') ||
+             msg.toLowerCase().includes('xung đột') ||
+             msg.toLowerCase().includes('schedule') ||
+             msg.toLowerCase().includes('lịch'))) {
+          errorMessage = 'Xung đột lịch';
+        } else {
+          errorMessage = msg;
+        }
       } else if (error.error?.error) {
-        errorMessage = error.error.error;
+        const err = error.error.error;
+        if (typeof err === 'string' &&
+            (err.toLowerCase().includes('conflict') ||
+             err.toLowerCase().includes('xung đột') ||
+             err.toLowerCase().includes('schedule') ||
+             err.toLowerCase().includes('lịch'))) {
+          errorMessage = 'Xung đột lịch';
+        } else {
+          errorMessage = err;
+        }
       } else if (typeof error.error === 'string') {
-        errorMessage = error.error;
+        const errStr = error.error;
+        if (errStr.toLowerCase().includes('conflict') ||
+            errStr.toLowerCase().includes('xung đột') ||
+            errStr.toLowerCase().includes('schedule') ||
+            errStr.toLowerCase().includes('lịch')) {
+          errorMessage = 'Xung đột lịch';
+        } else {
+          errorMessage = errStr;
+        }
       } else {
         errorMessage = 'Dữ liệu không hợp lệ. Vui lòng kiểm tra lại thông tin.';
       }
@@ -615,7 +658,24 @@ export class ClassesFormComponent implements OnInit {
       error: (error) => {
         this.isLoading = false;
         console.error(`Alternative ${action} also failed:`, error);
-        this.handleError(error, action);
+
+        // Check for schedule conflict
+        if (error.status === 409) {
+          this.message.error('Xung đột lịch');
+        } else if (error.status === 400) {
+          const errorMsg = error.error?.message || error.error?.error || error.error || '';
+          if (typeof errorMsg === 'string' &&
+              (errorMsg.toLowerCase().includes('conflict') ||
+               errorMsg.toLowerCase().includes('xung đột') ||
+               errorMsg.toLowerCase().includes('schedule') ||
+               errorMsg.toLowerCase().includes('lịch'))) {
+            this.message.error('Xung đột lịch');
+          } else {
+            this.handleError(error, action);
+          }
+        } else {
+          this.handleError(error, action);
+        }
       }
     });
   }

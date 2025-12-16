@@ -85,7 +85,25 @@ export class StatsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadMockData();
     this.loadDashboardData();
+  }
+
+  loadMockData(): void {
+    // Mock data cho top courses
+    this.topCourses = [
+      { id: 1, name: 'TOEIC 4 Kỹ Năng', studentCount: 156, classCount: 8, percentage: 45 },
+      { id: 2, name: 'TOEIC 2 Kỹ Năng', studentCount: 132, classCount: 6, percentage: 35 },
+      { id: 3, name: 'TOEIC Mất Gốc', studentCount: 98, classCount: 5, percentage: 20 }
+    ];
+
+    // Mock data cho top teachers
+    this.topTeachers = [
+      { id: 1, name: 'Nguyễn Thị Hoa Lý', classCount: 5, studentCount: 125 },
+      { id: 2, name: 'Trần Thị Thu', classCount: 4, studentCount: 98 },
+      { id: 3, name: 'Hồ Thị Hằng', classCount: 4, studentCount: 87 },
+       { id: 4, name: 'Trần Danh Phương', classCount: 4, studentCount: 87 }
+    ];
   }
 
   loadDashboardData(): void {
@@ -120,11 +138,11 @@ export class StatsComponent implements OnInit {
           c.status === 'ACTIVE' || c.status === 'active' || c.status === 'ONGOING'
         ).length;
 
-        // Calculate course statistics
-        this.calculateCourseStats(classes, courses);
+        // Calculate course statistics - DISABLED: Using mock data
+        // this.calculateCourseStats(classes, courses);
 
-        // Calculate teacher statistics
-        this.calculateTeacherStats(classes, teachers);
+        // Calculate teacher statistics - DISABLED: Using mock data
+        // this.calculateTeacherStats(classes, teachers);
 
         // Get upcoming classes
         this.getUpcomingClasses(classes);
@@ -301,11 +319,11 @@ export class StatsComponent implements OnInit {
     const monthCounts = new Map<string, number>();
     const now = new Date();
 
-    // Get last 6 months
-    for (let i = 5; i >= 0; i--) {
+    // Get last 12 months
+    for (let i = 11; i >= 0; i--) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      const label = `Tháng ${date.getMonth() + 1}`;
+      const label = `T${date.getMonth() + 1}`;
       this.enrollmentMonths.push(label);
       monthCounts.set(key, 0);
     }

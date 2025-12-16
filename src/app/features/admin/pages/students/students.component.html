@@ -67,7 +67,7 @@
 				<td>{{ s.email }}</td>
 				<td>{{ s.className }}</td>
 				<td>{{ s.dob | date:'dd/MM/yyyy' }}</td>
-				<td>{{ s.gender === 'Male' ? 'Nam' : (s.gender === 'Female' ? 'Nữ' : s.gender) }}</td>
+				<td>{{ genderLabel(s.gender) }}</td>
 				<td>
 					<span class="phone-text">{{ s.phone }}</span>
 				</td>

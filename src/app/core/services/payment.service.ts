@@ -5,6 +5,15 @@ import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { Payment, PaymentRequest, PaymentSummary } from '../models/payment.model';
 
+export interface ManualPaymentDto {
+  studentId: number;
+  classRoomId?: number;
+  amount?: number;
+  note?: string;
+  status?: 'PENDING' | 'SUCCESS' | 'FAILED' | 'EXPIRED' | 'CANCELED';
+  paymentMethod?: 'CASH' | 'VNPAY';
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -119,10 +128,16 @@ export class PaymentService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  // Cập nhật trạng thái thanh toán
-  updatePaymentStatus(id: number, status: string): Observable<Payment> {
-    // Backend expects { status: "STATUS_NAME" } format
-    return this.http.patch<Payment>(`${this.apiUrl}/${id}/status`, { status });
+  // Admin: Cập nhật trạng thái thanh toán (PUT /admin/payments/{id}/status)
+  updatePaymentStatus(id: number, status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'EXPIRED' | 'CANCELED'): Observable<any> {
+    const url = `${environment.apiUrl}/admin/payments/${id}/status`;
+    return this.http.put(url, { status });
+  }
+
+  // Admin: Đánh dấu đã thanh toán bằng tiền mặt (POST /admin/payments/mark-paid)
+  markAsPaidCash(data: ManualPaymentDto): Observable<any> {
+    const url = `${environment.apiUrl}/admin/payments/mark-paid`;
+    return this.http.post(url, data);
   }
 
   // Lấy thống kê thanh toán

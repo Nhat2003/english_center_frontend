@@ -40,6 +40,8 @@ export class ProfileSettingsComponent implements OnInit {
   initForm(): void {
     this.profileForm = this.fb.group({
       fullName: ['', [Validators.required, Validators.minLength(2)]],
+      bankName: [''],
+      bankAccountNumber: ['', [Validators.pattern(/^[0-9]{6,20}$/)]],
       phone: ['', [Validators.pattern(/^[0-9]{10}$/)]],
       email: ['', [Validators.email]],
       dob: [null],
@@ -69,6 +71,8 @@ export class ProfileSettingsComponent implements OnInit {
         this.currentProfile = profile;
         this.profileForm.patchValue({
           fullName: profile.fullName,
+          bankName: profile.bankName || '',
+          bankAccountNumber: profile.bankAccountNumber || '',
           phone: profile.phone,
           email: profile.email,
           dob: profile.dob ? new Date(profile.dob) : null,
@@ -147,6 +151,8 @@ export class ProfileSettingsComponent implements OnInit {
     if (this.currentProfile) {
       this.profileForm.patchValue({
         fullName: this.currentProfile.fullName,
+        bankName: this.currentProfile.bankName || '',
+        bankAccountNumber: this.currentProfile.bankAccountNumber || '',
         phone: this.currentProfile.phone,
         email: this.currentProfile.email,
         dob: this.currentProfile.dob ? new Date(this.currentProfile.dob) : null,

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { PaymentService } from '../../../../../core/services/payment.service';
 import { ClassService } from '../../../../../core/services/class.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzModalService } from 'ng-zorro-antd/modal';
 
 interface ClassPaymentSummary {
   classRoomId: number;
@@ -61,11 +62,21 @@ export class ClassPaymentsComponent implements OnInit {
   selectedStudent: StudentPaymentStatus | null = null;
   paymentHistory: any[] = [];
   detailModalTitle = '';
+  statusOptions = [
+    { value: 'PENDING', label: 'Chờ xử lý' },
+    { value: 'SUCCESS', label: 'Thành công' },
+    { value: 'FAILED', label: 'Thất bại' },
+    { value: 'EXPIRED', label: 'Hết hạn' },
+    { value: 'CANCELED', label: 'Hủy' }
+  ];
+  selectedStudentStatus?: 'PENDING' | 'SUCCESS' | 'FAILED' | 'EXPIRED' | 'CANCELED';
+  selectedPaymentMethod: 'CASH' | 'VNPAY' = 'CASH';
 
   constructor(
     private paymentService: PaymentService,
     private classService: ClassService,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private modal: NzModalService
   ) {}
 
   ngOnInit(): void {
@@ -180,9 +191,41 @@ export class ClassPaymentsComponent implements OnInit {
       case 'PAID': return 'Đã đóng đủ';
       case 'UNPAID': return 'Chưa đóng';
       case 'SUCCESS': return 'Thành công';
-      case 'PENDING': return 'Đang xử lý';
+      case 'PENDING': return 'Chờ xử lý';
       case 'FAILED': return 'Thất bại';
+      case 'EXPIRED': return 'Hết hạn';
+      case 'CANCELED': return 'Hủy';
       default: return status;
+    }
+  }
+
+  getStatusIcon(status: string): string {
+    switch (status) {
+      case 'SUCCESS': return 'check-circle';
+      case 'PENDING': return 'clock-circle';
+      case 'FAILED': return 'close-circle';
+      case 'EXPIRED': return 'exclamation-circle';
+      case 'CANCELED': return 'stop';
+      default: return 'question-circle';
+    }
+  }
+
+  getStatusDescription(status: string): string {
+    switch (status) {
+      case 'SUCCESS': return 'Giao dịch đã hoàn thành';
+      case 'PENDING': return 'Đang chờ xác nhận';
+      case 'FAILED': return 'Giao dịch không thành công';
+      case 'EXPIRED': return 'Đã quá hạn thanh toán';
+      case 'CANCELED': return 'Giao dịch đã bị hủy';
+      default: return 'Chưa có thông tin';
+    }
+  }
+
+  getPaymentMethodText(method: string): string {
+    switch (method) {
+      case 'CASH': return 'Tiền mặt';
+      case 'VNPAY': return 'VNPay';
+      default: return method;
     }
   }
 
@@ -199,6 +242,7 @@ export class ClassPaymentsComponent implements OnInit {
     this.detailModalTitle = `Chi tiết thanh toán - ${student.studentName}`;
     this.isDetailModalVisible = true;
     this.loadPaymentHistory(student.studentId);
+    this.selectedStudentStatus = (student.latestPaymentStatus as any) || undefined;
   }
 
   loadPaymentHistory(studentId: number): void {
@@ -221,5 +265,68 @@ export class ClassPaymentsComponent implements OnInit {
     this.isDetailModalVisible = false;
     this.selectedStudent = null;
     this.paymentHistory = [];
+  }
+
+  updateTransactionStatus(paymentId: number, status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'EXPIRED' | 'CANCELED'): void {
+    this.paymentService.updatePaymentStatus(paymentId, status).subscribe({
+      next: (res) => {
+        this.message.success(res?.message || 'Cập nhật trạng thái giao dịch thành công');
+        if (this.selectedStudent) {
+          this.loadPaymentHistory(this.selectedStudent.studentId);
+        }
+      },
+      error: (error) => {
+        if (error?.status === 400) {
+          this.message.error(error?.error?.error || 'Giá trị trạng thái không hợp lệ');
+        } else if (error?.status === 401) {
+          this.message.error('Bạn chưa đăng nhập');
+        } else if (error?.status === 403) {
+          this.message.error('Bạn không có quyền cập nhật');
+        } else {
+          this.message.error('Không thể cập nhật trạng thái (lỗi server)');
+        }
+      }
+    });
+  }
+
+  applySelectedStudentStatus(): void {
+    if (!this.selectedStudentStatus || !this.selectedStudent) return;
+
+    // Tìm giao dịch gần nhất có id
+    const latest = (this.paymentHistory || []).find((p: any) => p && p.id);
+
+    if (latest && latest.id) {
+      // Trường hợp 1: Đã có paymentId → gọi PUT để cập nhật status
+      this.updateTransactionStatus(latest.id, this.selectedStudentStatus);
+    } else {
+      // Trường hợp 2: Chưa có payment → gọi POST mark-paid
+      const paymentMethodText = this.getPaymentMethodText(this.selectedPaymentMethod);
+      const statusText = this.getStatusText(this.selectedStudentStatus);
+
+      const payload = {
+        studentId: this.selectedStudent.studentId,
+        classRoomId: this.selectedClassId || undefined,
+        amount: this.selectedStudent.requiredAmount || undefined,
+        status: this.selectedStudentStatus,
+        paymentMethod: this.selectedPaymentMethod,
+        note: `Admin cập nhật trạng thái: ${statusText}${this.selectedStudentStatus === 'SUCCESS' ? ' - Phương thức: ' + paymentMethodText : ''}`
+      };
+
+      this.paymentService.markAsPaidCash(payload).subscribe({
+        next: (res) => {
+          this.message.success(res?.message || 'Cập nhật trạng thái thành công');
+          if (this.selectedStudent) {
+            this.loadPaymentHistory(this.selectedStudent.studentId);
+          }
+          this.loadPaymentSummary();
+          // Reset payment method to default
+          this.selectedPaymentMethod = 'CASH';
+        },
+        error: (error) => {
+          console.error('Payment status update error:', error);
+          this.message.error(error?.error?.message || 'Không thể cập nhật trạng thái');
+        }
+      });
+    }
   }
 }

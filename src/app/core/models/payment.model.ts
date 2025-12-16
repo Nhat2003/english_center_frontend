@@ -7,7 +7,7 @@ export interface Payment {
   amount: number;
   paymentDate: Date;
   paymentMethod: 'CASH' | 'TRANSFER' | 'CARD';
-  status: 'PENDING' | 'COMPLETED' | 'SUCCESS' | 'FAILED' | 'REFUNDED';
+  status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'EXPIRED' | 'CANCELED' | 'REFUNDED';
   description?: string;
   transactionId?: string;
   createdAt?: Date;

@@ -847,7 +847,6 @@ export class ChatboxComponent implements OnInit, OnDestroy {
 
     Promise.all(classPromises).then(processedClasses => {
       this.myClasses = processedClasses;
-      console.log('✅ Student classes loaded (without teachers):', this.myClasses);
     }).catch(err => {
       console.error('Failed to load class details:', err);
       this.myClasses = [];

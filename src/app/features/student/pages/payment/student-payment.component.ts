@@ -197,7 +197,7 @@ export class StudentPaymentComponent implements OnInit {
     this.paymentService.getPaymentById(paymentIdNum).subscribe({
       next: (payment) => {
         console.log('💳 Payment status from API:', payment);
-        if (payment.status === 'SUCCESS' || payment.status === 'COMPLETED') {
+        if (payment.status === 'SUCCESS') {
           this.message.success('Thanh toán thành công!', { nzDuration: 1000 });
           setTimeout(() => {
             this.reloadClassData(classRoomIdParam);
@@ -310,7 +310,7 @@ export class StudentPaymentComponent implements OnInit {
     // Gọi API kiểm tra trạng thái payment theo ID
     this.paymentService.getPaymentById(paymentIdNum).subscribe({
       next: (payment) => {
-        if (payment && payment.status === 'COMPLETED') {
+        if (payment && payment.status === 'SUCCESS') {
           // Payment đã được xác nhận thành công
           this.message.success('Đã xác nhận thanh toán thành công!', { nzDuration: 1000 });
           this.reloadClassData(classRoomIdParam);
