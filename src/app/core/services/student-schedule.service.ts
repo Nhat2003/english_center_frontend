@@ -20,13 +20,8 @@ export class StudentScheduleService {
 
   // Gọi API /students/me/schedule để lấy lịch học của student hiện tại
   getMySchedule(): Observable<StudentSchedule[]> {
-    console.log('Calling /students/me/schedule API');
-
     // Debug: Check if we have token
     const token = localStorage.getItem('token');
-    console.log('Current token:', token ? 'Token exists' : 'No token found');
-    console.log('Token value:', token);
-
     return this.http.get<StudentScheduleResponse[]>(`${this.apiUrl}/me/schedule`)
       .pipe(
         map(response => this.flattenScheduleData(response)),
@@ -40,8 +35,6 @@ export class StudentScheduleService {
     const params = new HttpParams()
       .set('type', 'day')
       .set('date', dateStr);
-
-    console.log(`Calling /students/me/schedule?type=day&date=${dateStr}`);
 
     return this.http.get<StudentScheduleResponse[]>(`${this.apiUrl}/me/schedule`, { params })
       .pipe(
@@ -60,8 +53,6 @@ export class StudentScheduleService {
       .set('week', week.toString())
       .set('year', year.toString());
 
-    console.log(`Calling /students/me/schedule?type=week&week=${week}&year=${year}`);
-
     return this.http.get<StudentScheduleResponse[]>(`${this.apiUrl}/me/schedule`, { params })
       .pipe(
         map(response => this.flattenScheduleData(response)),
@@ -79,8 +70,6 @@ export class StudentScheduleService {
       .set('month', monthNum.toString())
       .set('year', year.toString());
 
-    console.log(`Calling /students/me/schedule?type=month&month=${monthNum}&year=${year}`);
-
     return this.http.get<StudentScheduleResponse[]>(`${this.apiUrl}/me/schedule`, { params })
       .pipe(
         map(response => this.flattenScheduleData(response)),
@@ -90,11 +79,7 @@ export class StudentScheduleService {
 
   // Method để test API với explicit headers (bypass interceptor issues)
   getMyScheduleWithExplicitHeaders(): Observable<StudentSchedule[]> {
-    console.log('Calling /students/me/schedule API with explicit headers');
-
     const token = localStorage.getItem('token');
-    console.log('Using token:', token);
-
     if (!token) {
       console.error('No token found in localStorage');
       return throwError(() => new Error('No authentication token found'));
@@ -110,7 +95,6 @@ export class StudentScheduleService {
     return this.http.get<StudentScheduleResponse[]>(`${this.apiUrl}/me/schedule`, { headers })
       .pipe(
         map(response => {
-          console.log('Success response:', response);
           return this.flattenScheduleData(response);
         }),
         catchError(error => {
@@ -126,16 +110,12 @@ export class StudentScheduleService {
   private flattenScheduleData(responseData: StudentScheduleResponse[]): StudentSchedule[] {
     const flattenedSchedules: StudentSchedule[] = [];
 
-    console.log('Raw API response data:', responseData);
-
     if (!responseData || !Array.isArray(responseData)) {
-      console.warn('Invalid response data:', responseData);
       return flattenedSchedules;
     }
 
     responseData.forEach(classData => {
       if (!classData.schedules || !Array.isArray(classData.schedules)) {
-        console.warn('Invalid schedules data for class:', classData);
         return;
       }
 
@@ -163,7 +143,6 @@ export class StudentScheduleService {
       });
     });
 
-    console.log('Flattened schedule data:', flattenedSchedules);
     return flattenedSchedules;
   }
 

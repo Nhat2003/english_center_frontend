@@ -64,7 +64,7 @@ export class ScheduleService {
   }
 
   // Get student schedule by ID with optional date range
-  getStudentSchedule(studentId: number, from?: string, to?: string): Observable<ScheduleItemForStudentDTO[]> {
+  getStudentSchedule(studentId: number, from?: string, to?: string, excludeOverridden: boolean = true): Observable<ScheduleItemForStudentDTO[]> {
     let params = new HttpParams();
     if (from) {
       params = params.set('from', from);
@@ -72,18 +72,24 @@ export class ScheduleService {
     if (to) {
       params = params.set('to', to);
     }
-
+    if (excludeOverridden) {
+      params = params.set('excludeOverridden', 'true');
+    }
     return this.http.get<ScheduleItemForStudentDTO[]>(`${this.baseUrl}/student/${studentId}`, { params });
   }
 
   // Get teacher schedule by ID with optional date range
-  getTeacherSchedule(teacherId: number, from?: string, to?: string): Observable<ScheduleItemForTeacherDTO[]> {
+  getTeacherSchedule(teacherId: number, from?: string, to?: string, includeOverrides: boolean = true): Observable<ScheduleItemForTeacherDTO[]> {
     let params = new HttpParams();
     if (from) {
       params = params.set('from', from);
     }
     if (to) {
       params = params.set('to', to);
+    }
+    // Add parameter to exclude overridden sessions
+    if (!includeOverrides) {
+      params = params.set('excludeOverridden', 'true');
     }
 
     return this.http.get<ScheduleItemForTeacherDTO[]>(`${this.baseUrl}/teacher/${teacherId}`, { params });

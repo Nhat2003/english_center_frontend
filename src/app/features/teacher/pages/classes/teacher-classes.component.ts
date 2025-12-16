@@ -35,7 +35,6 @@ export class TeacherClassesComponent implements OnInit {
     this.loadingClasses = true;
     this.teacherService.getClassesByTeacher(this.teacherId).subscribe({
       next: (data) => {
-        console.log('Classes data:', data);
         this.classes = data;
         this.loadingClasses = false;
       },

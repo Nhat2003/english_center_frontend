@@ -12,6 +12,37 @@ import { environment } from '../../../environments/environment';
 	providedIn: 'root'
 })
 export class StudentService {
+				// Tìm kiếm học sinh (admin)
+				searchStudents(q: string, page: number = 0, size: number = 10): Observable<any> {
+					let params = new HttpParams()
+						.set('q', q)
+						.set('page', page.toString())
+						.set('size', size.toString());
+					return this.http.get<any>(`${environment.apiUrl}/students/search`, { params })
+						.pipe(catchError(this.handleError));
+				}
+			// Lấy danh sách học sinh cho admin (chuẩn backend mới)
+			getAdminStudentList(page: number = 0, size: number = 10, searchText: string = ''): Observable<any> {
+				let params = new HttpParams()
+					.set('page', page.toString())
+					.set('size', size.toString());
+				if (searchText && searchText.trim()) {
+					params = params.set('search', searchText.trim());
+				}
+				return this.http.get<any>(`${environment.apiUrl}/students/admin/list`, { params })
+					.pipe(catchError(this.handleError));
+			}
+		// Lấy danh sách học sinh có tìm kiếm (nếu backend hỗ trợ search param)
+		getStudentsWithSearch(page: number = 0, size: number = 10, searchText: string = ''): Observable<any> {
+			let params = new HttpParams()
+				.set('page', page.toString())
+				.set('size', size.toString());
+			if (searchText && searchText.trim()) {
+				params = params.set('search', searchText.trim());
+			}
+			return this.http.get<any>(this.apiUrl, { params })
+				.pipe(catchError(this.handleError));
+		}
 	private apiUrl = `${environment.apiUrl}/students`;
 
 	constructor(private http: HttpClient) {}
@@ -21,9 +52,6 @@ export class StudentService {
 			.set('page', page.toString())
 			.set('size', size.toString());
 
-		console.log('Calling students API with params:', { page, size });
-		console.log('Full URL:', `${this.apiUrl}?page=${page}&size=${size}`);
-
 		return this.http.get<any>(this.apiUrl, { params })
 			.pipe(
 				catchError(this.handleError)
@@ -31,19 +59,14 @@ export class StudentService {
 	}
 
 	private handleError(error: HttpErrorResponse) {
-		console.error('Student API Error:', error);
-		console.error('Error status:', error.status);
-		console.error('Error message:', error.message);
-		console.error('Error body:', error.error);
-
 		if (error.status === 401) {
-			console.error('Unauthorized - Token may be expired');
+			// Unauthorized - Token may be expired
 		} else if (error.status === 400) {
-			console.error('Bad Request - Check parameters or request format');
+			// Bad Request - Check parameters or request format
 		} else if (error.status === 403) {
-			console.error('Forbidden - Insufficient permissions');
+			// Forbidden - Insufficient permissions
 		} else if (error.status === 404) {
-			console.error('Not Found - API endpoint may not exist');
+			// Not Found - API endpoint may not exist
 		}
 
 		return throwError(() => error);
@@ -66,9 +89,23 @@ export class StudentService {
 		return this.http.put<Student>(`${this.apiUrl}/${id}`, student);
 	}
 
-	// Import students from Excel data
-	importStudents(students: any[]): Observable<{successCount: number, errors: string[]}> {
-		return this.http.post<{successCount: number, errors: string[]}>(`${this.apiUrl}/import`, students)
+	// Import students from Excel data (JSON array)
+	importStudents(students: any[]): Observable<any> {
+		return this.http.post<any>(`${this.apiUrl}/import`, students)
+			.pipe(
+				catchError(this.handleError)
+			);
+	}
+
+	// Import students from Excel file (multipart/form-data)
+	importStudentsFromFile(file: File): Observable<any> {
+		const formData = new FormData();
+		formData.append('file', file, file.name);
+
+		// Gửi FormData - HttpClient sẽ tự động set Content-Type: multipart/form-data
+		return this.http.post<any>(`${this.apiUrl}/import`, formData, {
+			reportProgress: true
+		})
 			.pipe(
 				catchError(this.handleError)
 			);
@@ -88,7 +125,6 @@ export class StudentService {
 
 	// Lấy tất cả students cho dropdown (không phân trang)
 	getAllStudents(): Observable<Student[]> {
-		console.log('Calling getAllStudents API');
 		return this.http.get<Student[]>(`${this.apiUrl}/all`)
 			.pipe(
 				catchError(this.handleError)
@@ -103,24 +139,35 @@ export class StudentService {
 			);
 	}
 
-	// Test method để kiểm tra API cơ bản
-	getStudentsWithoutPagination(): Observable<Student[]> {
-		console.log('Calling students API without pagination');
-		return this.http.get<Student[]>(this.apiUrl)
+	/**
+	 * Get current student profile
+	 * API: GET /students/me/profile
+	 */
+	getMyProfile(): Observable<Student> {
+		return this.http.get<Student>(`${this.apiUrl}/me/profile`)
 			.pipe(
 				catchError(this.handleError)
 			);
 	}
 
 	/**
-	 * Get student overview data for dashboard
-	 * API: GET /students/me/overview
-	 * @returns StudentOverviewResponse with all stats
+	 * Update current student profile
+	 * API: PUT /students/me/profile
+	 * @param profileData - Student profile data to update
 	 */
-	getMyOverview(): Observable<StudentOverviewResponse> {
-		return this.http.get<StudentOverviewResponse>(`${this.apiUrl}/me/overview`)
+	updateMyProfile(profileData: Partial<Student>): Observable<Student> {
+		return this.http.put<Student>(`${this.apiUrl}/me/profile`, profileData)
 			.pipe(
 				catchError(this.handleError)
 			);
+	}
+
+	/**
+	 * Change password for current student
+	 * API: PUT /students/me/change-password
+	 */
+	changePassword(passwordData: { currentPassword: string; newPassword: string; confirmPassword: string }): Observable<any> {
+		return this.http.put(`${this.apiUrl}/me/change-password`, passwordData)
+			.pipe(catchError(this.handleError));
 	}
 }

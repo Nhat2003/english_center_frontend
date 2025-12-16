@@ -279,6 +279,44 @@
   background: transparent;
 }
 
+/* Collapsed Sidebar - Chỉ hiển thị icon */
+.sidebar-menu.ant-menu-inline-collapsed .ant-menu-item {
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 6px auto;
+  width: 48px;
+  height: 48px;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), transform 0.2s ease-out;
+}
+
+/* Ẩn text khi thu gọn, chỉ hiển thị icon */
+.sidebar-menu.ant-menu-inline-collapsed .ant-menu-item > span:not(.anticon):not(nz-badge) {
+  display: none !important;
+}
+
+.sidebar-menu.ant-menu-inline-collapsed .ant-menu-item .anticon {
+  font-size: 20px;
+  margin: 0;
+  line-height: 1;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.sidebar-menu.ant-menu-inline-collapsed .ant-menu-item:hover {
+  transform: scale(1.08);
+  background-color: rgba(59, 178, 115, 0.12);
+}
+
+.sidebar-menu.ant-menu-inline-collapsed .ant-menu-item-selected {
+  transform: scale(1);
+  box-shadow: 0 4px 12px rgba(59, 178, 115, 0.3);
+}
+
+.sidebar-menu.ant-menu-inline-collapsed .ant-menu-item-selected:hover {
+  transform: scale(1.02);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .header {

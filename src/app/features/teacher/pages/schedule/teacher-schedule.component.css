@@ -478,3 +478,115 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   border-left-color: #52c41a;
 }
+
+/* Schedule Actions */
+.schedule-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.schedule-actions button {
+  flex: 1;
+  font-size: 12px;
+  height: 24px;
+  padding: 0 4px;
+}
+
+/* Modal Styles */
+.student-modal-content,
+.reschedule-modal-content {
+  padding: 16px 0;
+}
+
+.schedule-info {
+  background: #f5f5f5;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+.schedule-info p {
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.schedule-info strong {
+  min-width: 80px;
+  display: inline-block;
+  color: #262626;
+}
+
+.student-list {
+  margin-top: 12px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 32px;
+  color: #8c8c8c;
+}
+
+.current-schedule-info {
+  background: #e6f7ff;
+  padding: 16px;
+  border-radius: 4px;
+  border-left: 4px solid #1890ff;
+  margin-bottom: 16px;
+}
+
+.current-schedule-info h4 {
+  margin: 0 0 12px 0;
+  color: #0950bd;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-item .label {
+  font-size: 12px;
+  color: #8c8c8c;
+  font-weight: 500;
+}
+
+.info-item .value {
+  font-size: 14px;
+  color: #262626;
+  font-weight: 500;
+}
+
+nz-form-item {
+  margin-bottom: 16px;
+}
+
+nz-divider {
+  margin: 16px 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .schedule-actions {
+    flex-direction: column;
+  }
+
+  .schedule-actions button {
+    width: 100%;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}

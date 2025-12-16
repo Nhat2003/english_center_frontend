@@ -25,22 +25,22 @@
   color: #fff;
 }
 
-/* Messenger Button - Blue */
+/* Messenger Button - Green Theme */
 .chat-button.messenger-btn {
-  background: linear-gradient(135deg, #0084ff 0%, #0066cc 100%);
+  background: linear-gradient(135deg, #3bb273 0%, #2d8a5a 100%);
   animation: pulse 2s infinite;
 }
 
 .chat-button.messenger-btn:hover {
-  box-shadow: 0 6px 20px rgba(0, 132, 255, 0.5);
+  box-shadow: 0 6px 20px rgba(59, 178, 115, 0.5);
 }
 
 @keyframes pulse {
   0%, 100% {
-    box-shadow: 0 4px 12px rgba(0, 132, 255, 0.3);
+    box-shadow: 0 4px 12px rgba(59, 178, 115, 0.3);
   }
   50% {
-    box-shadow: 0 4px 20px rgba(0, 132, 255, 0.5);
+    box-shadow: 0 4px 20px rgba(59, 178, 115, 0.5);
   }
 }
 
@@ -82,7 +82,7 @@
 
 /* Chat Header */
 .chat-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3bb273 0%, #2d8a5a 100%);
   padding: 16px 20px;
   display: flex;
   justify-content: space-between;
@@ -210,12 +210,12 @@
 }
 
 .tab-item:hover {
-  color: #667eea;
+  color: #3bb273;
   background: #f5f7fa;
 }
 
 .tab-item.active {
-  color: #667eea;
+  color: #3bb273;
   background: #fff;
 }
 
@@ -226,7 +226,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3bb273 0%, #2d8a5a 100%);
 }
 
 .tab-item span[nz-icon] {
@@ -312,7 +312,7 @@
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3bb273 0%, #2d8a5a 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -405,7 +405,7 @@
 
 .message-icon {
   font-size: 18px;
-  color: #667eea;
+  color: #3bb273;
 }
 
 .class-list {
@@ -446,7 +446,7 @@
 
 .class-icon {
   font-size: 16px;
-  color: #667eea;
+  color: #3bb273;
 }
 
 .class-name {
@@ -458,7 +458,7 @@
 .student-count {
   font-size: 12px;
   color: #fff;
-  background: #667eea;
+  background: #3bb273;
   padding: 2px 8px;
   border-radius: 10px;
   font-weight: 500;
@@ -516,7 +516,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  color: #667eea !important;
+  color: #3bb273 !important;
   font-size: 12px !important;
 }
 
@@ -679,7 +679,7 @@
 }
 
 .message-wrapper.own .message-text {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3bb273 0%, #2d8a5a 100%);
   color: #fff;
   border-radius: 16px 16px 4px 16px;
 }
@@ -705,54 +705,65 @@
   border-top: 1px solid #f0f0f0;
 }
 
-.message-input-group {
+.message-input-wrapper {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-:host ::ng-deep .message-input-group .ant-input-affix-wrapper {
+.message-input {
+  flex: 1;
   border-radius: 24px;
-  padding-right: 8px;
-  border-color: #e0e0e0;
-}
-
-:host ::ng-deep .message-input-group .ant-input {
+  padding: 10px 16px;
+  border: 1px solid #e0e0e0;
   font-size: 14px;
-  padding: 8px 16px;
+  transition: all 0.2s;
 }
 
-:host ::ng-deep .message-input-group .ant-input:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+.message-input:focus {
+  outline: none;
+  border-color: #3bb273;
+  box-shadow: 0 0 0 2px rgba(59, 178, 115, 0.1);
+}
+
+.message-input::placeholder {
+  color: #bfbfbf;
 }
 
 .send-btn {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
   border-radius: 50%;
   border: none;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3bb273 0%, #2d8a5a 100%);
   color: #fff;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
+  flex-shrink: 0;
 }
 
 .send-btn:hover:not(:disabled) {
-  transform: scale(1.1);
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(59, 178, 115, 0.4);
+}
+
+.send-btn:active:not(:disabled) {
+  transform: scale(0.95);
 }
 
 .send-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
+  background: #d9d9d9;
 }
 
-.send-btn span {
-  font-size: 16px;
+.send-btn svg {
+  display: block;
+  fill: currentColor;
 }
 
 /* Empty States */

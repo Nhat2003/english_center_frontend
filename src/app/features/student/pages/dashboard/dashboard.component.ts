@@ -10,6 +10,7 @@ import { AnnouncementService } from '../../../../core/services/announcement.serv
 import { StudentOverviewResponse } from '../../../../core/models/student.model';
 import { forkJoin } from 'rxjs';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { StudentScheduleService } from '../../../../core/services/student-schedule.service';
 
 interface ClassInfo {
   id: number;
@@ -46,7 +47,7 @@ interface AttendanceSummary {
 @Component({
   selector: 'app-student-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrls: ['./dashboard-new.component.css']
 })
 export class StudentDashboardComponent implements OnInit {
   currentUser: User | null = null;
@@ -93,6 +94,7 @@ export class StudentDashboardComponent implements OnInit {
     private router: Router,
     private studentService: StudentService,
     private scheduleService: ScheduleService,
+    private studentScheduleService: StudentScheduleService,
     private assignmentService: AssignmentService,
     private paymentService: PaymentService,
     private attendanceService: AttendanceService,
@@ -103,110 +105,133 @@ export class StudentDashboardComponent implements OnInit {
   ngOnInit() {
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
-      if (user?.student?.id) {
-        this.studentId = user.student.id;
+      if (user) {
         this.loadDashboardData();
       } else {
         this.loading = false;
-        this.message.error('Không tìm thấy thông tin học sinh');
       }
     });
   }
 
   /**
-   * Load dashboard data using new Overview API
-   * Falls back to old method if API not available
+   * Load dashboard when we don't have studentId directly
+   */
+  loadDashboardDataWithoutStudentId() {
+    // Use same method as loadDashboardData
+    this.loadDashboardData();
+  }
+
+  /**
+   * Load dashboard data - simplified version using available APIs
    */
   loadDashboardData() {
     this.loading = true;
 
-    // Try to use new Overview API first
-    this.studentService.getMyOverview().subscribe({
-      next: (overview) => {
-        this.loadDashboardFromOverview(overview);
-      },
-      error: (error) => {
-        console.warn('Overview API not available, falling back to old method:', error);
-        this.loadDashboardDataLegacy();
-      }
-    });
-  }
-
-  /**
-   * Load dashboard using new Overview API response
-   */
-  loadDashboardFromOverview(overview: StudentOverviewResponse) {
-    console.log('Dashboard overview loaded:', overview);
-
-    // Update stats from overview
-    this.attendanceSummary = {
-      totalSessions: overview.attendanceTotal,
-      presentCount: overview.attendancePresent,
-      absentCount: overview.attendanceAbsent,
-      lateCount: overview.attendanceLate,
-      attendanceRate: overview.attendanceRate
-    };
-
-    this.totalAssignments = overview.assignmentsTotal;
-    this.totalCompletedAssignments = overview.assignmentsSubmitted;
-    this.pendingAssignments = overview.assignmentsPending;
-    this.averageGrade = overview.averageGrade || 0;
-
-    // Still need to load detailed data for display
-    forkJoin({
-      classes: this.studentService.getClassesByStudent(this.studentId),
-      schedule: this.scheduleService.getStudentSchedule(this.studentId),
-      assignments: this.assignmentService.getMyAssignments(),
-      submissions: this.assignmentService.getMySubmissionHistory(),
-      paymentsDue: this.paymentService.getDueForStudent(this.studentId),
-      paymentsHistory: this.paymentService.getPaymentHistory(this.studentId)
-    }).subscribe({
-      next: (data) => {
-        this.processClassesData(data.classes);
-        this.processScheduleData(data.schedule);
-        this.processAssignmentsDataFromOverview(data.assignments, data.submissions, overview);
-        this.processPaymentDataNew(data.paymentsDue, data.paymentsHistory);
-        this.loadAnnouncements();
+    // Just load user profile, don't call APIs that cause errors
+    this.studentService.getMyProfile().subscribe({
+      next: (profile) => {
+        // Profile loaded successfully
         this.loading = false;
       },
       error: (error) => {
-        console.error('Error loading detailed dashboard data:', error);
-        this.message.error('Không thể tải đầy đủ dữ liệu trang chủ');
+        console.error('Error loading profile:', error);
+        // Don't show error message, just finish loading
         this.loading = false;
       }
     });
   }
 
   /**
-   * Legacy method - load dashboard data using multiple API calls
+   * Process schedule data from StudentScheduleService.getMySchedule()
    */
-  loadDashboardDataLegacy() {
-    this.loading = true;
+  processMyScheduleData(schedules: any[]) {
+    if (!schedules || schedules.length === 0) return;
 
-    forkJoin({
-      classes: this.studentService.getClassesByStudent(this.studentId),
-      schedule: this.scheduleService.getStudentSchedule(this.studentId),
-      assignments: this.assignmentService.getMyAssignments(),
-      submissions: this.assignmentService.getMySubmissionHistory(),
-      attendance: this.attendanceService.getByStudent(this.studentId),
-      paymentsDue: this.paymentService.getDueForStudent(this.studentId),
-      paymentsHistory: this.paymentService.getPaymentHistory(this.studentId)
-    }).subscribe({
-      next: (data) => {
-        this.processClassesData(data.classes);
-        this.processScheduleData(data.schedule);
-        this.processAssignmentsData(data.assignments, data.submissions);
-        this.processAttendanceData(data.attendance);
-        this.processPaymentDataNew(data.paymentsDue, data.paymentsHistory);
-        this.loadAnnouncements();
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading dashboard data:', error);
-        this.message.error('Không thể tải dữ liệu trang chủ');
-        this.loading = false;
-      }
+    // Sort by date and time
+    const sortedSchedules = schedules.sort((a, b) => {
+      const dateA = new Date(a.date + ' ' + a.startTime);
+      const dateB = new Date(b.date + ' ' + b.startTime);
+      return dateA.getTime() - dateB.getTime();
     });
+
+    // Find next class
+    const now = new Date();
+    const futureClasses = sortedSchedules.filter(s => {
+      const scheduleDateTime = new Date(s.date + ' ' + s.startTime);
+      return scheduleDateTime > now;
+    });
+
+    if (futureClasses.length > 0) {
+      const next = futureClasses[0];
+      this.nextClass = {
+        className: next.className || '',
+        subject: next.courseName || next.className || '',
+        time: `${next.startTime} - ${next.endTime}`,
+        date: this.formatDate(next.date),
+        dayOfWeek: this.getDayOfWeek(next.date),
+        teacher: next.teacherName || '',
+        room: next.roomName || 'Phòng học',
+        hasOnlineLink: true
+      };
+    }
+
+    // Get week schedule (next 7 days)
+    const nextWeek = new Date();
+    nextWeek.setDate(nextWeek.getDate() + 7);
+
+    this.weekSchedule = sortedSchedules
+      .filter(s => {
+        const date = new Date(s.date);
+        return date >= now && date <= nextWeek;
+      })
+      .slice(0, 5)
+      .map(s => ({
+        id: s.id,
+        day: this.getDayOfWeekShort(s.date),
+        date: this.formatShortDate(s.date),
+        subject: s.courseName || s.className,
+        time: `${s.startTime} - ${s.endTime}`,
+        teacher: s.teacherName || '',
+        room: s.roomName || 'Phòng học',
+        hasOnlineLink: true,
+        className: s.className
+      }));
+  }
+
+  /**
+   * Simplified assignment processing
+   */
+  processAssignmentsDataSimple(assignments: any[], submissions: any[]) {
+    // Count assignments
+    this.totalAssignments = assignments.length;
+    this.totalCompletedAssignments = submissions.length;
+    this.pendingAssignments = assignments.length - submissions.length;
+
+    // Find nearest deadline
+    const now = new Date();
+    const pendingWithDeadline = assignments
+      .filter(a => {
+        const hasSubmission = submissions.some(s => s.assignmentId === a.id);
+        return !hasSubmission && new Date(a.dueDate) > now;
+      })
+      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+
+    if (pendingWithDeadline.length > 0) {
+      this.nearestDeadline = this.formatDate(pendingWithDeadline[0].dueDate);
+    }
+
+    // Get recent grades (last 5)
+    this.recentGrades = submissions
+      .filter(s => s.grade !== null && s.grade !== undefined)
+      .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
+      .slice(0, 5);
+
+    // Calculate average grade
+    const gradedSubmissions = submissions.filter(s => s.grade !== null && s.grade !== undefined);
+    if (gradedSubmissions.length > 0) {
+      const total = gradedSubmissions.reduce((sum, s) => sum + (s.grade || 0), 0);
+      this.averageGrade = Math.round((total / gradedSubmissions.length) * 10) / 10;
+    }
   }
 
   processClassesData(classes: any[]) {
@@ -270,6 +295,58 @@ export class StudentDashboardComponent implements OnInit {
         room: s.room?.name || s.room?.location || 'Online',
         hasOnlineLink: true,
         className: s.classRoom?.name
+      }));
+  }
+
+  /**
+   * Process schedule data from /students/me/schedule endpoint
+   */
+  processScheduleDataFromMySchedule(schedule: any[]) {
+    if (!schedule || schedule.length === 0) return;
+
+    // Sort by date
+    const sortedSchedule = schedule.sort((a, b) =>
+      new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+
+    // Find next class
+    const now = new Date();
+    const futureClasses = sortedSchedule.filter(s => new Date(s.date) > now);
+
+    if (futureClasses.length > 0) {
+      const next = futureClasses[0];
+      this.nextClass = {
+        className: next.className || '',
+        subject: next.courseName || next.className || '',
+        time: `${next.startTime} - ${next.endTime}`,
+        date: this.formatDate(next.date),
+        dayOfWeek: this.getDayOfWeek(next.date),
+        teacher: next.teacherName || '',
+        room: next.roomName || 'Online',
+        hasOnlineLink: true
+      };
+    }
+
+    // Get week schedule (next 7 days)
+    const nextWeek = new Date();
+    nextWeek.setDate(nextWeek.getDate() + 7);
+
+    this.weekSchedule = sortedSchedule
+      .filter(s => {
+        const date = new Date(s.date);
+        return date >= now && date <= nextWeek;
+      })
+      .slice(0, 5)
+      .map(s => ({
+        id: s.id,
+        day: this.getDayOfWeekShort(s.date),
+        date: this.formatShortDate(s.date),
+        subject: s.courseName || s.className,
+        time: `${s.startTime} - ${s.endTime}`,
+        teacher: s.teacherName || '',
+        room: s.roomName || 'Online',
+        hasOnlineLink: true,
+        className: s.className
       }));
   }
 
@@ -404,6 +481,39 @@ export class StudentDashboardComponent implements OnInit {
           .map(a => ({
             ...a,
             className: this.myClasses.find(c => c.id === a.classId)?.name
+          }));
+      },
+      error: (error) => {
+        console.error('Error loading announcements:', error);
+      }
+    });
+  }
+
+  /**
+   * Load announcements when myClasses is already populated
+   */
+  loadAnnouncementsFromClasses() {
+    if (this.myClasses.length === 0) return;
+
+    const announcementRequests = this.myClasses.map(cls =>
+      this.announcementService.getAnnouncementsByClass(cls.id)
+    );
+
+    forkJoin(announcementRequests).subscribe({
+      next: (results) => {
+        const allAnnouncements: any[] = [];
+        results.forEach(arr => {
+          if (arr && Array.isArray(arr)) {
+            allAnnouncements.push(...arr);
+          }
+        });
+
+        this.latestAnnouncements = allAnnouncements
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .slice(0, 3)
+          .map(a => ({
+            ...a,
+            className: this.myClasses.find(c => c.id === a.classId)?.name || 'Lớp học'
           }));
       },
       error: (error) => {

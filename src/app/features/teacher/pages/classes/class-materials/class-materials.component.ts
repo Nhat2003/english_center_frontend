@@ -167,8 +167,7 @@ export class ClassMaterialsComponent implements OnInit {
         } else if (err.status === 0) {
           // CORS or network error - fallback to direct URL
           this.message.warning('Endpoint download chưa sẵn sàng');
-          console.warn('Backend cần implement: GET /class-documents/{id}/download');
-        } else {
+          } else {
           this.message.error('Không thể tải xuống tài liệu');
         }
       }

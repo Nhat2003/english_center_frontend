@@ -54,7 +54,7 @@ export class UserListComponent implements OnInit {
           fullName: user.fullName || user.student?.fullName || ''
         }));
         this.users = [...this.allUsers]; // Copy to display array
-        console.log('Users data from backend:', this.users); // Debug log
+        // Debug log
       },
       error: (err) => console.error(' Lỗi load users:', err),
     });

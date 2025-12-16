@@ -1,0 +1,1005 @@
+.class-payments-container {
+  padding: 24px;
+  background: #f0f2f5;
+  min-height: 100%;
+}
+
+/* Page Header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header-content {
+  flex: 1;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-title i {
+  font-size: 28px;
+  color: #1890ff;
+}
+
+.page-description {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* Class Selection Card */
+.class-selection-card {
+  margin-bottom: 24px;
+}
+
+.class-select {
+  width: 100%;
+  max-width: 500px;
+}
+
+/* Statistics Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card.total {
+  border-top: 3px solid #1890ff;
+}
+
+.stat-card.success {
+  border-top: 3px solid #52c41a;
+}
+
+.stat-card.pending {
+  border-top: 3px solid #faad14;
+}
+
+.stat-card.failed {
+  border-top: 3px solid #ff4d4f;
+}
+
+/* Revenue Grid */
+.revenue-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.revenue-card {
+  border-radius: 8px;
+}
+
+.revenue-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.revenue-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.revenue-amount {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.revenue-amount.success {
+  color: #52c41a;
+}
+
+.revenue-amount.pending {
+  color: #ff4d4f;
+}
+
+.total-revenue {
+  border-left: 4px solid #1890ff;
+}
+
+.success-revenue {
+  border-left: 4px solid #52c41a;
+}
+
+.pending-revenue {
+  border-left: 4px solid #ff4d4f;
+}
+
+/* Student List Card */
+.student-list-card {
+  border-radius: 8px;
+}
+
+.filters-section {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 250px;
+}
+
+.status-filter {
+  width: 200px;
+}
+
+/* Table Styles */
+.amount-text {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.amount-text.paid {
+  color: #52c41a;
+}
+
+.progress-wrapper {
+  min-width: 150px;
+}
+
+.text-muted {
+  color: #999;
+}
+
+/* Table Header Styling */
+::ng-deep .student-list-card .ant-table-thead > tr > th {
+  background-color: #f0f2f5 !important;
+  font-weight: 600;
+  color: #262626;
+}
+
+/* Header for Status and Latest Transaction columns */
+
+
+
+
+/* Status Column - Background Color */
+::ng-deep .student-list-card .ant-table-tbody > tr > td:nth-child(6) {
+  background-color: #ffffff !important;
+  font-weight: 600;
+}
+
+::ng-deep .student-list-card .ant-table-tbody > tr > td:nth-child(6) .ant-tag {
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  padding: 4px 12px !important;
+}
+
+/* Override tag colors for better visibility - Use more specific selectors */
+::ng-deep .student-list-card nz-tag,
+::ng-deep .student-list-card .ant-tag,
+::ng-deep .payment-detail-modal nz-tag,
+::ng-deep .payment-detail-modal .ant-tag {
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  padding: 6px 12px !important;
+  border-radius: 4px !important;
+  color: #ffffff !important;
+}
+
+::ng-deep .student-list-card nz-tag[ng-reflect-nz-color="success"],
+::ng-deep .student-list-card .ant-tag-success,
+::ng-deep .student-list-card .ant-tag[ng-reflect-nz-color="success"],
+::ng-deep .payment-detail-modal nz-tag[ng-reflect-nz-color="success"],
+::ng-deep .payment-detail-modal .ant-tag-success,
+::ng-deep .payment-detail-modal .ant-tag[ng-reflect-nz-color="success"] {
+  background-color: #52c41a !important;
+  color: #ffffff !important;
+  border-color: #52c41a !important;
+}
+
+::ng-deep .student-list-card nz-tag[ng-reflect-nz-color="error"],
+::ng-deep .student-list-card .ant-tag-error,
+::ng-deep .student-list-card .ant-tag[ng-reflect-nz-color="error"],
+::ng-deep .payment-detail-modal nz-tag[ng-reflect-nz-color="error"],
+::ng-deep .payment-detail-modal .ant-tag-error,
+::ng-deep .payment-detail-modal .ant-tag[ng-reflect-nz-color="error"] {
+  background-color: #ff4d4f !important;
+  color: #ffffff !important;
+  border-color: #ff4d4f !important;
+}
+
+::ng-deep .student-list-card nz-tag[ng-reflect-nz-color="warning"],
+::ng-deep .student-list-card .ant-tag-warning,
+::ng-deep .student-list-card .ant-tag[ng-reflect-nz-color="warning"],
+::ng-deep .payment-detail-modal nz-tag[ng-reflect-nz-color="warning"],
+::ng-deep .payment-detail-modal .ant-tag-warning,
+::ng-deep .payment-detail-modal .ant-tag[ng-reflect-nz-color="warning"] {
+  background-color: #faad14 !important;
+  color: #ffffff !important;
+  border-color: #faad14 !important;
+}
+
+::ng-deep .student-list-card nz-tag[ng-reflect-nz-color="processing"],
+::ng-deep .student-list-card .ant-tag-processing,
+::ng-deep .student-list-card .ant-tag[ng-reflect-nz-color="processing"],
+::ng-deep .payment-detail-modal nz-tag[ng-reflect-nz-color="processing"],
+::ng-deep .payment-detail-modal .ant-tag-processing,
+::ng-deep .payment-detail-modal .ant-tag[ng-reflect-nz-color="processing"] {
+  background-color: #1890ff !important;
+  color: #ffffff !important;
+  border-color: #1890ff !important;
+}
+
+::ng-deep .student-list-card nz-tag[ng-reflect-nz-color="default"],
+::ng-deep .student-list-card .ant-tag-default,
+::ng-deep .student-list-card .ant-tag[ng-reflect-nz-color="default"],
+::ng-deep .payment-detail-modal nz-tag[ng-reflect-nz-color="default"],
+::ng-deep .payment-detail-modal .ant-tag-default,
+::ng-deep .payment-detail-modal .ant-tag[ng-reflect-nz-color="default"] {
+  background-color: #595959 !important;
+  color: #ffffff !important;
+  border-color: #595959 !important;
+}
+
+::ng-deep .student-list-card nz-tag[ng-reflect-nz-color="blue"],
+::ng-deep .student-list-card .ant-tag-blue,
+::ng-deep .payment-detail-modal nz-tag[ng-reflect-nz-color="blue"],
+::ng-deep .payment-detail-modal .ant-tag-blue {
+  background-color: #1890ff !important;
+  color: #ffffff !important;
+  border-color: #1890ff !important;
+}
+
+/* Make sure text inside tags is white */
+::ng-deep .student-list-card .ant-tag span,
+::ng-deep .student-list-card nz-tag span,
+::ng-deep .payment-detail-modal .ant-tag span,
+::ng-deep .payment-detail-modal nz-tag span {
+  color: #ffffff !important;
+}
+
+/* Latest Transaction Column - Background Color */
+::ng-deep .student-list-card .ant-table-tbody > tr > td:nth-child(7) {
+  background-color: #ffffff !important;
+  font-weight: 600;
+}
+
+::ng-deep .student-list-card .ant-table-tbody > tr > td:nth-child(7) .ant-tag {
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  padding: 4px 12px !important;
+}
+
+::ng-deep .student-list-card .ant-table-tbody > tr > td:nth-child(7) .text-muted {
+  color: #999;
+  font-weight: normal;
+}
+
+/* Hover Effect for Rows */
+::ng-deep .student-list-card .ant-table-tbody > tr:hover > td {
+  background-color: #fafafa !important;
+}
+/* Responsive */
+@media (max-width: 768px) {
+  .class-payments-container {
+    padding: 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .header-actions button {
+    flex: 1;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .revenue-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filters-section {
+    flex-direction: column;
+  }
+
+  .search-input,
+  .status-filter {
+    width: 100%;
+  }
+
+  .progress-wrapper {
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Loading State */
+::ng-deep .ant-spin-nested-loading {
+  min-height: 200px;
+}
+
+/* Payment Detail Modal Styles */
+.payment-detail-modal {
+  padding: 8px 0;
+}
+
+.payment-detail-modal .info-card,
+.payment-detail-modal .summary-card,
+.payment-detail-modal .history-card {
+  margin-bottom: 16px;
+  border-radius: 8px;
+}
+
+.payment-detail-modal .info-card:last-child,
+.payment-detail-modal .summary-card:last-child,
+.payment-detail-modal .history-card:last-child {
+  margin-bottom: 0;
+}
+
+/* Info Card Grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-label {
+  font-size: 13px;
+  color: #8c8c8c;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 15px;
+  color: #262626;
+  font-weight: 600;
+}
+
+/* Summary Card Grid */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 8px;
+  border-left: 4px solid #d9d9d9;
+}
+
+.summary-item.total {
+  border-left-color: #1890ff;
+}
+
+.summary-item.paid {
+  border-left-color: #52c41a;
+}
+
+.summary-item.remaining {
+  border-left-color: #ff4d4f;
+}
+
+.summary-item i {
+  font-size: 32px;
+  color: #8c8c8c;
+}
+
+.summary-item.total i {
+  color: #1890ff;
+}
+
+.summary-item.paid i {
+  color: #52c41a;
+}
+
+.summary-item.remaining i {
+  color: #faad14;
+}
+
+.summary-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.summary-label {
+  font-size: 13px;
+  color: #8c8c8c;
+  font-weight: 500;
+}
+
+.summary-amount {
+  font-size: 20px;
+  font-weight: 700;
+  color: #262626;
+  font-family: 'Courier New', monospace;
+}
+
+.summary-amount.success {
+  color: #52c41a;
+}
+
+.summary-amount.pending {
+  color: #ff4d4f;
+}
+
+/* Payment Progress */
+.payment-progress {
+  padding: 16px;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.progress-label {
+  display: block;
+  font-size: 14px;
+  color: #595959;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+/* Transaction Code */
+.transaction-code {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: #1890ff;
+  font-size: 13px;
+}
+
+/* Modal Specific Table Styles */
+::ng-deep .payment-detail-modal .ant-table-thead > tr > th {
+  background-color: #f0f2f5 !important;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+::ng-deep .payment-detail-modal .ant-table-tbody > tr > td {
+  font-size: 13px;
+}
+
+/* Modal Responsive */
+@media (max-width: 768px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-item {
+    padding: 12px;
+  }
+
+  .summary-amount {
+    font-size: 18px;
+  }
+}
+/* Status Update Card - Modern Professional Design */
+.update-status-card-modern {
+  margin-bottom: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e8e8e8;
+  transition: all 0.3s ease;
+}
+
+.update-status-card-modern:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+::ng-deep .update-status-card-modern .ant-card-body {
+  padding: 0;
+}
+
+/* Status Header */
+.status-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.status-header-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+}
+
+.status-header-icon i {
+  font-size: 24px;
+  color: white;
+}
+
+.status-header-text h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+}
+
+.status-header-text p {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Status Content Grid */
+.status-content-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 24px;
+  padding: 32px 24px;
+  background: #fafafa;
+  align-items: center;
+}
+
+.status-section {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.status-section:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.section-header i {
+  font-size: 16px;
+  color: #1890ff;
+}
+
+.section-header span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #262626;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.section-body {
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+}
+
+/* Status Display */
+.status-display {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.status-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.status-icon-wrapper i {
+  font-size: 28px;
+  color: white;
+}
+
+.status-icon-wrapper.success {
+  background: linear-gradient(135deg, #52c41a, #73d13d);
+}
+
+.status-icon-wrapper.processing {
+  background: linear-gradient(135deg, #1890ff, #40a9ff);
+}
+
+.status-icon-wrapper.error {
+  background: linear-gradient(135deg, #ff4d4f, #ff7875);
+}
+
+.status-icon-wrapper.warning {
+  background: linear-gradient(135deg, #faad14, #ffc53d);
+}
+
+.status-icon-wrapper.default {
+  background: linear-gradient(135deg, #8c8c8c, #bfbfbf);
+}
+
+.status-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.status-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.status-desc {
+  font-size: 13px;
+  color: #8c8c8c;
+}
+
+/* Arrow Divider */
+.arrow-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.arrow-divider i {
+  font-size: 20px;
+  color: #1890ff;
+}
+
+/* Modern Status Select */
+::ng-deep .modern-status-select {
+  width: 100%;
+}
+
+::ng-deep .modern-status-select .ant-select-selector {
+  border-radius: 8px !important;
+  border: 2px solid #e8e8e8 !important;
+  padding: 8px 12px !important;
+  min-height: 48px !important;
+  transition: all 0.3s ease;
+}
+
+::ng-deep .modern-status-select:hover .ant-select-selector {
+  border-color: #40a9ff !important;
+}
+
+::ng-deep .modern-status-select.ant-select-focused .ant-select-selector {
+  border-color: #1890ff !important;
+  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1) !important;
+}
+
+::ng-deep .modern-status-select .ant-select-selection-placeholder {
+  font-size: 14px;
+  color: #bfbfbf;
+}
+
+.status-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-option i {
+  font-size: 16px;
+  color: #1890ff;
+}
+
+/* Status Actions Footer */
+.status-actions-footer {
+  padding: 20px 24px 24px 24px;
+  background: white;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* Payment Method Section */
+.payment-method-section {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border: 2px dashed #4caf50;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.method-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+.method-header i {
+  font-size: 18px;
+  color: #4caf50;
+}
+
+.method-radio-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+::ng-deep .method-radio {
+  flex: 1;
+  min-width: 120px;
+}
+
+::ng-deep .method-radio .ant-radio {
+  display: none;
+}
+
+::ng-deep .method-radio .ant-radio-wrapper {
+  width: 100%;
+}
+
+.method-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  color: #595959;
+}
+
+.method-option i {
+  font-size: 18px;
+  color: #8c8c8c;
+}
+
+::ng-deep .method-radio.ant-radio-wrapper-checked .method-option {
+  background: linear-gradient(135deg, #4caf50, #66bb6a);
+  border-color: #4caf50;
+  color: white;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+::ng-deep .method-radio.ant-radio-wrapper-checked .method-option i {
+  color: white;
+}
+
+.method-option:hover {
+  border-color: #4caf50;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.compact-alert {
+  margin-bottom: 16px;
+}
+
+::ng-deep .compact-alert .ant-alert-message {
+  font-size: 13px;
+  color: #595959;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.btn-reset {
+  border-radius: 8px;
+  font-weight: 500;
+  border: 2px solid #d9d9d9;
+  transition: all 0.3s ease;
+}
+
+.btn-reset:hover {
+  border-color: #40a9ff;
+  color: #40a9ff;
+}
+
+.btn-confirm {
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(24, 144, 255, 0.3);
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #1890ff, #40a9ff);
+  border: none;
+}
+
+.btn-confirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.4);
+}
+
+.btn-confirm:disabled {
+  background: #f5f5f5;
+  color: #bfbfbf;
+  transform: none;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .status-content-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .arrow-divider {
+    transform: rotate(90deg);
+  }
+}
+
+@media (max-width: 576px) {
+  .status-header {
+    padding: 20px 16px;
+  }
+
+  .status-content-grid {
+    padding: 24px 16px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .btn-reset,
+  .btn-confirm {
+    width: 100%;
+  }
+}
+
+/* Inline Status Select in Table */
+::ng-deep .inline-status-select {
+  min-width: 140px;
+}
+
+::ng-deep .inline-status-select .ant-select-selector {
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* Responsive for Status Update Card */
+@media (max-width: 768px) {
+  .status-update-wrapper {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  ::ng-deep .status-update-wrapper nz-divider {
+    display: none;
+  }
+
+  .status-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  ::ng-deep .status-select {
+    width: 100%;
+  }
+
+  .btn-update-status {
+    width: 100%;
+  }
+}
+
+/* Cash Payment Section */
+.cash-payment-section {
+  text-align: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #f6f9fc 0%, #e9f5e9 100%);
+  border-radius: 8px;
+  border: 2px dashed #52c41a;
+}
+
+.cash-payment-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 8px;
+}
+
+.cash-payment-header i {
+  font-size: 24px;
+}
+
+.cash-payment-desc {
+  font-size: 13px;
+  color: #595959;
+  margin: 0 0 16px 0;
+}
+
+.btn-cash-payment {
+  background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
+  border: none;
+  font-weight: 600;
+  font-size: 15px;
+  height: 44px;
+  padding: 0 32px;
+  box-shadow: 0 4px 12px rgba(82, 196, 26, 0.4);
+  transition: all 0.3s;
+}
+
+.btn-cash-payment:hover {
+  background: linear-gradient(135deg, #73d13d 0%, #95de64 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(82, 196, 26, 0.5);
+}
+
+.btn-cash-payment:active {
+  transform: translateY(0);
+}

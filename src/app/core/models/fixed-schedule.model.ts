@@ -109,8 +109,8 @@ export const DAY_MAPPING = {
 };
 
 export const DAY_NAMES_VI = {
-  '1': 'T2', '2': 'T3', '3': 'T4', '4': 'T5',
-  '5': 'T6', '6': 'T7', '7': 'CN'
+  '2': 'T2', '3': 'T3', '4': 'T4', '5': 'T5',
+  '6': 'T6', '7': 'T7', '8': 'CN'
 };
 
 // Convert JavaScript day (0=Sunday, 1=Monday...) to our day mapping (1=Monday, 2=Tuesday...)
@@ -131,13 +131,19 @@ export function getJSDayNumber(ourDay: number): number {
 
 export function formatDaysOfWeekDisplay(daysOfWeek: string | null): string {
   if (!daysOfWeek) return 'Không xác định';
-  const days = daysOfWeek.split(',').map(day => DAY_NAMES_VI[day] || day);
+  const days = daysOfWeek.split(',').map(day => DAY_NAMES_VI[day.trim()] || day);
   return days.join(', ');
 }
 
 export function formatTimeRange(startTime: string | null, endTime: string | null): string {
   if (!startTime || !endTime) return 'Chưa xác định';
-  return `${startTime} - ${endTime}`;
+
+  // Remove seconds from time (HH:mm:ss -> HH:mm)
+  const formatTime = (time: string) => {
+    return time.substring(0, 5); // "20:00:00" -> "20:00"
+  };
+
+  return `${formatTime(startTime)} - ${formatTime(endTime)}`;
 }
 
 // Helper functions for student schedule display

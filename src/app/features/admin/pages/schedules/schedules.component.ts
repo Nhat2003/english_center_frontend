@@ -32,7 +32,6 @@ export class SchedulesComponent implements OnInit {
       next: (data: FixedSchedule[]) => {
         this.fixedSchedules = data || [];
         this.isLoadingFixed = false;
-        console.log('Loaded fixed schedules from API:', this.fixedSchedules);
         this.message.success(`Đã tải ${this.fixedSchedules.length} lịch cố định`);
       },
       error: (error) => {

@@ -29,9 +29,10 @@ export class PaymentListComponent implements OnInit {
   statusOptions = [
     { label: 'Tất cả', value: '' },
     { label: 'Chờ xử lý', value: 'PENDING' },
-    { label: 'Hoàn thành', value: 'COMPLETED' },
+    { label: 'Thành công', value: 'SUCCESS' },
     { label: 'Thất bại', value: 'FAILED' },
-    { label: 'Hoàn tiền', value: 'REFUNDED' }
+    { label: 'Hết hạn', value: 'EXPIRED' },
+    { label: 'Hủy', value: 'CANCELED' }
   ];
 
   // Payment method options
@@ -132,7 +133,10 @@ export class PaymentListComponent implements OnInit {
   }
 
   updatePaymentStatus(payment: Payment, newStatus: string): void {
-    this.paymentService.updatePaymentStatus(payment.id!, newStatus).subscribe({
+    this.paymentService.updatePaymentStatus(
+      payment.id!,
+      newStatus as 'PENDING' | 'SUCCESS' | 'FAILED' | 'EXPIRED' | 'CANCELED'
+    ).subscribe({
       next: () => {
         this.message.success('Cập nhật trạng thái thành công');
         this.loadPayments();
@@ -197,13 +201,15 @@ export class PaymentListComponent implements OnInit {
 
   getStatusColor(status: string): string {
     switch (status) {
-      case 'COMPLETED':
+      case 'SUCCESS':
         return 'success';
       case 'PENDING':
         return 'warning';
       case 'FAILED':
         return 'error';
-      case 'REFUNDED':
+      case 'EXPIRED':
+        return 'default';
+      case 'CANCELED':
         return 'default';
       default:
         return 'default';
@@ -212,14 +218,16 @@ export class PaymentListComponent implements OnInit {
 
   getStatusText(status: string): string {
     switch (status) {
-      case 'COMPLETED':
-        return 'Hoàn thành';
+      case 'SUCCESS':
+        return 'Thành công';
       case 'PENDING':
         return 'Chờ xử lý';
       case 'FAILED':
         return 'Thất bại';
-      case 'REFUNDED':
-        return 'Hoàn tiền';
+      case 'EXPIRED':
+        return 'Hết hạn';
+      case 'CANCELED':
+        return 'Hủy';
       default:
         return status;
     }

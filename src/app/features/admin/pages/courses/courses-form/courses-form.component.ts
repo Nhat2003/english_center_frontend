@@ -31,7 +31,7 @@ export class CoursesFormComponent implements OnInit {
       description: [null],
       duration: [null, [Validators.required, Validators.min(1)]],
       fee: [null, [Validators.required, Validators.min(0)]],
-      level: [null, Validators.required]
+      level: [null] // Không required
     });
   }
 
@@ -89,7 +89,6 @@ export class CoursesFormComponent implements OnInit {
       apiCall.subscribe({
         next: (course) => {
           this.loading = false;
-          console.log(`Course ${action}d successfully:`, course);
           this.modal.close(true);
         },
         error: (error) => {
@@ -117,5 +116,17 @@ export class CoursesFormComponent implements OnInit {
 
   onCancel() {
     this.modal.close(false);
+  }
+
+  getLevelText(level: string | undefined): string {
+    if (!level) return 'N/A';
+    const levels: { [key: string]: string } = {
+      'BEGINNER': 'Sơ cấp',
+      'INTERMEDIATE': 'Trung cấp',
+      'ADVANCED': 'Nâng cao',
+      'TOEIC': 'TOEIC',
+      'IELTS': 'IELTS'
+    };
+    return levels[level] || level;
   }
 }

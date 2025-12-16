@@ -69,13 +69,8 @@ export class ClassAssignmentsComponent implements OnInit {
 
     // TODO: Backend cần tạo endpoint GET /assignments/class/{classRoomId}
     // Tạm thời set empty để test UI
-    console.warn('Backend endpoint /assignments/class/:id chưa có hoặc trả về 400');
-    console.log('Cần backend tạo endpoint: GET /assignments/class/{classRoomId}');
-
     this.assignmentService.getAssignmentsByClass(this.classId!).subscribe({
       next: (data) => {
-        console.log('Assignments loaded:', data);
-
         // Map to TeacherAssignment với completedCount và totalStudents từ submissions
         this.assignments = data.map(a => ({
           ...a,
@@ -152,22 +147,12 @@ export class ClassAssignmentsComponent implements OnInit {
 
     // Get teacher ID from current user
     const currentUser = this.authService.getCurrentUser();
-    console.log('=== CREATE ASSIGNMENT DEBUG ===');
-    console.log('Current user from localStorage:', currentUser);
-    console.log('Teacher object:', currentUser?.teacher);
-
     // teacherId is at user.teacher.id according to login response
     let teacherId = currentUser?.teacher?.id;
-    console.log('Teacher ID from user.teacher.id:', teacherId);
-
     // TEMPORARY FIX: If teacherId is null, use hardcoded value
     if (!teacherId) {
-      console.warn('⚠️ teacherId is null, using hardcoded value = 2');
       teacherId = 2; // Hardcoded for testing
     }
-
-    console.log('✅ Final teacherId to be sent:', teacherId);
-    console.log('✅ Final classRoomId to be sent:', this.classId);
 
     // Prepare FormData instead of JSON
     const formData = new FormData();
@@ -180,20 +165,12 @@ export class ClassAssignmentsComponent implements OnInit {
     // Add file if exists
     if (this.assignmentForm.file) {
       formData.append('file', this.assignmentForm.file);
-      console.log('� File attached:', this.assignmentForm.file.name);
-    }
+      }
 
-    console.log('📤 Sending FormData with:');
-    console.log('  - title:', this.assignmentForm.title);
-    console.log('  - description:', this.assignmentForm.description);
     console.log('  - dueDate:', this.assignmentForm.dueDate!.toISOString().split('T')[0]);
-    console.log('  - classRoomId:', this.classId);
-    console.log('  - teacherId:', teacherId);
-
     // Call API to create assignment with FormData
     this.assignmentService.createAssignmentWithFile(formData).subscribe({
       next: (response) => {
-        console.log('✅ Assignment created successfully:', response);
         this.message.success('Tạo bài tập thành công');
         this.closeCreateModal();
         this.loadAssignments();
@@ -265,7 +242,6 @@ export class ClassAssignmentsComponent implements OnInit {
     let teacherId = currentUser?.teacher?.id;
 
     if (!teacherId) {
-      console.warn('⚠️ teacherId is null, using hardcoded value = 2');
       teacherId = 2;
     }
 
@@ -282,12 +258,9 @@ export class ClassAssignmentsComponent implements OnInit {
       formData.append('file', this.editForm.file);
     }
 
-    console.log('📝 Updating assignment ID:', this.editingAssignment.id);
-
     // Call API to update assignment
     this.assignmentService.updateAssignment(this.editingAssignment.id, formData).subscribe({
       next: (response) => {
-        console.log('✅ Assignment updated successfully:', response);
         this.message.success('Cập nhật bài tập thành công');
         this.closeEditModal();
         this.loadAssignments();
@@ -307,11 +280,8 @@ export class ClassAssignmentsComponent implements OnInit {
       nzOkType: 'primary',
       nzCancelText: 'Hủy',
       nzOnOk: () => {
-        console.log('🗑️ Deleting assignment ID:', assignment.id);
-
         this.assignmentService.deleteAssignment(assignment.id).subscribe({
           next: () => {
-            console.log('✅ Assignment deleted successfully');
             this.message.success('Xóa bài tập thành công');
             this.loadAssignments();
           },

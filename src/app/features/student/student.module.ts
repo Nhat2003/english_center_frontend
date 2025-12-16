@@ -36,6 +36,7 @@ import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { NzRateModule } from 'ng-zorro-antd/rate';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 
 // Components
 import { StudentLayoutComponent } from './student-layout/student-layout.component';
@@ -65,6 +66,8 @@ import { PaymentSuccessComponent } from './pages/payment-success/payment-success
 // Routes
 import { STUDENT_ROUTES } from './student.routes';
 import { SharedModule } from '../../shared/shared.module';
+import { ProfileSettingsComponent } from './pages/profile-settings/profile-settings.component';
+import { CoreModule } from '../../core/core.module';
 
 @NgModule({
   declarations: [
@@ -83,7 +86,8 @@ import { SharedModule } from '../../shared/shared.module';
     StudentNotificationsComponent,
     ClassTabsComponent,
     StudentPaymentComponent,
-    PaymentSuccessComponent
+    PaymentSuccessComponent,
+    ProfileSettingsComponent
   ],
   imports: [
     CommonModule,
@@ -123,7 +127,9 @@ import { SharedModule } from '../../shared/shared.module';
     NzRateModule,
     NzTypographyModule,
     NzFormModule,
-    SharedModule
+    NzDatePickerModule,
+    SharedModule,
+    CoreModule
   ],
   providers: [
     StudentScheduleService

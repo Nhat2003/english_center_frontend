@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, of } from 'rxjs';
+import { Observable, BehaviorSubject, of, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
@@ -152,7 +152,6 @@ export class AuthService {
     return this.http.post<any>(`${this.API_URL}/auth/register`, userData)
       .pipe(
         catchError(error => {
-          console.warn('Backend register failed, using fallback:', error);
           // Fallback logic
           if (this.users.find(u => u.username === userData.username)) {
             return of({ success: false, message: 'Tên đăng nhập đã tồn tại!' });
@@ -168,9 +167,52 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem(this.STORAGE_KEY);
     localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.STORAGE_KEY);
     this.currentUserSubject.next(null);
+  }
+
+  /**
+   * Forgot password - Send reset password email
+   * API: POST /auth/forgot-password
+   */
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post(`${this.API_URL}/auth/forgot-password`, { email })
+      .pipe(
+        catchError(error => {
+          console.error('Forgot password error:', error);
+          return throwError(() => error);
+        })
+      );
+  }
+
+  /**
+   * Validate reset password token
+   * API: GET /auth/reset/validate?token=...
+   */
+  validateResetToken(token: string): Observable<any> {
+    return this.http.get(`${this.API_URL}/auth/reset/validate`, {
+      params: { token }
+    }).pipe(
+      catchError(error => {
+        console.error('Validate token error:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Reset password with token
+   * API: POST /auth/reset-password
+   */
+  resetPassword(token: string, newPassword: string): Observable<any> {
+    return this.http.post(`${this.API_URL}/auth/reset-password`, { token, newPassword })
+      .pipe(
+        catchError(error => {
+          console.error('Reset password error:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   isLoggedIn(): boolean {
@@ -207,7 +249,6 @@ export class AuthService {
 
         // If token doesn't have exp field, consider it valid
         if (!payload.exp) {
-          console.log('JWT token has no exp field, considering it valid');
           return false;
         }
 
@@ -221,7 +262,6 @@ export class AuthService {
 
           // If token doesn't have exp field, consider it valid
           if (!payload.exp) {
-            console.log('Custom token has no exp field, considering it valid');
             return false;
           }
 
@@ -230,14 +270,12 @@ export class AuthService {
           return expired;
         } catch {
           // If can't parse, consider token as valid (might be opaque token)
-          console.log('Token is opaque, considering it valid');
           return false;
         }
       }
     } catch (error) {
       console.error('Token parse error:', error);
       // If JWT parse fails but token exists, consider it valid (opaque token)
-      console.log('Treating as opaque token, considering it valid');
       return false;
     }
   }

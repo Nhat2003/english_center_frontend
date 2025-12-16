@@ -49,7 +49,7 @@ export class StudentScheduleComponent implements OnInit {
     weekEnd.setDate(this.currentWeekStart.getDate() + 6);
     const toDate = this.formatDateForAPI(weekEnd);
 
-    this.scheduleService.getStudentSchedule(this.currentUser.student.id, fromDate, toDate).subscribe({
+    this.scheduleService.getStudentSchedule(this.currentUser.student.id, fromDate, toDate, true).subscribe({
       next: (data: ScheduleItemForStudentDTO[]) => {
         this.studentSchedules = data;
         this.loading = false;
@@ -137,7 +137,7 @@ export class StudentScheduleComponent implements OnInit {
   }
 
   getDayLabel(dayIndex: number): string {
-    const dayNumber = (dayIndex + 1).toString();
+    const dayNumber = (dayIndex + 2).toString();
     return DAY_NAMES_VI[dayNumber] || `Day ${dayIndex}`;
   }
 

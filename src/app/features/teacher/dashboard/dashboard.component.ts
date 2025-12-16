@@ -94,8 +94,6 @@ export class TeacherDashboardComponent implements OnInit {
       this.teacherId = user.teacher.id;
       this.currentUser = user;
       this.loadDashboardData();
-    } else {
-      this.message.error('Không tìm thấy thông tin giáo viên');
     }
 
     // Update current time every minute
@@ -111,13 +109,11 @@ export class TeacherDashboardComponent implements OnInit {
       return;
     }
 
-    console.log('Loading dashboard data for teacher:', this.teacherId);
     this.loading = true;
 
     // Load classes
     this.teacherService.getClassesByTeacher(this.teacherId).subscribe({
       next: (classes) => {
-        console.log('Classes loaded:', classes);
         this.teacherStats.totalClasses = classes.length;
 
         // Count total students
@@ -128,7 +124,6 @@ export class TeacherDashboardComponent implements OnInit {
         if (studentRequests.length > 0) {
           forkJoin(studentRequests).subscribe({
             next: (studentsArrays) => {
-              console.log('Students loaded:', studentsArrays);
               this.teacherStats.totalStudents = studentsArrays.reduce(
                 (total, students) => total + students.length,
                 0
@@ -153,12 +148,9 @@ export class TeacherDashboardComponent implements OnInit {
     // Load today's schedule using teacher ID
     const today = new Date();
     const todayStr = this.formatDate(today);
-    console.log('Loading schedule for teacher:', this.teacherId, 'date:', todayStr);
-
     // Use getTeacherScheduleToday instead of getMyScheduleByDate
     this.scheduleService.getTeacherScheduleToday(this.teacherId).subscribe({
       next: (schedule) => {
-        console.log('Schedule loaded:', schedule);
         this.todaySchedule = schedule.map(item => ({
           id: item.id,
           date: item.date,

@@ -39,7 +39,7 @@
           <span nz-icon nzType="down"></span>
         </div>
         <ul nz-menu nzSelectable="false">
-          <li nz-menu-item>
+          <li nz-menu-item [routerLink]="['/teacher/profile-settings']">
             <span nz-icon nzType="user"></span>
             Thông tin cá nhân
           </li>
@@ -91,8 +91,9 @@
 
         <!-- Thông báo cho học sinh -->
         <li nz-menu-item routerLink="/teacher/notifications" routerLinkActive="ant-menu-item-selected">
-          <span nz-icon nzType="notification" class="menu-icon"></span>
-          <span>Thông báo cho học sinh</span>
+          <span nz-icon nzType="bell" class="menu-icon"></span>
+
+          <span>Thông báo</span>
           <nz-badge [nzCount]="newNotifications" [nzShowZero]="false" class="notification-badge"></nz-badge>
         </li>
 
@@ -146,6 +147,12 @@
           <span nz-icon nzType="check-square" class="menu-icon"></span>
           <span>Điểm danh</span>
         </li>
+
+        <!-- Đổi lịch học -->
+        <!-- <li nz-menu-item [routerLink]="['/teacher/classes', currentClassId, 'edit-schedule']" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="calendar" class="menu-icon"></span>
+          <span>Đổi lịch học</span>
+        </li> -->
       </ul>
     </nz-sider>
 
@@ -153,6 +160,7 @@
     <nz-layout class="inner-layout">
       <nz-content class="content">
         <div class="content-wrapper">
+          <app-breadcrumb></app-breadcrumb>
           <router-outlet></router-outlet>
         </div>
       </nz-content>

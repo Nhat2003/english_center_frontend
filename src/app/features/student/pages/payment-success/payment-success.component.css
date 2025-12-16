@@ -1,43 +1,159 @@
-.payment-success-container {
-  max-width: 420px;
-  margin: 60px auto;
-  padding: 36px 28px 32px 28px;
-  border: 1.5px solid #e3e8ee;
+.payment-result-container {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #f0f2f5;
+}
+
+.result-card {
+  max-width: 560px;
+  width: 100%;
+  padding: 48px 36px;
+  background: white;
   border-radius: 16px;
-  background: linear-gradient(135deg, #f8fafc 0%, #e3f9e5 100%);
-  box-shadow: 0 4px 24px 0 rgba(67, 160, 71, 0.08);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   text-align: center;
-  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+  animation: fadeInUp 0.5s ease;
 }
-.payment-success-container h2 {
-  color: #43a047;
-  font-size: 2rem;
-  margin-bottom: 18px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-.icon-success {
-  margin: 18px 0 12px 0;
-}
-.success-message {
-  color: #333;
-  font-size: 1.1rem;
+
+.icon-wrapper {
+  font-size: 80px;
   margin-bottom: 24px;
+  animation: scaleIn 0.6s ease;
 }
-.back-link {
-  display: inline-block;
-  padding: 10px 28px;
-  background: linear-gradient(90deg, #43a047 60%, #66bb6a 100%);
-  color: #fff;
-  border-radius: 6px;
-  text-decoration: none;
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.success-icon {
+  color: #52c41a;
+}
+
+.warning-icon {
+  color: #faad14;
+}
+
+.error-icon {
+  color: #ff4d4f;
+}
+
+.result-card h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #262626;
+}
+
+.result-card.success h2 {
+  color: #52c41a;
+}
+
+.result-card.cancelled h2 {
+  color: #faad14;
+}
+
+.result-card.failed h2 {
+  color: #ff4d4f;
+}
+
+.message {
+  font-size: 16px;
+  color: #595959;
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
+.sub-message {
+  font-size: 14px;
+  color: #8c8c8c;
+  margin-bottom: 32px;
+}
+
+.error-text {
+  color: #ff4d4f;
   font-weight: 600;
-  font-size: 1rem;
-  transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
-  box-shadow: 0 2px 8px 0 rgba(67, 160, 71, 0.10);
 }
-.back-link:hover {
-  background: linear-gradient(90deg, #388e3c 60%, #43a047 100%);
-  box-shadow: 0 4px 16px 0 rgba(67, 160, 71, 0.18);
-  transform: translateY(-2px) scale(1.03);
+
+.countdown-section {
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.countdown-section p {
+  font-size: 15px;
+  color: #595959;
+  margin-bottom: 20px;
+}
+
+.countdown-section strong {
+  color: #52c41a;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.action-buttons button {
+  min-width: 160px;
+}
+
+.processing {
+  padding: 60px 36px;
+}
+
+.processing h2 {
+  color: #1890ff;
+  margin-top: 24px;
+}
+
+.processing p {
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+@media (max-width: 576px) {
+  .result-card {
+    padding: 32px 24px;
+  }
+
+  .icon-wrapper {
+    font-size: 64px;
+  }
+
+  .result-card h2 {
+    font-size: 24px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-buttons button {
+    width: 100%;
+  }
 }

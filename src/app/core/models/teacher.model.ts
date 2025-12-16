@@ -9,4 +9,8 @@ export interface Teacher {
   address: string;
   speciality: string;
   hiredAt: string; // yyyy-MM-dd
+
+  // Thông tin ngân hàng
+  bankName?: string;
+  bankAccountNumber?: string;
 }

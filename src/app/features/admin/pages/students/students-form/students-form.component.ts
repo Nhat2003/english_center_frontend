@@ -36,14 +36,14 @@ export class StudentsFormComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       userId: [null, Validators.required],
-      fullName: [null, Validators.required],
-      email: [null, [Validators.required, Validators.email]],
-      dob: [null, Validators.required],
-      gender: [null, Validators.required],
-      phone: [null, Validators.required],
-      address: [null, Validators.required],
-      joinedAt: [null, Validators.required],
-      className: [null, Validators.required]
+      fullName: [null],
+      email: [null],
+      dob: [null],
+      gender: [null],
+      phone: [null],
+      address: [null],
+      joinedAt: [null],
+      className: [null]
     });
   }
 
@@ -76,17 +76,14 @@ export class StudentsFormComponent implements OnInit {
         // Filter thêm isActive = true để đảm bảo
         this.availableUsers = users.filter(user => user.isActive === true);
         this.filteredUsers = [...this.availableUsers];
-        console.log('Available active users for student profile (API):', this.availableUsers);
       },
       error: (error) => {
-        console.log('API không hỗ trợ isActive filter, sử dụng fallback:', error);
         // Fallback: Lấy tất cả users theo role rồi filter
         this.userService.getUsersByRole('STUDENT').subscribe({
           next: (users) => {
             // Chỉ lấy users có isActive = true
             this.availableUsers = users.filter(user => user.isActive === true);
             this.filteredUsers = [...this.availableUsers];
-            console.log('Available active users for student profile (filtered):', this.availableUsers);
           },
           error: (err) => {
             console.error('Error loading users with role STUDENT:', err);
@@ -150,12 +147,9 @@ export class StudentsFormComponent implements OnInit {
         : this.studentService.createStudent(data);
 
       const action = this.mode === 'edit' ? 'cập nhật' : 'tạo';
-      console.log(`${action} student with data:`, data);
-
       apiCall.subscribe({
         next: (student) => {
           this.loading = false;
-          console.log(`Student ${action}d successfully:`, student);
           this.modal.close(true); // Đóng modal và trả về true
         },
         error: (error) => {
@@ -165,9 +159,7 @@ export class StudentsFormComponent implements OnInit {
         }
       });
     } else {
-      console.log('Form is invalid:', this.form.errors);
-      console.log('Form values:', this.form.value);
-    }
+      }
   }
 
   handleError(error: any, action: string) {
@@ -199,8 +191,6 @@ export class StudentsFormComponent implements OnInit {
 
   // User selection modal methods
   openUserSelectionModal() {
-    console.log('Opening user selection modal...');
-    console.log('Available users:', this.availableUsers);
     console.log('Current userId:', this.form.get('userId')?.value);
     this.isUserSelectionModalVisible = true;
     this.filterUsers();
@@ -229,7 +219,11 @@ export class StudentsFormComponent implements OnInit {
   }
 
   selectUser(user: User) {
-    this.form.patchValue({ userId: user.id });
+    this.form.patchValue({
+      userId: user.id,
+      fullName: user.fullName || user.username,
+      email: user.email
+    });
     this.isUserSelectionModalVisible = false;
     this.message.success(`Đã chọn: ${user.fullName || user.username}`);
   }
@@ -240,5 +234,20 @@ export class StudentsFormComponent implements OnInit {
 
     const user = this.availableUsers.find(u => u.id === userId);
     return user ? (user.fullName || user.username || '') : '';
+  }
+
+  getAvatarText(): string {
+    const name = this.studentData?.fullName;
+    if (!name) return 'S';
+    const parts = name.split(' ');
+    if (parts.length >= 2) {
+      return parts[0].charAt(0).toUpperCase() + parts[parts.length - 1].charAt(0).toUpperCase();
+    }
+    return name.charAt(0).toUpperCase();
+  }
+
+  getGenderText(gender: string | undefined): string {
+    if (!gender) return 'N/A';
+    return gender === 'Male' ? 'Nam' : gender === 'Female' ? 'Nữ' : 'N/A';
   }
 }

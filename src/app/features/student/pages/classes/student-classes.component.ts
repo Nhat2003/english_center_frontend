@@ -40,7 +40,6 @@ export class StudentClassesComponent implements OnInit {
     // Gọi API lấy danh sách lớp của học sinh
     this.studentService.getClassesByStudent(this.studentId).subscribe({
       next: (classes: any[]) => {
-        console.log('Classes loaded for student:', classes);
         this.classes = classes;
         this.loadingClasses = false;
       },

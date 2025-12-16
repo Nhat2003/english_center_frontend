@@ -106,13 +106,11 @@ export class ChatService {
   // WebSocket: Connect with STOMP over SockJS
   connect(): void {
     if (this.stompClient && this.stompClient.connected) {
-      console.log('Already connected to WebSocket');
       return;
     }
 
     const token = this.getToken();
     if (!token) {
-      console.warn('No token available for WebSocket connection');
       return;
     }
 
@@ -131,8 +129,7 @@ export class ChatService {
 
         // Debug output
         debug: (str) => {
-          console.log('[STOMP Debug]:', str);
-        },
+          },
 
         // Reconnect settings
         reconnectDelay: 5000,
@@ -141,7 +138,6 @@ export class ChatService {
 
         // Connection callback
         onConnect: (frame) => {
-          console.log('✅ STOMP Connected:', frame);
           this.connected$.next(true);
 
           // Subscribe to personal queue
@@ -158,8 +154,7 @@ export class ChatService {
               this.subscriptions.set('personal-queue', personalSub);
             }
 
-            console.log(`📩 Subscribed to /user/queue/messages`);
-          }
+            }
         },
 
         // Disconnect callback
@@ -176,16 +171,13 @@ export class ChatService {
 
         // WebSocket close
         onWebSocketClose: (event) => {
-          console.log('🔌 WebSocket closed');
           this.connected$.next(false);
         }
       });
 
       // Activate the client
       this.stompClient.activate();
-      console.log('🔄 Activating STOMP client...');
-
-    } catch (error) {
+      } catch (error) {
       console.warn('Failed to initialize WebSocket (chat will be unavailable):', error);
       this.connected$.next(false);
     }
@@ -195,8 +187,6 @@ export class ChatService {
   private handleIncomingMessage(message: Message): void {
     try {
       const chatMessage: ChatMessage = JSON.parse(message.body);
-      console.log('📬 Received message:', chatMessage);
-
       // Emit to personal messages stream
       this.personalMessages$.next(chatMessage);
 
@@ -221,10 +211,8 @@ export class ChatService {
         this.stompClient.deactivate();
         this.stompClient = null;
         this.connected$.next(false);
-        console.log('✅ WebSocket disconnected');
-      }
+        }
     } catch (error) {
-      console.warn('Error during WebSocket disconnect:', error);
       this.stompClient = null;
       this.connected$.next(false);
     }
@@ -233,7 +221,6 @@ export class ChatService {
   // Subscribe to specific conversation for realtime updates
   subscribeToConversation(conversationId: string, callback: (msg: ChatMessage) => void): void {
     if (!this.stompClient || !this.stompClient.connected) {
-      console.warn('Cannot subscribe to conversation - not connected');
       return;
     }
 
@@ -251,8 +238,7 @@ export class ChatService {
     );
 
     this.subscriptions.set(`conversation-${conversationId}`, subscription);
-    console.log('📩 Subscribed to conversation:', conversationId);
-  }
+    }
 
   // Unsubscribe from conversation
   unsubscribeFromConversation(conversationId: string): void {
@@ -262,8 +248,7 @@ export class ChatService {
     if (subscription) {
       subscription.unsubscribe();
       this.subscriptions.delete(key);
-      console.log('🚫 Unsubscribed from conversation:', conversationId);
-    }
+      }
   }
 
   // Send message via WebSocket STOMP
@@ -280,14 +265,11 @@ export class ChatService {
         destination: '/app/chat.sendMessage',
         body: JSON.stringify(payload)
       });
-      console.log('📤 Message sent via WebSocket STOMP to /app/chat.sendMessage');
-    } else {
+      } else {
       // Fallback to REST API POST /chat/send if WebSocket not connected
-      console.warn('⚠️ WebSocket not connected, using HTTP fallback');
       this.http.post(`${this.baseUrl}/chat/send`, payload).subscribe({
         next: (response) => {
-          console.log('📤 Message sent via REST API POST /chat/send:', response);
-        },
+          },
         error: (err) => console.error('❌ Send message error:', err)
       });
     }

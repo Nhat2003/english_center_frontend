@@ -1,6 +1,74 @@
-/* :host ::ng-deep .ant-menu-item.ant-menu-item-selected {
-  padding-left: 0 !important;
-} */
+/* Variables */
+:host {
+  --primary-color: #3bb273;
+  --primary-hover: #2d9960;
+  --sidebar-bg: #fff;
+  --header-height: 64px;
+}
+
+/* Logo Wrapper - Same as Teacher */
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(59, 178, 115, 0.08) 0%, rgba(59, 178, 115, 0.02) 100%);
+  transition: all 0.3s ease;
+}
+
+.logo-wrapper:hover {
+  background: linear-gradient(135deg, rgba(59, 178, 115, 0.12) 0%, rgba(59, 178, 115, 0.04) 100%);
+  transform: translateY(-1px);
+}
+
+.logo-icon {
+  width: 45px;
+  height: 45px;
+  background: linear-gradient(135deg, #3bb273 0%, #2d9960 100%);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(59, 178, 115, 0.25);
+  transition: all 0.3s ease;
+  padding: 8px;
+}
+
+.logo-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.logo-wrapper:hover .logo-icon {
+  box-shadow: 0 6px 16px rgba(59, 178, 115, 0.35);
+  transform: scale(1.05);
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.brand-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: #262626;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.brand-subtitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: #3bb273;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
 /* Căn giữa icon khi sidebar thu gọn */
 .menu-icon-center {
   display: flex;
@@ -8,7 +76,8 @@
   justify-content: center;
   height: 100%;
 }
-/* Logo */
+
+/* Logo Sidebar */
 
 .logo {
   height: 64px;
@@ -48,12 +117,24 @@
   border-radius: 6px;
   margin: 4px 8px;
   transition: all 0.3s;
+  height: 48px;
+  line-height: 48px;
+}
+
+:host ::ng-deep .ant-menu-item .anticon {
+  font-size: 18px;
+  margin-right: 10px;
+  transition: all 0.3s;
 }
 
 /* Hover */
 :host ::ng-deep .ant-menu-item:hover {
   background: #e6f7ef !important; /* xanh lá nhạt khi hover */
   color: #3bb273 !important; /* chữ màu primary */
+}
+
+:host ::ng-deep .ant-menu-item:hover .anticon {
+  transform: scale(1.1);
 }
 
 /* Selected */
@@ -70,4 +151,46 @@
 :host ::ng-deep .ant-menu-item.ant-menu-item-selected {
   background: #c5ecd8 !important; /* nền xanh dịu */
   color: #2e8b57 !important; /* chữ secondary */
+}
+
+/* Collapsed Sidebar - Chỉ hiển thị icon */
+:host ::ng-deep .ant-menu-inline-collapsed .ant-menu-item {
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 6px auto;
+  width: 56px;
+  height: 56px;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), transform 0.2s ease-out;
+}
+
+/* Ẩn text khi thu gọn, chỉ hiển thị icon */
+:host ::ng-deep .ant-menu-inline-collapsed .ant-menu-item > span:not(.anticon):not(nz-badge) {
+  display: none !important;
+}
+
+:host ::ng-deep .ant-menu-inline-collapsed .ant-menu-item .anticon {
+  font-size: 24px;
+  margin: 0;
+  line-height: 1;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+:host ::ng-deep .ant-menu-inline-collapsed .ant-menu-item:hover {
+  transform: scale(1.08);
+  background-color: rgba(59, 178, 115, 0.12) !important;
+}
+
+:host ::ng-deep .ant-menu-inline-collapsed .ant-menu-item:hover .anticon {
+  transform: scale(1.15);
+}
+
+:host ::ng-deep .ant-menu-inline-collapsed .ant-menu-item-selected {
+  transform: scale(1);
+  box-shadow: 0 4px 12px rgba(59, 178, 115, 0.3);
+}
+
+:host ::ng-deep .ant-menu-inline-collapsed .ant-menu-item-selected:hover {
+  transform: scale(1.02);
 }

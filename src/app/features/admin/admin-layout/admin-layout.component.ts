@@ -18,13 +18,13 @@ export class AdminLayoutComponent implements OnInit {
   currentUser: User | null = null;
 
   menuItems = [
-    { label: 'Quản lý người dùng', icon: 'user', route: '/admin/users' },
+    { label: 'Quản lý tài khoản', icon: 'user', route: '/admin/users' },
     { label: 'Quản lý giáo viên', icon: 'solution', route: '/admin/teachers' },
     { label: 'Quản lý học sinh', icon: 'solution', route: '/admin/students' },
     { label: 'Quản lý khóa học', icon: 'book', route: '/admin/courses' },
     { label: 'Quản lý lớp học', icon: 'team', route: '/admin/classes' },
-    { label: 'Quản lý lịch học', icon: 'calendar', route: '/admin/schedules' },
-    { label: 'Quản lý thanh toán', icon: 'credit-card', route: '/admin/payments' },
+    { label: 'Quản lý ca học', icon: 'calendar', route: '/admin/schedules' },
+    { label: 'Quản lý học phí', icon: 'credit-card', route: '/admin/payments' },
     { label: 'Thống kê', icon: 'bar-chart', route: '/admin/stats' }
   ];
 

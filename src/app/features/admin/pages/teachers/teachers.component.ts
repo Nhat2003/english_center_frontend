@@ -12,11 +12,13 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { TeacherService } from '../../../../core/services/teacher.service';
 
   interface Teacher {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  subject: string;
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+    subject: string;
+    bankName?: string;
+    bankAccountNumber?: string;
   }
 
 @Component({
@@ -84,7 +86,9 @@ export class TeachersComponent {
           name: t.fullName || '',
           email: t.email || '',
           phone: t.phone || '',
-          subject: t.speciality || ''
+          subject: t.speciality || '',
+          bankName: t.bankName || '',
+          bankAccountNumber: t.bankAccountNumber || ''
         }));
         this.teachers = [...this.allTeachers]; // Copy to display array
         this.loading = false;
@@ -160,7 +164,7 @@ export class TeachersComponent {
       nzTitle: 'Thông tin giáo viên',
       nzContent: TeachersFormComponent,
       nzFooter: null,
-      nzWidth: 600,
+      nzWidth: 1000,
       nzComponentParams: {
         teacher: { id: teacher.id }, // Chỉ truyền id để component tự load dữ liệu
         mode: 'view'

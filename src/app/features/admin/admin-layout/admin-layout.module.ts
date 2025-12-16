@@ -10,10 +10,11 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzMessageModule } from 'ng-zorro-antd/message';
 import { RouterModule } from '@angular/router';
 import { AdminLayoutComponent } from './admin-layout.component';
-import { BreadcrumbComponent } from '../../../core/components/breadcrumb/breadcrumb/breadcrumb.component';
+import { SharedModule } from '../../../shared/shared.module';
+import { CoreModule } from '../../../core/core.module';
 
 @NgModule({
-  declarations: [AdminLayoutComponent, BreadcrumbComponent],
+  declarations: [AdminLayoutComponent],
   imports: [
     CommonModule,
     NzLayoutModule,
@@ -24,8 +25,10 @@ import { BreadcrumbComponent } from '../../../core/components/breadcrumb/breadcr
     NzAvatarModule,
     NzButtonModule,
     NzMessageModule,
-    RouterModule
+    RouterModule,
+    SharedModule,
+    CoreModule
   ],
-  exports: [AdminLayoutComponent, BreadcrumbComponent]
+  exports: [AdminLayoutComponent]
 })
 export class AdminLayoutModule {}

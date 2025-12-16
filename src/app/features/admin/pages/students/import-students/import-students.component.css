@@ -25,7 +25,7 @@
 
 .step-content {
   padding: 24px;
-  min-height: 400px;
+  min-height: 600px;
 }
 
 /* Step 1: File Upload */
@@ -37,6 +37,30 @@
 
 .upload-info {
   margin-bottom: 16px;
+}
+
+/* Mode Selection */
+.mode-selection {
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #f0f0f0;
+}
+
+.mode-selection nz-radio-group {
+  display: flex;
+  gap: 16px;
+}
+
+.mode-selection label {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.3s;
+}
+
+.mode-selection label:hover {
+  background: #e6f7ff;
 }
 
 .file-upload {
@@ -166,6 +190,7 @@
   border: 1px solid #f0f0f0;
   border-radius: 8px;
   overflow: hidden;
+  min-height: 550px;
 }
 
 .preview-actions {

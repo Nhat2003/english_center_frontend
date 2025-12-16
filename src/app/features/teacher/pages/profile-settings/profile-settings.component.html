@@ -1,0 +1,207 @@
+<div class="profile-settings-container">
+  <nz-spin [nzSpinning]="loading">
+    <nz-card nzTitle="Cài đặt thông tin cá nhân" [nzExtra]="extraTemplate">
+      <form nz-form [formGroup]="profileForm" (ngSubmit)="onSubmit()" nzLayout="vertical">
+
+        <!-- Full Name -->
+        <nz-form-item>
+          <nz-form-label nzRequired>Họ và tên</nz-form-label>
+          <nz-form-control nzErrorTip="Vui lòng nhập họ tên (tối thiểu 2 ký tự)">
+            <input nz-input formControlName="fullName" placeholder="Nhập họ và tên đầy đủ" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Bank Name -->
+        <nz-form-item>
+          <nz-form-label>Tên ngân hàng</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="bankName" placeholder="Nhập tên ngân hàng" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Bank Account Number -->
+        <nz-form-item>
+          <nz-form-label>Số tài khoản ngân hàng</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="bankAccountNumber" placeholder="Nhập số tài khoản ngân hàng" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Phone -->
+        <nz-form-item>
+          <nz-form-label>Số điện thoại</nz-form-label>
+          <nz-form-control nzErrorTip="Số điện thoại không hợp lệ (10 số)">
+            <input nz-input formControlName="phone" placeholder="Nhập số điện thoại (10 số)" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Email -->
+        <nz-form-item>
+          <nz-form-label>Email</nz-form-label>
+          <nz-form-control nzErrorTip="Email không hợp lệ">
+            <input nz-input formControlName="email" placeholder="Nhập email" type="email" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Date of Birth & Specialization (Same Row) -->
+        <nz-row [nzGutter]="16">
+          <nz-col [nzSpan]="12">
+            <nz-form-item>
+              <nz-form-label>Ngày sinh</nz-form-label>
+              <nz-form-control>
+                <input nz-input type="date" formControlName="dob" placeholder="mm/dd/yyyy" />
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+          <nz-col [nzSpan]="12">
+            <nz-form-item>
+              <nz-form-label>Chuyên môn</nz-form-label>
+              <nz-form-control>
+                <nz-select formControlName="speciality" nzPlaceHolder="Chọn chuyên môn" nzAllowClear>
+                  <nz-option nzValue="TOEIC RL" nzLabel="TOEIC RL"></nz-option>
+                  <nz-option nzValue="TOEIC SW" nzLabel="TOEIC SW"></nz-option>
+                  <nz-option nzValue="IELTS" nzLabel="IELTS"></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+        </nz-row>
+
+        <!-- Gender -->
+        <nz-form-item>
+          <nz-form-label>Giới tính</nz-form-label>
+          <nz-form-control nzErrorTip="Vui lòng chọn giới tính">
+            <nz-select formControlName="gender" nzPlaceHolder="Chọn giới tính">
+              <nz-option nzValue="MALE" nzLabel="Nam"></nz-option>
+              <nz-option nzValue="FEMALE" nzLabel="Nữ"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Address -->
+        <nz-form-item>
+          <nz-form-label>Địa chỉ</nz-form-label>
+          <nz-form-control>
+            <textarea
+              nz-input
+              formControlName="address"
+              placeholder="Nhập địa chỉ"
+              [nzAutosize]="{ minRows: 2, maxRows: 4 }">
+            </textarea>
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Action Buttons -->
+        <nz-form-item>
+          <nz-form-control>
+            <button nz-button nzType="primary" type="submit" [nzLoading]="saving">
+              <i nz-icon nzType="save" nzTheme="outline"></i>
+              Lưu thay đổi
+            </button>
+            <button nz-button type="button" (click)="resetForm()" style="margin-left: 8px;">
+              <i nz-icon nzType="redo" nzTheme="outline"></i>
+              Khôi phục
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+
+      </form>
+
+      <ng-template #extraTemplate>
+        <nz-tag nzColor="green">
+          <i nz-icon nzType="user" nzTheme="outline"></i>
+          Giáo viên
+        </nz-tag>
+      </ng-template>
+    </nz-card>
+
+    <!-- Change Password Section -->
+    <nz-card nzTitle="Đổi mật khẩu" style="margin-top: 16px;">
+      <button nz-button nzType="primary" (click)="showPasswordModal()">
+        <i nz-icon nzType="key" nzTheme="outline"></i>
+        Đổi mật khẩu
+      </button>
+      <nz-alert
+        nzType="info"
+        nzMessage="Nhấn nút bên trên để đổi mật khẩu"
+        nzShowIcon
+        style="margin-top: 16px;">
+      </nz-alert>
+    </nz-card>
+
+    <!-- Password Change Modal -->
+    <nz-modal
+      [(nzVisible)]="isPasswordModalVisible"
+      nzTitle="Đổi mật khẩu"
+      (nzOnCancel)="handlePasswordModalCancel()"
+      [nzFooter]="null"
+      nzWidth="500px">
+      <form nz-form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()" nzLayout="vertical">
+        <!-- Current Password -->
+        <nz-form-item>
+          <nz-form-label nzRequired>Mật khẩu hiện tại</nz-form-label>
+          <nz-form-control nzErrorTip="Vui lòng nhập mật khẩu hiện tại">
+            <nz-input-group [nzSuffix]="suffixTemplate1">
+              <input
+                [type]="passwordVisible1 ? 'text' : 'password'"
+                nz-input
+                formControlName="currentPassword"
+                placeholder="Nhập mật khẩu hiện tại" />
+            </nz-input-group>
+            <ng-template #suffixTemplate1>
+              <i nz-icon [nzType]="passwordVisible1 ? 'eye-invisible' : 'eye'" (click)="passwordVisible1 = !passwordVisible1"></i>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- New Password -->
+        <nz-form-item>
+          <nz-form-label nzRequired>Mật khẩu mới</nz-form-label>
+          <nz-form-control nzErrorTip="Mật khẩu mới phải có ít nhất 6 ký tự">
+            <nz-input-group [nzSuffix]="suffixTemplate2">
+              <input
+                [type]="passwordVisible2 ? 'text' : 'password'"
+                nz-input
+                formControlName="newPassword"
+                placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)" />
+            </nz-input-group>
+            <ng-template #suffixTemplate2>
+              <i nz-icon [nzType]="passwordVisible2 ? 'eye-invisible' : 'eye'" (click)="passwordVisible2 = !passwordVisible2"></i>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Confirm Password -->
+        <nz-form-item>
+          <nz-form-label nzRequired>Xác nhận mật khẩu mới</nz-form-label>
+          <nz-form-control [nzErrorTip]="passwordForm.hasError('mismatch') ? 'Mật khẩu xác nhận không khớp' : 'Vui lòng xác nhận mật khẩu'">
+            <nz-input-group [nzSuffix]="suffixTemplate3">
+              <input
+                [type]="passwordVisible3 ? 'text' : 'password'"
+                nz-input
+                formControlName="confirmPassword"
+                placeholder="Nhập lại mật khẩu mới" />
+            </nz-input-group>
+            <ng-template #suffixTemplate3>
+              <i nz-icon [nzType]="passwordVisible3 ? 'eye-invisible' : 'eye'" (click)="passwordVisible3 = !passwordVisible3"></i>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Submit Button -->
+        <nz-form-item>
+          <nz-form-control>
+            <button nz-button nzType="primary" nzDanger type="submit" [nzLoading]="changingPassword" style="width: 100%;">
+              <i nz-icon nzType="key" nzTheme="outline"></i>
+              Đổi mật khẩu
+            </button>
+            <button nz-button type="button" (click)="handlePasswordModalCancel()" style="margin-top: 8px; width: 100%;">
+              Hủy
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </nz-modal>
+
+  </nz-spin>
+</div>

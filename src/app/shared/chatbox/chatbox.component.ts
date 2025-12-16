@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
@@ -62,6 +63,8 @@ export class ChatboxComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   private conversationSubscription: any = null;
   private processedMessageIds = new Set<number>(); // Track processed messages to avoid duplicates
+  private searchTimeout: any;
+  private baseUrl = 'http://localhost:8080';
 
   constructor(
     private chatService: ChatService,
@@ -69,7 +72,8 @@ export class ChatboxComponent implements OnInit, OnDestroy {
     private classService: ClassService,
     private studentService: StudentService,
     private teacherService: TeacherService,
-    private notification: NzNotificationService
+    private notification: NzNotificationService,
+    private http: HttpClient
   ) {}
 
   ngOnInit() {
@@ -78,8 +82,7 @@ export class ChatboxComponent implements OnInit, OnDestroy {
 
       // Chỉ kết nối WebSocket nếu đã đăng nhập (có userId hợp lệ)
       if (!this.currentUserId || this.currentUserId === 0) {
-        console.log('Chatbox: User not logged in, skipping connection');
-        return;
+                return;
       }
 
       // Get current user role
@@ -118,11 +121,8 @@ export class ChatboxComponent implements OnInit, OnDestroy {
   }
 
   loadConversations() {
-    console.log('🔄 Loading conversations...');
     this.chatService.getConversations().subscribe({
       next: (data) => {
-        console.log('✅ Conversations loaded from backend:', data);
-
         // Map backend data to frontend format
         this.conversations = data.map(conv => ({
           ...conv,
@@ -132,15 +132,11 @@ export class ChatboxComponent implements OnInit, OnDestroy {
             : conv.lastMessage
         }));
 
-        console.log('📋 Mapped conversations:', this.conversations);
-
         // Save to localStorage
         this.saveConversationsToCache();
       },
       error: (err) => {
-        console.error('❌ Failed to load conversations:', err);
-        console.log('ℹ️ Backend may not have /chat/conversations endpoint');
-        console.log('💡 Loading from cache or starting fresh');
+        console.error('Failed to load conversations:', err);
         // Try to load from localStorage cache
         this.loadConversationsFromCache();
       }
@@ -152,8 +148,7 @@ export class ChatboxComponent implements OnInit, OnDestroy {
     try {
       localStorage.setItem('chatbox_conversations', JSON.stringify(this.conversations));
     } catch (e) {
-      console.warn('Failed to save conversations to cache:', e);
-    }
+          }
   }
 
   // Load conversations from localStorage
@@ -162,28 +157,10 @@ export class ChatboxComponent implements OnInit, OnDestroy {
       const cached = localStorage.getItem('chatbox_conversations');
       if (cached) {
         this.conversations = JSON.parse(cached);
-        console.log('✅ Loaded conversations from cache:', this.conversations.length);
-        console.log('📋 Conversation data:', this.conversations);
-
-        // Debug each conversation
-        this.conversations.forEach((conv, index) => {
-          const lastMsg = typeof conv.lastMessage === 'string'
-            ? conv.lastMessage
-            : conv.lastMessage?.content;
-
-          console.log(`Conversation ${index}:`, {
-            otherUserFullName: conv.otherUserFullName,
-            otherUserId: conv.otherUserId,
-            lastMessage: lastMsg,
-            unreadCount: conv.unreadCount
-          });
-        });
       } else {
         this.conversations = [];
-        console.log('💡 No cached conversations, starting fresh');
       }
     } catch (e) {
-      console.warn('Failed to load conversations from cache:', e);
       this.conversations = [];
     }
   }
@@ -204,8 +181,7 @@ export class ChatboxComponent implements OnInit, OnDestroy {
         if (unreadMessages.length > 0) {
           unreadMessages.forEach(msg => {
             this.chatService.markAsRead(msg.id).subscribe({
-              next: () => console.log('✅ Marked message as read:', msg.id),
-              error: (err) => console.error('❌ Failed to mark as read:', err)
+              error: (err) => console.error('Failed to mark as read:', err)
             });
           });
 
@@ -215,7 +191,6 @@ export class ChatboxComponent implements OnInit, OnDestroy {
             if (conv) {
               conv.unreadCount = 0;
               this.saveConversationsToCache();
-              console.log('✅ Reset unreadCount for conversation:', conv.otherUserFullName);
             }
           }
         }
@@ -232,7 +207,6 @@ export class ChatboxComponent implements OnInit, OnDestroy {
   handleIncomingMessage(msg: ChatMessage) {
     // Check if already processed (deduplicate messages from multiple subscriptions)
     if (msg.id && this.processedMessageIds.has(msg.id)) {
-      console.log('ℹ️ Message already processed, skipping:', msg.id);
       return;
     }
 
@@ -247,21 +221,11 @@ export class ChatboxComponent implements OnInit, OnDestroy {
       }
     }
 
-    console.log('📨 handleIncomingMessage:', msg);
-    console.log('🔍 Current state:', {
-      isOpen: this.isOpen,
-      currentConversation: this.currentConversation?.otherUserFullName,
-      conversationsCount: this.conversations.length,
-      totalUnread: this.getTotalUnreadCount()
-    });
-
     // Add isOwn flag
     const message = {
       ...msg,
       isOwn: msg.senderId === this.currentUserId
     };
-
-    console.log('📩 Message isOwn:', message.isOwn);
 
     // Get sender name for notification
     let senderName = 'Người dùng';
@@ -271,9 +235,7 @@ export class ChatboxComponent implements OnInit, OnDestroy {
       c => c.otherUserId === (msg.senderId === this.currentUserId ? msg.receiverId : msg.senderId)
     );
 
-    console.log('🔍 Found conversation at index:', convIndex);
-
-    if (convIndex >= 0) {
+        if (convIndex >= 0) {
       const conv = this.conversations[convIndex];
       conv.lastMessage = msg;
       senderName = conv.otherUserFullName || conv.otherUserName || senderName;
@@ -288,14 +250,12 @@ export class ChatboxComponent implements OnInit, OnDestroy {
 
       if (shouldIncrementUnread) {
         conv.unreadCount++;
-        console.log('📬 Incremented unreadCount to:', conv.unreadCount);
-        console.log('📊 Total unread count:', this.getTotalUnreadCount());
+                console.log('📊 Total unread count:', this.getTotalUnreadCount());
 
         // Show notification for new message (not own message, not in current conversation)
         this.showMessageNotification(senderName, msg.content);
       } else {
-        console.log('ℹ️ Not incrementing unread - isOwn:', message.isOwn, 'isOpen:', this.isOpen, 'isCurrentConv:', conv.otherUserId === this.currentConversation?.otherUserId);
-      }
+              }
 
       // Move to top
       this.conversations.splice(convIndex, 1);
@@ -325,8 +285,6 @@ export class ChatboxComponent implements OnInit, OnDestroy {
 
         this.conversations.unshift(newConv);
         this.saveConversationsToCache();
-
-        console.log('➕ Created new conversation from incoming message:', newConv);
       }
 
       // Show notification for new message
@@ -342,10 +300,6 @@ export class ChatboxComponent implements OnInit, OnDestroy {
       if (isFromCurrentConv) {
         // If this is own message from server (with real DB ID), replace temporary message
         if (message.isOwn && msg.id) {
-          console.log('🔄 Trying to replace temporary message');
-          console.log('📝 Server message:', { id: msg.id, content: msg.content, senderId: msg.senderId, receiverId: msg.receiverId });
-          console.log('📋 Current messages:', this.messages.map(m => ({ id: m.id, content: m.content, isOwn: m.isOwn })));
-
           // Find temporary message by content and timestamp (within last 10 seconds)
           const now = Date.now();
           const tempMsgIndex = this.messages.findIndex(
@@ -355,20 +309,14 @@ export class ChatboxComponent implements OnInit, OnDestroy {
                  (now - m.id < 10000) // Within last 10 seconds
           );
 
-          console.log('🔍 Found temp message at index:', tempMsgIndex);
-
           if (tempMsgIndex >= 0) {
             // Replace temporary message with real message from DB
             this.messages[tempMsgIndex] = message;
-            console.log('✅ Replaced temporary message with DB message, ID:', msg.id);
           } else {
             // Check if this message already exists (by ID)
             const existingIndex = this.messages.findIndex(m => m.id === msg.id);
             if (existingIndex === -1) {
-              console.warn('⚠️ Temporary message not found, adding as new');
               this.messages.push(message);
-            } else {
-              console.log('ℹ️ Message already exists with DB ID, skipping');
             }
           }
         } else {
@@ -376,8 +324,6 @@ export class ChatboxComponent implements OnInit, OnDestroy {
           const exists = this.messages.find(m => m.id === msg.id);
           if (!exists) {
             this.messages.push(message);
-          } else {
-            console.log('ℹ️ Message already exists, skipping');
           }
         }
 
@@ -418,40 +364,20 @@ export class ChatboxComponent implements OnInit, OnDestroy {
     try {
       const audio = new Audio('assets/sounds/notification.mp3');
       audio.volume = 0.3;
-      audio.play().catch(err => {
-        console.log('Could not play notification sound:', err);
-      });
+      audio.play().catch(() => {});
     } catch (err) {
-      console.log('Notification sound not available');
+      // Silent fail
     }
   }
 
   toggleChatbox() {
-    console.log('🔄 toggleChatbox - Before:', {
-      isOpen: this.isOpen,
-      currentConversation: this.currentConversation?.otherUserFullName,
-      messagesCount: this.messages.length,
-      showConversationList: this.showConversationList
-    });
-
     this.isOpen = !this.isOpen;
     if (!this.isOpen) {
       // Khi đóng chatbox, chỉ set isMinimized = false
       // Giữ nguyên tất cả state: currentConversation, messages, showConversationList
       this.isMinimized = false;
-      console.log('🔒 Chatbox closed - State preserved:', {
-        currentConversation: this.currentConversation?.otherUserFullName,
-        messagesCount: this.messages.length,
-        showConversationList: this.showConversationList
-      });
     } else {
       // Khi mở chatbox
-      console.log('🔓 Chatbox opening - State before reload:', {
-        currentConversation: this.currentConversation?.otherUserFullName,
-        messagesCount: this.messages.length,
-        showConversationList: this.showConversationList
-      });
-
       // Reload conversations để cập nhật unread count
       this.loadConversations();
 
@@ -459,12 +385,6 @@ export class ChatboxComponent implements OnInit, OnDestroy {
       if (this.currentConversation && !this.showConversationList) {
         setTimeout(() => this.scrollToBottom(), 100);
       }
-
-      console.log('✅ Chatbox opened - Final state:', {
-        currentConversation: this.currentConversation?.otherUserFullName,
-        messagesCount: this.messages.length,
-        showConversationList: this.showConversationList
-      });
     }
   }
 
@@ -473,19 +393,13 @@ export class ChatboxComponent implements OnInit, OnDestroy {
   }
 
   selectConversation(conversation: Conversation) {
-    console.log('📌 selectConversation called:', conversation.otherUserFullName);
-    console.log('📌 Current conversation:', this.currentConversation?.otherUserFullName);
-    console.log('📌 Messages count:', this.messages.length);
-
     // Nếu đang ở conversation này rồi, chỉ cần chuyển view và scroll
     if (this.currentConversation?.conversationId === conversation.conversationId) {
-      console.log('📌 Same conversation, just switching view');
       this.showConversationList = false;
       setTimeout(() => this.scrollToBottom(), 100);
       return;
     }
 
-    console.log('📌 New conversation, loading history');
     this.currentConversation = conversation;
     this.showConversationList = false;
     this.messages = [];
@@ -501,10 +415,6 @@ export class ChatboxComponent implements OnInit, OnDestroy {
     this.chatService.subscribeToConversation(convId, (msg) => {
       this.handleIncomingMessage(msg);
     });
-
-    // Mark messages as read when loading conversation
-    // Will be handled in loadChatHistory when messages are loaded
-    // Don't set unreadCount = 0 here to prevent losing count before messages are marked as read
   }
 
   backToConversationList() {
@@ -630,68 +540,106 @@ export class ChatboxComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const searchTerm = this.searchText.toLowerCase();
+    // Debounce search
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
 
-    // If in class view, search within classes
-    if (this.showClassView) {
-      // Search in all students from all classes
-      const allStudentsFromClasses: UserForChat[] = [];
-      this.myClasses.forEach(classItem => {
-        classItem.students.forEach(student => {
-          // Add class name to student for display
-          allStudentsFromClasses.push({
-            ...student,
-            className: classItem.name
+    this.searchTimeout = setTimeout(() => {
+      const searchTerm = this.searchText.trim();
+      // Nếu đang ở chế độ xem lớp, tìm trong danh sách học sinh các lớp
+      if (this.showClassView) {
+        const allStudentsFromClasses: UserForChat[] = [];
+        this.myClasses.forEach(classItem => {
+          classItem.students.forEach(student => {
+            allStudentsFromClasses.push({
+              ...student,
+              className: classItem.name
+            });
           });
         });
-      });
-
-      // Filter by name or class name
-      this.searchResults = allStudentsFromClasses.filter(student =>
-        student.fullName.toLowerCase().includes(searchTerm) ||
-        (student.className && student.className.toLowerCase().includes(searchTerm))
-      );
-
-      console.log('Class view search results:', this.searchResults);
-    } else {
-      // Regular user search for conversation view
-      this.searchResults = this.allUsers.filter(user =>
-        user.fullName.toLowerCase().includes(searchTerm) &&
-        user.id !== this.currentUserId // Exclude current user
-      );
-
-      console.log('Conversation view search results:', this.searchResults);
-      console.log('All users available:', this.allUsers);
-    }
+        this.searchResults = allStudentsFromClasses.filter(student =>
+          student.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (student.className && student.className.toLowerCase().includes(searchTerm.toLowerCase()))
+        );
+      } else {
+        // Luôn dùng API tìm kiếm cho mọi vai trò
+        this.userService.searchUsers(searchTerm).subscribe({
+          next: (users) => {
+            this.searchResults = users
+              .filter(u => u.id !== this.currentUserId)
+              .map(u => ({
+                id: u.id,
+                fullName: u.fullName || u.username,
+                role: u.role,
+                avatar: u.avatar
+              }));
+          },
+          error: () => {
+            this.searchResults = [];
+          }
+        });
+      }
+    }, 300); // Debounce 300ms
   }
 
-  loadAllUsers() {
-    console.log('Loading all users for chatbox...');
-    // Use the new /chat/contacts API
-    this.chatService.getContacts().subscribe({
-      next: (contacts: any[]) => {
-        console.log('Contacts loaded from API:', contacts);
-
-        this.allUsers = contacts.map(contact => ({
-          id: contact.id,
-          fullName: contact.fullName,
-          avatar: contact.avatar,
-          role: contact.role || 'USER'
-        }));
-
-        console.log('✅ All users loaded:', this.allUsers);
+  searchUsersFromAPI(query: string, classId?: number, role?: string) {
+    this.userService.searchUsers(query, classId, role).subscribe({
+      next: (users) => {
+        console.log('✅ Search results:', users);
+        this.searchResults = users
+          .filter(u => u.id !== this.currentUserId)
+          .map(u => ({
+            id: u.id,
+            fullName: u.fullName || u.username,
+            role: u.role,
+            avatar: u.avatar
+          }));
       },
       error: (err) => {
-        console.error('❌ Failed to load contacts:', err);
-        this.allUsers = [];
+        console.error('❌ Search error:', err);
+        this.searchResults = [];
       }
     });
   }
 
-  startConversationWithUser(user: UserForChat) {
-    console.log('💬 Starting conversation with:', user.fullName);
+  loadAllUsers(searchQuery?: string, classId?: number, role?: string) {
+    if (searchQuery || classId || role) {
+      this.userService.searchUsers(searchQuery || '', classId, role).subscribe({
+        next: (users) => {
+          console.log('✅ Users loaded:', users);
+          this.allUsers = users.map(u => ({
+            id: u.id,
+            fullName: u.fullName || u.username,
+            avatar: u.avatar,
+            role: u.role || 'USER'
+          }));
+        },
+        error: (err) => {
+          console.error('❌ Load users error:', err);
+          this.allUsers = [];
+        }
+      });
+    } else {
+      // Fallback: load contacts if no search/filter
+      this.http.get<any[]>(`${this.baseUrl}/chat/contacts`).subscribe({
+        next: (users) => {
+          this.allUsers = users.map(u => ({
+            id: u.id,
+            fullName: u.fullName || u.username,
+            avatar: u.avatar,
+            role: u.role || 'USER'
+          }));
+        },
+        error: (err) => {
+          this.allUsers = [];
+        }
+      });
+    }
+  }
 
-    // Create a temporary conversation
+  startConversationWithUser(user: UserForChat) {
+        // Create a temporary conversation
     const newConversation: Conversation = {
       conversationId: this.chatService.getConversationId(this.currentUserId, user.id),
       otherUserId: user.id,
@@ -700,24 +648,18 @@ export class ChatboxComponent implements OnInit, OnDestroy {
       unreadCount: 0
     };
 
-    console.log('📝 New conversation:', newConversation);
-
-    // Clear search
+        // Clear search
     this.searchText = '';
     this.searchResults = [];
 
     // Check if conversation already exists
     const existing = this.conversations.find(c => c.otherUserId === user.id);
     if (existing) {
-      console.log('✅ Conversation exists, selecting it');
-      this.selectConversation(existing);
+            this.selectConversation(existing);
     } else {
-      console.log('➕ Adding new conversation to list');
-      // Add to conversations list
+            // Add to conversations list
       this.conversations.unshift(newConversation);
-      console.log('📋 Total conversations:', this.conversations.length);
-
-      // Save to cache
+            // Save to cache
       this.saveConversationsToCache();
 
       this.selectConversation(newConversation);
@@ -738,7 +680,6 @@ export class ChatboxComponent implements OnInit, OnDestroy {
   selectClass(classItem: ClassWithStudents) {
     this.selectedClass = classItem;
     this.showClassMembers = true;
-    console.log('Selected class:', classItem);
   }
 
   // Back to class list from members view
@@ -758,11 +699,8 @@ export class ChatboxComponent implements OnInit, OnDestroy {
 
   // Load classes for students
   loadStudentClasses() {
-    console.log('📚 Loading classes for student:', this.currentUserId);
     this.studentService.getClassesByStudent(this.currentUserId).subscribe({
       next: (classes: any[]) => {
-        console.log('📚 Student classes loaded:', classes);
-
         if (!classes || classes.length === 0) {
           this.myClasses = [];
           return;
@@ -771,7 +709,6 @@ export class ChatboxComponent implements OnInit, OnDestroy {
         // First, get all teachers to map teacher names to IDs
         this.teacherService.getAllTeachers().subscribe({
           next: (teachers: any[]) => {
-            console.log('📚 All teachers loaded:', teachers);
 
             // Create teacher name -> ID map
             const teacherMap = new Map<string, any>();
@@ -784,9 +721,7 @@ export class ChatboxComponent implements OnInit, OnDestroy {
 
             // Process each class and fetch student details
             const classPromises = classes.map(classItem => {
-              console.log(`📚 Processing class ${classItem.name}, student IDs:`, classItem.students);
-
-              const members: UserForChat[] = [];
+                            const members: UserForChat[] = [];
               const memberPromises: Promise<void>[] = [];
 
               // Add teacher if available
@@ -801,8 +736,7 @@ export class ChatboxComponent implements OnInit, OnDestroy {
                     className: classItem.name
                   });
                 } else if (!teacher) {
-                  console.warn(`Teacher "${classItem.teacherName}" not found in teacher list`);
-                }
+                                  }
               }
 
               // Fetch details for each student
@@ -852,8 +786,7 @@ export class ChatboxComponent implements OnInit, OnDestroy {
             // Wait for all classes to be processed
             Promise.all(classPromises).then(processedClasses => {
               this.myClasses = processedClasses;
-              console.log('✅ Student classes loaded:', this.myClasses);
-            }).catch(err => {
+                          }).catch(err => {
               console.error('Failed to load class details:', err);
               this.myClasses = [];
             });
@@ -914,7 +847,6 @@ export class ChatboxComponent implements OnInit, OnDestroy {
 
     Promise.all(classPromises).then(processedClasses => {
       this.myClasses = processedClasses;
-      console.log('✅ Student classes loaded (without teachers):', this.myClasses);
     }).catch(err => {
       console.error('Failed to load class details:', err);
       this.myClasses = [];
@@ -923,22 +855,16 @@ export class ChatboxComponent implements OnInit, OnDestroy {
 
   // Load classes for teachers
   loadTeacherClasses() {
-    console.log('📚 Loading classes for teacher in class view:', this.currentUserId);
-    this.classService.getClassesByTeacher(this.currentUserId).subscribe({
+        this.classService.getClassesByTeacher(this.currentUserId).subscribe({
       next: (classes: any[]) => {
-        console.log('📚 Classes loaded for teacher:', classes);
-
-        if (!classes || classes.length === 0) {
+                if (!classes || classes.length === 0) {
           this.myClasses = [];
-          console.warn('⚠️ No classes found for teacher ID:', this.currentUserId);
-          return;
+                    return;
         }
 
         // Process each class and fetch student details
         const classPromises = classes.map(classItem => {
-          console.log(`📚 Processing class ${classItem.name}, student IDs:`, classItem.students);
-
-          // Fetch details for all students in this class
+                    // Fetch details for all students in this class
           const studentPromises: Promise<UserForChat>[] = [];
 
           if (classItem.students && Array.isArray(classItem.students)) {
@@ -979,8 +905,7 @@ export class ChatboxComponent implements OnInit, OnDestroy {
         // Wait for all classes to be processed
         Promise.all(classPromises).then(processedClasses => {
           this.myClasses = processedClasses;
-          console.log('✅ myClasses loaded:', this.myClasses);
-        }).catch(err => {
+                  }).catch(err => {
           console.error('❌ Failed to process classes:', err);
           this.myClasses = [];
         });
@@ -996,8 +921,7 @@ export class ChatboxComponent implements OnInit, OnDestroy {
 
   // Alternative method to load teacher classes using paginated endpoint
   loadTeacherClassesAlternative() {
-    console.log('📚 This method is deprecated - using getClassesByTeacher instead');
-  }  // Toggle expand/collapse class student list
+      }  // Toggle expand/collapse class student list
   toggleClassExpand(classItem: ClassWithStudents) {
     classItem.isExpanded = !classItem.isExpanded;
   }

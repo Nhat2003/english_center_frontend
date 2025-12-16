@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-payments',
   template: `
     <div class="payments-wrapper">
-      <app-payment-list></app-payment-list>
+      <app-class-payments></app-class-payments>
     </div>
   `,
   styles: [`

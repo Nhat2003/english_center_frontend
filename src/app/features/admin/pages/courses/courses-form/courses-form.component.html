@@ -1,8 +1,81 @@
-<div class="form-container">
+<!-- View Mode - Card Display -->
+<div *ngIf="isViewMode" class="course-detail-view">
+  <nz-spin [nzSpinning]="loading" nzTip="Đang tải...">
+    <!-- Header Card -->
+    <nz-card class="course-header-card">
+      <div class="course-header">
+        <div class="course-icon">
+          <i nz-icon nzType="book" nzTheme="outline"></i>
+        </div>
+        <div class="course-info-header">
+          <h2 class="course-name">{{ courseData?.name || 'N/A' }}</h2>
+          <p class="course-description">{{ courseData?.description || 'Chưa có mô tả' }}</p>
+          <div class="course-meta">
+            <nz-tag nzColor="blue">
+              <i nz-icon nzType="idcard" nzTheme="outline"></i>
+              ID: {{ courseData?.id }}
+            </nz-tag>
+            <nz-tag nzColor="purple" *ngIf="courseData?.level">
+              <i nz-icon nzType="star" nzTheme="outline"></i>
+              {{ getLevelText(courseData?.level) }}
+            </nz-tag>
+          </div>
+        </div>
+      </div>
+    </nz-card>
+
+    <!-- Two Column Layout for Cards -->
+    <div class="cards-grid">
+      <!-- Course Information Card -->
+      <nz-card nzTitle="Thông tin khóa học" class="info-section-card">
+        <div class="info-grid-single">
+          <div class="info-item">
+            <div class="info-label">
+              <i nz-icon nzType="calendar" nzTheme="outline"></i>
+              Thời lượng
+            </div>
+            <div class="info-value">{{ courseData?.duration || 0 }} buổi</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <i nz-icon nzType="wallet" nzTheme="outline"></i>
+              Học phí
+            </div>
+            <div class="info-value">{{ (courseData?.fee || 0) | number }} VNĐ</div>
+          </div>
+        </div>
+      </nz-card>
+
+      <!-- Level Information Card -->
+      <nz-card nzTitle="Thông tin cấp độ" class="info-section-card">
+        <div class="info-grid-single">
+          <div class="info-item">
+            <div class="info-label">
+              <i nz-icon nzType="star" nzTheme="outline"></i>
+              Cấp độ
+            </div>
+            <div class="info-value">{{ getLevelText(courseData?.level) }}</div>
+          </div>
+        </div>
+      </nz-card>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-footer">
+      <button nz-button nzType="default" (click)="onCancel()" type="button">
+        <i nz-icon nzType="close" nzTheme="outline"></i>
+        Đóng
+      </button>
+    </div>
+  </nz-spin>
+</div>
+
+<!-- Edit/Create Mode - Form Display -->
+<div *ngIf="!isViewMode" class="form-container">
   <form nz-form [formGroup]="form" (ngSubmit)="onSubmit()" nzLayout="vertical">
     <nz-form-item>
       <nz-form-label [nzRequired]="true" nzFor="name">Tên khóa học</nz-form-label>
-      <nz-form-control>
+      <nz-form-control [nzErrorTip]="form.get('name')?.hasError('required') ? 'Vui lòng nhập tên khóa học' : ''">
         <input nz-input formControlName="name" id="name" placeholder="Nhập tên khóa học" />
       </nz-form-control>
     </nz-form-item>
@@ -16,18 +89,24 @@
 
     <nz-form-item>
       <nz-form-label [nzRequired]="true" nzFor="duration">Thời lượng (buổi)</nz-form-label>
-      <nz-form-control>
+      <nz-form-control [nzErrorTip]="form.get('duration')?.hasError('required') ? 'Vui lòng nhập thời lượng' : (form.get('duration')?.hasError('min') ? 'Thời lượng phải lớn hơn 0' : '')">
         <input nz-input type="number" formControlName="duration" id="duration" placeholder="Nhập thời lượng" min="1" />
       </nz-form-control>
     </nz-form-item>
 
     <nz-form-item>
       <nz-form-label [nzRequired]="true" nzFor="fee">Học phí (VNĐ)</nz-form-label>
-      <nz-form-control>
+      <nz-form-control [nzErrorTip]="form.get('fee')?.hasError('required') ? 'Vui lòng nhập học phí' : (form.get('fee')?.hasError('min') ? 'Học phí không được âm' : '')">
         <input nz-input type="number" formControlName="fee" id="fee" placeholder="Nhập học phí" min="0" />
       </nz-form-control>
     </nz-form-item>
 
+    <nz-form-item>
+      <nz-form-label nzFor="level">Cấp độ</nz-form-label>
+      <nz-form-control>
+        <input nz-input formControlName="level" id="level" placeholder="Nhập cấp độ " />
+      </nz-form-control>
+    </nz-form-item>
 
     <div class="form-footer">
       <button nz-button nzType="default" (click)="onCancel()" type="button">

@@ -91,8 +91,6 @@ export class ClassAttendanceComponent implements OnInit {
     
     this.scheduleService.getClassScheduleToday(this.classId).subscribe({
       next: (schedule) => {
-        console.log('Lịch học hôm nay:', schedule);
-        
         if (!schedule || schedule.length === 0) {
           this.hasScheduleToday = false;
           this.students = [];
@@ -127,8 +125,6 @@ export class ClassAttendanceComponent implements OnInit {
     
     this.scheduleService.getClassScheduleByDate(this.classId, dateString).subscribe({
       next: (schedule) => {
-        console.log('Lịch học ngày', dateString, ':', schedule);
-        
         if (!schedule || schedule.length === 0) {
           this.hasScheduleToday = false;
           this.students = [];
@@ -183,12 +179,8 @@ export class ClassAttendanceComponent implements OnInit {
 
   loadClassStudents(): void {
     // Use TeacherService to get students by class (có quyền cho giáo viên)
-    console.log('Loading students for class:', this.classId);
-
     this.teacherService.getStudentsByClass(this.classId).subscribe({
       next: (studentDetails: any[]) => {
-        console.log('Student details loaded:', studentDetails);
-
         if (!studentDetails || studentDetails.length === 0) {
           this.students = [];
           this.loading = false;
@@ -209,7 +201,6 @@ export class ClassAttendanceComponent implements OnInit {
           };
         });
 
-        console.log('Students ready for attendance:', this.students);
         this.summary.total = this.students.length;
         this.calculateSummary();
         this.loading = false;

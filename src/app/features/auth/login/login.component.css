@@ -176,3 +176,229 @@
   transform: translateY(-2px) scale(1.03);
   filter: drop-shadow(0 8px 18px rgba(17, 67, 45, 0.25));
 }
+
+/* ============================================
+   FORGOT PASSWORD MODAL STYLES
+   ============================================ */
+
+/* Form container */
+.forgot-password-form {
+  padding: 0;
+}
+
+/* Alert spacing */
+.info-alert {
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+.success-alert {
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+/* Success title */
+.success-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #52c41a;
+  margin-bottom: 16px;
+}
+
+/* Temporary password display box */
+.temp-password-box {
+  background: linear-gradient(135deg, #f6ffed 0%, #f0f9ff 100%);
+  border: 2px solid #b7eb8f;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 16px 0;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(82, 196, 26, 0.1);
+}
+
+.temp-password-label {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.temp-password-value {
+  font-family: 'Courier New', Consolas, monospace;
+  font-size: 24px;
+  font-weight: 700;
+  color: #52c41a;
+  letter-spacing: 2px;
+  padding: 12px;
+  background: white;
+  border-radius: 8px;
+  border: 1px dashed #52c41a;
+  user-select: all;
+  cursor: text;
+  transition: all 0.3s ease;
+}
+
+.temp-password-value:hover {
+  background: #f6ffed;
+  box-shadow: 0 0 0 3px rgba(82, 196, 26, 0.1);
+}
+
+/* Instructions box */
+.instructions-box {
+  background: #fffbe6;
+  border-left: 4px solid #faad14;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.instructions-box strong {
+  color: #fa8c16;
+  font-size: 15px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.instructions-box ol {
+  margin: 8px 0 0 0;
+  padding-left: 20px;
+}
+
+.instructions-box ol li {
+  margin-bottom: 6px;
+  color: #595959;
+}
+
+.instructions-box ol li strong {
+  display: inline;
+  color: #fa8c16;
+  font-size: inherit;
+  margin: 0;
+}
+
+/* Form items */
+::ng-deep .forgot-password-form .ant-form-item {
+  margin-bottom: 20px;
+}
+
+::ng-deep .forgot-password-form .ant-form-item-label > label {
+  font-weight: 500;
+  color: #262626;
+}
+
+::ng-deep .forgot-password-form .ant-input-affix-wrapper {
+  border-radius: 8px;
+  padding: 10px 12px;
+  transition: all 0.3s ease;
+}
+
+::ng-deep .forgot-password-form .ant-input-affix-wrapper:hover {
+  border-color: #40a9ff;
+}
+
+::ng-deep .forgot-password-form .ant-input-affix-wrapper:focus,
+::ng-deep .forgot-password-form .ant-input-affix-wrapper-focused {
+  border-color: #3bb273;
+  box-shadow: 0 0 0 2px rgba(59, 178, 115, 0.1);
+}
+
+/* Button group */
+.button-group {
+  margin-top: 24px;
+  margin-bottom: 0;
+}
+
+::ng-deep .forgot-password-form .button-group .ant-form-item-control-input-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+::ng-deep .forgot-password-form .submit-btn {
+  width: 100%;
+  height: 44px;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #3bb273 0%, #4cc084 100%);
+  border: none;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+::ng-deep .forgot-password-form .submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 178, 115, 0.3);
+  background: linear-gradient(135deg, #3bb273 0%, #4cc084 100%);
+  color: white;
+}
+
+::ng-deep .forgot-password-form .submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  background: linear-gradient(135deg, #3bb273 0%, #4cc084 100%);
+}
+
+::ng-deep .forgot-password-form .cancel-btn {
+  width: 100%;
+  height: 44px;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+::ng-deep .forgot-password-form .cancel-btn:hover {
+  color: #3bb273;
+  border-color: #3bb273;
+}
+
+/* Modal customization */
+::ng-deep .ant-modal-header {
+  background: linear-gradient(135deg, #3bb273 0%, #4cc084 100%);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+}
+
+::ng-deep .ant-modal-title {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+::ng-deep .ant-modal-close {
+  color: white;
+}
+
+::ng-deep .ant-modal-close:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+::ng-deep .ant-modal-content {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Alert icon colors */
+::ng-deep .forgot-password-form .ant-alert-success .anticon {
+  color: #52c41a;
+}
+
+::ng-deep .forgot-password-form .ant-alert-info .anticon {
+  color: #1890ff;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .temp-password-value {
+    font-size: 20px;
+    letter-spacing: 1px;
+  }
+
+  .instructions-box {
+    font-size: 13px;
+  }
+}

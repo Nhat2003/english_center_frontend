@@ -1,6 +1,124 @@
+<!-- View Mode - Card Display -->
+<div *ngIf="isViewMode" class="teacher-detail-view">
+  <nz-spin [nzSpinning]="loading" nzTip="Đang tải...">
+    <!-- Header Card -->
+    <nz-card class="teacher-header-card">
+      <div class="teacher-header">
+        <div class="teacher-avatar">
 
+        </div>
+        <div class="teacher-info-header">
+          <h2 class="teacher-name">{{ teacherData?.fullName || 'N/A' }}</h2>
+          <p class="teacher-speciality">
+            <i nz-icon nzType="book" nzTheme="outline"></i>
+            {{ teacherData?.speciality || 'Chưa cập nhật' }}
+          </p>
+          <div class="teacher-meta">
+            <nz-tag nzColor="blue">
+              <i nz-icon nzType="idcard" nzTheme="outline"></i>
+              ID: {{ teacherData?.id }}
+            </nz-tag>
+            <nz-tag nzColor="green">
+              <i nz-icon nzType="user" nzTheme="outline"></i>
+              Giáo viên
+            </nz-tag>
+          </div>
+        </div>
+      </div>
+    </nz-card>
 
-<div class="card shadow-sm p-4" style="border-radius: 12px; max-width: 650px; margin: 0 auto; background: #fff;">
+    <!-- Two Column Layout for Cards -->
+    <div class="cards-grid">
+      <!-- Personal Information Card -->
+      <nz-card nzTitle="Thông tin cá nhân" class="info-section-card">
+        <div class="info-grid-single">
+          <div class="info-item">
+            <div class="info-label">
+              <i nz-icon nzType="mail" nzTheme="outline"></i>
+              Email
+            </div>
+            <div class="info-value">{{ teacherData?.email || 'N/A' }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <i nz-icon nzType="phone" nzTheme="outline"></i>
+              Số điện thoại
+            </div>
+            <div class="info-value">{{ teacherData?.phone || 'N/A' }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <i nz-icon nzType="calendar" nzTheme="outline"></i>
+              Ngày sinh
+            </div>
+            <div class="info-value">{{ (teacherData?.dob | date:'dd/MM/yyyy') || 'N/A' }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <i nz-icon nzType="man" nzTheme="outline"></i>
+              Giới tính
+            </div>
+            <div class="info-value">{{ getGenderText(teacherData?.gender) }}</div>
+          </div>
+          <div class="info-item full-width">
+            <div class="info-label">
+              <i nz-icon nzType="home" nzTheme="outline"></i>
+              Địa chỉ
+            </div>
+            <div class="info-value">{{ teacherData?.address || 'N/A' }}</div>
+          </div>
+        </div>
+
+      </nz-card>
+
+      <!-- Professional Information Card -->
+      <nz-card nzTitle="Thông tin công việc" class="info-section-card">
+        <div class="info-grid-single">
+          <div class="info-item">
+            <div class="info-label">
+              <i nz-icon nzType="trophy" nzTheme="outline"></i>
+              Chuyên môn
+            </div>
+            <div class="info-value">{{ teacherData?.speciality || 'N/A' }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">
+              <i nz-icon nzType="calendar-check" nzTheme="outline"></i>
+              Ngày vào làm
+            </div>
+            <div class="info-value">{{ (teacherData?.hiredAt | date:'dd/MM/yyyy') || 'N/A' }}</div>
+          </div>
+        </div>
+
+                <div class="info-item">
+          <div class="info-label">
+            <i nz-icon nzType="bank" nzTheme="outline"></i>
+            Tên ngân hàng
+          </div>
+          <div class="info-value">{{ teacherData?.bankName || 'N/A' }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">
+            <i nz-icon nzType="credit-card" nzTheme="outline"></i>
+            Số tài khoản
+          </div>
+          <div class="info-value">{{ teacherData?.bankAccountNumber || 'N/A' }}</div>
+        </div>
+      </nz-card>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-footer">
+      <button nz-button nzType="default" (click)="onCancel()" type="button">
+        <i nz-icon nzType="close" nzTheme="outline"></i>
+        Đóng
+      </button>
+    </div>
+  </nz-spin>
+</div>
+
+<!-- Edit/Create Mode - Form Display -->
+<div *ngIf="!isViewMode" class="card shadow-sm p-4" style="border-radius: 12px; max-width: 650px; margin: 0 auto; background: #fff;">
   <form nz-form [formGroup]="form" (ngSubmit)="onSubmit()" nzLayout="vertical">
     <div class="form-header mb-4 d-flex align-items-center">
       <div class="avatar bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width:48px;height:48px;border-radius:50%;font-size:24px;">
@@ -48,34 +166,34 @@
       </div>
       <div nz-col [nzSpan]="12">
         <nz-form-item>
-          <nz-form-label [nzRequired]="!isViewMode" nzFor="fullName">Họ tên</nz-form-label>
+          <nz-form-label nzFor="fullName">Họ tên</nz-form-label>
           <nz-form-control nzErrorTip="Vui lòng nhập họ tên">
             <input
               nz-input
               formControlName="fullName"
               id="fullName"
-              placeholder="Ví dụ: Nguyễn Văn A"
+              placeholder="Nhập họ và tên"
               maxlength="100" />
           </nz-form-control>
         </nz-form-item>
       </div>
       <div nz-col [nzSpan]="12">
         <nz-form-item>
-          <nz-form-label [nzRequired]="!isViewMode" nzFor="email">Email</nz-form-label>
+          <nz-form-label nzFor="email">Email</nz-form-label>
           <nz-form-control nzErrorTip="Vui lòng nhập email hợp lệ">
             <input
               nz-input
               formControlName="email"
               id="email"
               type="email"
-              placeholder="Ví dụ: teacher@example.com"
+              placeholder="Nhập email"
               maxlength="100" />
           </nz-form-control>
         </nz-form-item>
       </div>
       <div nz-col [nzSpan]="12">
         <nz-form-item>
-          <nz-form-label [nzRequired]="!isViewMode" nzFor="dob">Ngày sinh</nz-form-label>
+          <nz-form-label nzFor="dob">Ngày sinh</nz-form-label>
           <nz-form-control nzErrorTip="Vui lòng chọn ngày sinh">
             <input
               nz-input
@@ -88,7 +206,7 @@
       </div>
       <div nz-col [nzSpan]="12">
         <nz-form-item>
-          <nz-form-label [nzRequired]="!isViewMode" nzFor="gender">Giới tính</nz-form-label>
+          <nz-form-label nzFor="gender">Giới tính</nz-form-label>
           <nz-form-control nzErrorTip="Vui lòng chọn giới tính">
             <nz-select formControlName="gender" id="gender" nzPlaceHolder="Chọn giới tính">
               <nz-option nzValue="MALE" nzLabel="Nam"></nz-option>
@@ -99,26 +217,26 @@
       </div>
       <div nz-col [nzSpan]="12">
         <nz-form-item>
-          <nz-form-label [nzRequired]="!isViewMode" nzFor="phone">Số điện thoại</nz-form-label>
+          <nz-form-label nzFor="phone">Số điện thoại</nz-form-label>
           <nz-form-control nzErrorTip="Vui lòng nhập số điện thoại hợp lệ (10-11 số)">
             <input
               nz-input
               formControlName="phone"
               id="phone"
-              placeholder="Ví dụ: 0987654321"
+              placeholder="Nhập số điện thoại"
               maxlength="11" />
           </nz-form-control>
         </nz-form-item>
       </div>
       <div nz-col [nzSpan]="24">
         <nz-form-item>
-          <nz-form-label [nzRequired]="!isViewMode" nzFor="address">Địa chỉ</nz-form-label>
+          <nz-form-label nzFor="address">Địa chỉ</nz-form-label>
           <nz-form-control nzErrorTip="Vui lòng nhập địa chỉ">
             <textarea
               nz-input
               formControlName="address"
               id="address"
-              placeholder="Ví dụ: 123 Đường ABC, Phường XYZ, Quận 1, TP.HCM"
+              placeholder="Nhập địa chỉ"
               rows="2"
               maxlength="255"></textarea>
           </nz-form-control>
@@ -126,20 +244,20 @@
       </div>
       <div nz-col [nzSpan]="12">
         <nz-form-item>
-          <nz-form-label [nzRequired]="!isViewMode" nzFor="speciality">Chuyên môn</nz-form-label>
+          <nz-form-label nzFor="speciality">Chuyên môn</nz-form-label>
           <nz-form-control nzErrorTip="Vui lòng nhập chuyên môn giảng dạy">
             <input
               nz-input
               formControlName="speciality"
               id="speciality"
-              placeholder="Ví dụ: Tiếng Anh giao tiếp, IELTS, TOEIC"
+              placeholder="Nhập chuyên môn giảng dạy"
               maxlength="100" />
           </nz-form-control>
         </nz-form-item>
       </div>
       <div nz-col [nzSpan]="12">
         <nz-form-item>
-          <nz-form-label [nzRequired]="!isViewMode" nzFor="hiredAt">Ngày vào trung tâm</nz-form-label>
+          <nz-form-label nzFor="hiredAt">Ngày vào trung tâm</nz-form-label>
           <nz-form-control nzErrorTip="Vui lòng chọn ngày vào làm">
             <input
               nz-input

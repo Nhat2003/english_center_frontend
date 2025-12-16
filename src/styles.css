@@ -498,4 +498,13 @@ nz-table-inner-scroll,
   background: #2e8b57;
 }
 
+/* Fix double scroll issue in admin layout */
+.ant-layout.ant-layout-has-sider > .ant-layout,
+.ant-layout.ant-layout-has-sider > .ant-layout-content {
+  overflow-x: visible !important;
+  overflow-y: auto !important;
+}
+
+
+
 

@@ -46,7 +46,17 @@ export class UserService {
     return this.http.post<User>(`${this.apiUrl}/login`, { username, password });
   }
 
-  updateRole(id: number, role: string): Observable<string> {
-    return this.http.put<string>(`${this.apiUrl}/${id}/role`, { role });
+
+  /**
+   * Search users by name, classId, and/or role
+   * @param q Name or keyword to search
+   * @param classId Optional class ID to filter
+   * @param role Optional role to filter (e.g., 'STUDENT', 'TEACHER')
+   */
+  searchUsers(q: string, classId?: number, role?: string): Observable<User[]> {
+    let params: any = { q };
+    if (classId) params.classId = classId;
+    if (role) params.role = role;
+    return this.http.get<User[]>(`${this.apiUrl}/search`, { params });
   }
 }

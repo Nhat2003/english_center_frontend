@@ -19,6 +19,8 @@ export class ImportStudentsComponent {
   errors: string[] = [];
   showPreview = false;
   step = 1; // 1: Select file, 2: Preview, 3: Import
+  importMode: 'direct' | 'preview' = 'direct'; // 'direct': upload file trực tiếp, 'preview': xem trước rồi import
+  isImporting = false; // Flag để ngăn gọi import nhiều lần
 
   constructor(
     private modal: NzModalRef,
@@ -48,7 +50,14 @@ export class ImportStudentsComponent {
       }
 
       this.selectedFile = file;
-      this.processFile();
+
+      // Nếu chọn mode direct, import ngay
+      if (this.importMode === 'direct') {
+        this.importDirectly();
+      } else {
+        // Nếu mode preview, xử lý file để xem trước
+        this.processFile();
+      }
     }
   }
 
@@ -93,21 +102,182 @@ export class ImportStudentsComponent {
       return;
     }
 
+    // Ngăn gọi import nhiều lần
+    if (this.isImporting) {
+      console.log('Import is already in progress');
+      return;
+    }
+
+    if (!this.selectedFile) {
+      this.message.error('Không tìm thấy file');
+      return;
+    }
+
+    this.isImporting = true;
     this.isProcessing = true;
     this.step = 3;
 
-    // Gọi API import students
-    this.studentService.importStudents(this.validData).subscribe({
+    console.log('Starting preview mode import with', this.validData.length, 'records from file:', this.selectedFile.name);
+
+    // Gửi file (FormData) thay vì JSON array vì backend chỉ accept multipart
+    this.studentService.importStudentsFromFile(this.selectedFile).subscribe({
       next: (result) => {
-        this.message.success(`Import thành công ${result.successCount || this.validData.length} học sinh`);
-        this.importSuccess.emit();
-        this.closeModal();
+        console.log('=== Import Response (Preview Mode) ===');
+        console.log('Full response:', result);
+        console.log('Response keys:', Object.keys(result));
+
+        // Parse response - backend format: { totalRows, processed, successes, failed, skipped, results }
+        const successes = result.successes || 0;
+        const failed = result.failed || 0;
+        const skipped = result.skipped || 0;
+        const totalRows = result.totalRows || 0;
+
+        console.log('Parsed - successes:', successes, 'failed:', failed, 'skipped:', skipped, 'totalRows:', totalRows);
+
+        let successMessage = '';
+        if (successes > 0) {
+          successMessage += `Import thành công ${successes} học sinh`;
+        }
+        if (skipped > 0) {
+          successMessage += (successMessage ? ', ' : '') + `bỏ qua ${skipped} dòng`;
+        }
+        if (failed > 0) {
+          successMessage += (successMessage ? ', ' : '') + `thất bại ${failed} dòng`;
+        }
+
+        if (successMessage) {
+          this.message.success(successMessage);
+        } else {
+          this.message.info('Import complete: ' + JSON.stringify(result));
+        }
+
+        // Show error details if any
+        if (result.results && Array.isArray(result.results)) {
+          const failedResults = result.results.filter((r: any) => r.status !== 'SUCCESS');
+          if (failedResults.length > 0) {
+            console.error('Failed imports:', failedResults);
+            failedResults.forEach((r: any) => {
+              console.log(`Row ${r.rowNumber}: ${r.status} - ${r.message}`);
+            });
+          }
+        }
+
+        this.modal.close({
+          success: true,
+          successCount: successes,
+          errorCount: failed,
+          skippedCount: skipped,
+          response: result
+        });
         this.isProcessing = false;
       },
       error: (error) => {
+        console.error('Import preview error:', error);
+        console.error('Error details:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          errorBody: error.error
+        });
+
         this.message.error('Lỗi import dữ liệu: ' + (error.error?.message || error.message || 'Unknown error'));
-        console.error('Import error:', error);
         this.isProcessing = false;
+        this.isImporting = false;
+        this.step = 2; // Quay lại step preview để user có thể thử lại
+      }
+    });
+  }
+
+  importDirectly(): void {
+    // Ngăn gọi import nhiều lần
+    if (this.isImporting) {
+      console.log('Import is already in progress');
+      return;
+    }
+
+    if (!this.selectedFile) {
+      this.message.error('Chưa chọn file');
+      return;
+    }
+
+    this.isImporting = true;
+    this.isProcessing = true;
+    this.step = 3;
+
+    console.log('Starting direct import of file:', this.selectedFile.name);
+
+    // Gọi API import với file upload trực tiếp
+    this.studentService.importStudentsFromFile(this.selectedFile).subscribe({
+      next: (result) => {
+        console.log('=== Import Response ===');
+        console.log('Full response:', result);
+        console.log('Response keys:', Object.keys(result));
+
+        // Parse response - backend format: { totalRows, processed, successes, failed, skipped, results }
+        const successes = result.successes || 0;
+        const failed = result.failed || 0;
+        const skipped = result.skipped || 0;
+        const totalRows = result.totalRows || 0;
+
+        console.log('Parsed - successes:', successes, 'failed:', failed, 'skipped:', skipped, 'totalRows:', totalRows);
+
+        let successMessage = '';
+        if (successes > 0) {
+          successMessage += `Import thành công ${successes} học sinh`;
+        }
+        if (skipped > 0) {
+          successMessage += (successMessage ? ', ' : '') + `bỏ qua ${skipped} dòng`;
+        }
+        if (failed > 0) {
+          successMessage += (successMessage ? ', ' : '') + `thất bại ${failed} dòng`;
+        }
+
+        if (successMessage) {
+          this.message.success(successMessage);
+        } else {
+          this.message.info('Import complete: ' + JSON.stringify(result));
+        }
+
+        // Show error details if any
+        if (result.results && Array.isArray(result.results)) {
+          const failedResults = result.results.filter((r: any) => r.status !== 'SUCCESS');
+          if (failedResults.length > 0) {
+            console.error('Failed imports:', failedResults);
+            failedResults.forEach((r: any) => {
+              console.log(`Row ${r.rowNumber}: ${r.status} - ${r.message}`);
+            });
+          }
+        }
+
+        this.modal.close({
+          success: true,
+          successCount: successes,
+          errorCount: failed,
+          skippedCount: skipped,
+          response: result
+        });
+        this.isProcessing = false;
+      },
+      error: (error) => {
+        console.error('Import file error details:', error);
+        console.error('Error response:', error.error);
+        console.error('Error status:', error.status);
+
+        // Nếu gặp lỗi multipart, tự động fallback sang JSON mode
+        if (error.error?.message && error.error.message.includes('multipart')) {
+          this.message.warning('Chế độ upload file không khả dụng, chuyển sang chế độ xem trước...');
+          console.log('Falling back to preview mode');
+          this.isProcessing = false;
+          this.isImporting = false;
+          this.step = 1;
+          this.importMode = 'preview';
+          this.message.info('Vui lòng chọn file lại với chế độ "Xem trước dữ liệu"');
+        } else {
+          this.message.error('Lỗi import file: ' + (error.error?.message || error.message || 'Unknown error'));
+          this.isProcessing = false;
+          this.isImporting = false;
+          this.step = 1; // Quay lại step chọn file
+        }
       }
     });
   }

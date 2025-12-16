@@ -23,9 +23,19 @@
                 {{ getPaymentMethodText(payment.paymentMethod) }}
               </nz-descriptions-item>
               <nz-descriptions-item nzTitle="Trạng thái">
-                <nz-tag [nzColor]="getStatusColor(payment.status)">
-                  {{ getStatusText(payment.status) }}
-                </nz-tag>
+                <div class="status-inline">
+                  <nz-tag [nzColor]="getStatusColor(payment.status)" style="margin-right:8px;">
+                    {{ getStatusText(payment.status) }}
+                  </nz-tag>
+                  <nz-select
+                    [ngModel]="payment.status"
+                    (ngModelChange)="onStatusSelectChange($event)"
+                    nzSize="small"
+                    style="min-width: 160px;"
+                  >
+                    <nz-option *ngFor="let opt of statusOptions" [nzValue]="opt.value" [nzLabel]="opt.label"></nz-option>
+                  </nz-select>
+                </div>
               </nz-descriptions-item>
               <nz-descriptions-item nzTitle="Ngày thanh toán">
                 {{ payment.paymentDate | date:'dd/MM/yyyy HH:mm:ss' }}
@@ -80,57 +90,34 @@
         </nz-col>
       </nz-row>
 
-      <!-- Actions -->
+      <!-- Actions / Alerts -->
       <nz-row [nzGutter]="24" style="margin-top: 24px;">
         <nz-col [nzSpan]="24">
-          <nz-card nzTitle="Thao tác" nzSize="small">
-            <div class="action-buttons">
-              <button
-                *ngIf="payment.status === 'PENDING'"
-                nz-button
-                nzType="primary"
-                (click)="updatePaymentStatus('COMPLETED')"
-                style="margin-right: 8px;">
-                <i nz-icon nzType="check"></i>
-                Đánh dấu hoàn thành
-              </button>
+          <nz-card nzTitle="Cập nhật trạng thái" nzSize="small">
+            <div class="action-inline">
+              <span style="margin-right:8px;">Trạng thái hiện tại:</span>
+              <nz-tag [nzColor]="getStatusColor(payment.status)" style="margin-right:16px;">
+                {{ getStatusText(payment.status) }}
+              </nz-tag>
 
-              <button
-                *ngIf="payment.status === 'PENDING'"
-                nz-button
-                nzType="default"
-                nzDanger
-                (click)="updatePaymentStatus('FAILED')"
-                style="margin-right: 8px;">
-                <i nz-icon nzType="close"></i>
-                Đánh dấu thất bại
-              </button>
+              <nz-select
+                [(ngModel)]="selectedStatus"
+                nzPlaceHolder="Chọn trạng thái mới"
+                style="min-width: 220px; margin-right: 12px;"
+              >
+                <nz-option *ngFor="let opt of statusOptions" [nzValue]="opt.value" [nzLabel]="opt.label"></nz-option>
+              </nz-select>
 
-              <button
-                *ngIf="payment.status === 'COMPLETED'"
-                nz-button
-                nzType="default"
-                (click)="updatePaymentStatus('REFUNDED')"
-                style="margin-right: 8px;">
-                <i nz-icon nzType="rollback"></i>
-                Hoàn tiền
-              </button>
-
-              <button
-                *ngIf="payment.status === 'FAILED' || payment.status === 'REFUNDED'"
-                nz-button
-                nzType="primary"
-                (click)="updatePaymentStatus('PENDING')"
-                style="margin-right: 8px;">
-                <i nz-icon nzType="reload"></i>
-                Đặt lại chờ xử lý
+              <button nz-button nzType="primary" (click)="applyStatusChange()">
+                <i nz-icon nzType="save"></i>
+                Cập nhật
               </button>
             </div>
 
             <nz-alert
-              *ngIf="payment.status === 'COMPLETED'"
+              *ngIf="payment.status === 'SUCCESS'"
               nzType="success"
-              nzMessage="Thanh toán đã hoàn thành"
+              nzMessage="Thanh toán thành công"
               nzDescription="Thanh toán này đã được xử lý thành công."
               nzShowIcon
               style="margin-top: 16px;">
@@ -155,10 +142,19 @@
             </nz-alert>
 
             <nz-alert
-              *ngIf="payment.status === 'REFUNDED'"
+              *ngIf="payment.status === 'EXPIRED'"
               nzType="info"
-              nzMessage="Thanh toán đã hoàn tiền"
-              nzDescription="Thanh toán này đã được hoàn tiền cho học sinh."
+              nzMessage="Thanh toán hết hạn"
+              nzDescription="Thanh toán này đã hết hạn."
+              nzShowIcon
+              style="margin-top: 16px;">
+            </nz-alert>
+
+            <nz-alert
+              *ngIf="payment.status === 'CANCELED'"
+              nzType="default"
+              nzMessage="Thanh toán đã hủy"
+              nzDescription="Thanh toán này đã bị hủy."
               nzShowIcon
               style="margin-top: 16px;">
             </nz-alert>

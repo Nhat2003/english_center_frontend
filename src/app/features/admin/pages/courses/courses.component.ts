@@ -110,7 +110,7 @@ export class CoursesComponent implements OnInit {
       nzTitle: 'Thông tin khóa học',
       nzContent: CoursesFormComponent,
       nzFooter: null,
-      nzWidth: 600,
+      nzWidth: 900,
       nzComponentParams: {
         course: { id: course.id },
         mode: 'view'

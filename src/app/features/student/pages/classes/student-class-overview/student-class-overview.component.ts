@@ -14,6 +14,9 @@ export class StudentClassOverviewComponent implements OnInit {
   classId!: number;
   classInfo?: Class;
   loading = false;
+  students: any[] = [];
+  loadingStudents = false;
+  isStudentsModalVisible = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -26,6 +29,7 @@ export class StudentClassOverviewComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.classId = +params['id'];
       this.loadClassInfo();
+      this.loadStudents();
     });
   }
 
@@ -44,6 +48,29 @@ export class StudentClassOverviewComponent implements OnInit {
     });
   }
 
+  loadStudents(): void {
+    this.loadingStudents = true;
+    this.classService.getStudentsByClass(this.classId).subscribe({
+      next: (data) => {
+        this.students = data;
+        this.loadingStudents = false;
+      },
+      error: (err) => {
+        console.error('Error loading students:', err);
+        this.message.error('Không thể tải danh sách học sinh');
+        this.loadingStudents = false;
+      }
+    });
+  }
+
+  showStudentsModal(): void {
+    this.isStudentsModalVisible = true;
+  }
+
+  handleStudentsModalCancel(): void {
+    this.isStudentsModalVisible = false;
+  }
+
   /**
    * Format days of week from "1,3,5" to "Thứ 2, Thứ 4, Thứ 6"
    */
@@ -51,13 +78,13 @@ export class StudentClassOverviewComponent implements OnInit {
     if (!daysOfWeek) return '';
 
     const dayNames: { [key: string]: string } = {
-      '1': 'Thứ 2',
-      '2': 'Thứ 3',
-      '3': 'Thứ 4',
-      '4': 'Thứ 5',
-      '5': 'Thứ 6',
-      '6': 'Thứ 7',
-      '7': 'Chủ nhật'
+      '2': 'Thứ 2',
+      '3': 'Thứ 3',
+      '4': 'Thứ 4',
+      '5': 'Thứ 5',
+      '6': 'Thứ 6',
+      '7': 'Thứ 7',
+      '8': 'Chủ nhật'
     };
 
     return daysOfWeek

@@ -1,7 +1,7 @@
 # Chức năng Quản lý Thanh toán
 
 ## Tổng quan
-Chức năng quản lý thanh toán cho phép admin của English Center quản lý tất cả các giao dịch thanh toán của học sinh, bao gồm:
+Chức năng quản lý thanh toán cho phép admin của TOEIC DOWNTOWN quản lý tất cả các giao dịch thanh toán của học sinh, bao gồm:
 
 - Xem danh sách thanh toán
 - Thêm thanh toán mới

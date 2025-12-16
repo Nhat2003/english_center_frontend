@@ -128,6 +128,11 @@
   overflow: hidden;
 }
 
+.next-class-card.empty-state {
+  text-align: center;
+  padding: 20px;
+}
+
 .next-class-card::before {
   content: '';
   position: absolute;
@@ -136,6 +141,10 @@
   right: 0;
   height: 4px;
   background: linear-gradient(90deg, #3bb273, #52c41a);
+}
+
+.next-class-card.empty-state::before {
+  display: none;
 }
 
 .next-class-card .badge {
